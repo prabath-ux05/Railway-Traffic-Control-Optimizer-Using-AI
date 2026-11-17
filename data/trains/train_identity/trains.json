@@ -1,0 +1,309 @@
+
+[
+  {
+    "train_id": "TR_12607",
+    "train_number": "12607",
+    "train_name": "Lalbagh SF Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_12609",
+    "train_number": "12609",
+    "train_name": "Mysuru Express",
+    "service_type": "INTERCITY"
+  },
+  {
+    "train_id": "TR_12610",
+    "train_number": "12610",
+    "train_name": "Chennai Express",
+    "service_type": "INTERCITY"
+  },
+  {
+    "train_id": "TR_43411",
+    "train_number": "43411",
+    "train_name": "Chennai–Arakkonam Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_43412",
+    "train_number": "43412",
+    "train_name": "Arakkonam–Chennai Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_16057",
+    "train_number": "16057",
+    "train_name": "Sapthagiri Express",
+    "service_type": "INTERCITY"
+  },
+  {
+    "train_id": "TR_16203",
+    "train_number": "16203",
+    "train_name": "Garudadri Express",
+    "service_type": "INTERCITY"
+  },
+  {
+    "train_id": "TR_12639",
+    "train_number": "12639",
+    "train_name": "Brindavan Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_12640",
+    "train_number": "12640",
+    "train_name": "Brindavan Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_22625",
+    "train_number": "22625",
+    "train_name": "SBC Double Decker Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_43507",
+    "train_number": "43507",
+    "train_name": "Chennai–Tiruttani Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_43219",
+    "train_number": "43219",
+    "train_name": "Chennai–Tiruvallur Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_12675",
+    "train_number": "12675",
+    "train_name": "Kovai SF Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_12676",
+    "train_number": "12676",
+    "train_name": "Kovai SF Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_20607",
+    "train_number": "20607",
+    "train_name": "Mysuru Vande Bharat Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_43413",
+    "train_number": "43413",
+    "train_name": "Chennai–Arakkonam Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_43223",
+    "train_number": "43223",
+    "train_name": "Chennai–Tiruvallur Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_13351",
+    "train_number": "13351",
+    "train_name": "Dhanbad–Alappuzha Express",
+    "service_type": "LONG_DISTANCE"
+  },
+  {
+    "train_id": "TR_43501",
+    "train_number": "43501",
+    "train_name": "Chennai–Tiruttani Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_12657",
+    "train_number": "12657",
+    "train_name": "Chennai–Bengaluru Mail",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_12712",
+    "train_number": "12712",
+    "train_name": "Pinakini SF Express",
+    "service_type": "INTERCITY"
+  },
+  {
+    "train_id": "TR_12711",
+    "train_number": "12711",
+    "train_name": "Pinakini SF Express",
+    "service_type": "INTERCITY"
+  },
+  {
+    "train_id": "TR_12842",
+    "train_number": "12842",
+    "train_name": "Coromandel Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_12656",
+    "train_number": "12656",
+    "train_name": "Navajeevan Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_42411",
+    "train_number": "42411",
+    "train_name": "Chennai–Sullurpeta Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_42412",
+    "train_number": "42412",
+    "train_name": "Sullurpeta–Chennai Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_42015",
+    "train_number": "42015",
+    "train_name": "Chennai–Gummidipundi Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_42413",
+    "train_number": "42413",
+    "train_name": "Chennai–Sullurpeta Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_40001",
+    "train_number": "40001",
+    "train_name": "Chennai Beach–Tambaram Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_40143",
+    "train_number": "40143",
+    "train_name": "Chennai Beach–Chengalpattu Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_40144",
+    "train_number": "40144",
+    "train_name": "Chengalpattu–Chennai Beach Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_12635",
+    "train_number": "12635",
+    "train_name": "Vaigai Superfast Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_12636",
+    "train_number": "12636",
+    "train_name": "Vaigai Superfast Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_12605",
+    "train_number": "12605",
+    "train_name": "Pallavan Superfast Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_16159",
+    "train_number": "16159",
+    "train_name": "Chennai Egmore–Trichy Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_12693",
+    "train_number": "12693",
+    "train_name": "Pearl City Express",
+    "service_type": "EXPRESS"
+  },
+  {
+    "train_id": "TR_41001",
+    "train_number": "41001",
+    "train_name": "Chennai Beach–Velachery Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_41002",
+    "train_number": "41002",
+    "train_name": "Velachery–Chennai Beach Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_41015",
+    "train_number": "41015",
+    "train_name": "Chennai Beach–Velachery Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_41016",
+    "train_number": "41016",
+    "train_name": "Velachery–Chennai Beach Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_41131",
+    "train_number": "41131",
+    "train_name": "Chennai Beach–Velachery Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_41132",
+    "train_number": "41132",
+    "train_name": "Velachery–Chennai Beach Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_42601",
+    "train_number": "42601",
+    "train_name": "Chennai Beach–Gummidipundi Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_42602",
+    "train_number": "42602",
+    "train_name": "Gummidipundi–Chennai Beach Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_42425",
+    "train_number": "42425",
+    "train_name": "Chennai Beach–Sullurpeta Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_44002",
+    "train_number": "44002",
+    "train_name": "Chengalpattu–Arakkonam Passenger",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_44004",
+    "train_number": "44004",
+    "train_name": "Chengalpattu–Arakkonam Passenger",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_44003",
+    "train_number": "44003",
+    "train_name": "Arakkonam–Chengalpattu Passenger",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_44001",
+    "train_number": "44001",
+    "train_name": "Arakkonam–Chengalpattu Passenger",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_43102",
+    "train_number": "43102",
+    "train_name": "Pattabiram Siding–Chennai Central Local",
+    "service_type": "SUBURBAN_EMU"
+  },
+  {
+    "train_id": "TR_43116",
+    "train_number": "43116",
+    "train_name": "Pattabiram Siding–Chennai Central Local",
+    "service_type": "SUBURBAN_EMU"
+  }
+]

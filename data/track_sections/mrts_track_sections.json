@@ -1,0 +1,52 @@
+[
+  { "id": "MSB_MSF_MRTS_UP", "from": "MSB", "to": "MSF", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "MSF_MSB_MRTS_DOWN", "from": "MSF", "to": "MSB", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "MSF_MPKT_MRTS_UP", "from": "MSF", "to": "MPKT", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "MPKT_MSF_MRTS_DOWN", "from": "MPKT", "to": "MSF", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "MPKT_MCPT_MRTS_UP", "from": "MPKT", "to": "MCPT", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "MCPT_MPKT_MRTS_DOWN", "from": "MCPT", "to": "MPKT", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "MCPT_MCPK_MRTS_UP", "from": "MCPT", "to": "MCPK", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "MCPK_MCPT_MRTS_DOWN", "from": "MCPK", "to": "MCPT", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "MCPK_MTCN_MRTS_UP", "from": "MCPK", "to": "MTCN", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "MTCN_MCPK_MRTS_DOWN", "from": "MTCN", "to": "MCPK", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "MTCN_MLHS_MRTS_UP", "from": "MTCN", "to": "MLHS", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "MLHS_MTCN_MRTS_DOWN", "from": "MLHS", "to": "MTCN", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "MLHS_MKAK_MRTS_UP", "from": "MLHS", "to": "MKAK", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "MKAK_MLHS_MRTS_DOWN", "from": "MKAK", "to": "MLHS", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "MKAK_MTMY_MRTS_UP", "from": "MKAK", "to": "MTMY", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "MTMY_MKAK_MRTS_DOWN", "from": "MTMY", "to": "MKAK", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "MTMY_MNDY_MRTS_UP", "from": "MTMY", "to": "MNDY", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "MNDY_MTMY_MRTS_DOWN", "from": "MNDY", "to": "MTMY", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "MNDY_GWYR_MRTS_UP", "from": "MNDY", "to": "GWYR", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "GWYR_MNDY_MRTS_DOWN", "from": "GWYR", "to": "MNDY", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "GWYR_KTPM_MRTS_UP", "from": "GWYR", "to": "KTPM", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "KTPM_GWYR_MRTS_DOWN", "from": "KTPM", "to": "GWYR", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "KTPM_KTBR_MRTS_UP", "from": "KTPM", "to": "KTBR", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "KTBR_KTPM_MRTS_DOWN", "from": "KTBR", "to": "KTPM", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "KTBR_INDR_MRTS_UP", "from": "KTBR", "to": "INDR", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "INDR_KTBR_MRTS_DOWN", "from": "INDR", "to": "KTBR", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "INDR_TYMR_MRTS_UP", "from": "INDR", "to": "TYMR", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "TYMR_INDR_MRTS_DOWN", "from": "TYMR", "to": "INDR", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "TYMR_TRMN_MRTS_UP", "from": "TYMR", "to": "TRMN", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "TRMN_TYMR_MRTS_DOWN", "from": "TRMN", "to": "TYMR", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "TRMN_PRGD_MRTS_UP", "from": "TRMN", "to": "PRGD", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "PRGD_TRMN_MRTS_DOWN", "from": "PRGD", "to": "TRMN", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "PRGD_VLCY_MRTS_UP", "from": "PRGD", "to": "VLCY", "direction": "UP", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "VLCY_PRGD_MRTS_DOWN", "from": "VLCY", "to": "PRGD", "direction": "DOWN", "track_type": "MRTS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 4.0 }
+]

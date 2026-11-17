@@ -1,0 +1,10 @@
+[
+  { "id": "MSB_RPM_SUBURBAN_BYPASS_UP", "from": "MSB", "to": "RPM", "direction": "UP", "track_type": "SUBURBAN_BYPASS", "travel_time_min": 4.0, "capacity": 1, "headway_min": 3.0 },
+  { "id": "RPM_MSB_SUBURBAN_BYPASS_DOWN", "from": "RPM", "to": "MSB", "direction": "DOWN", "track_type": "SUBURBAN_BYPASS", "travel_time_min": 4.0, "capacity": 1, "headway_min": 3.0 },
+
+  { "id": "RPM_WST_SUBURBAN_BYPASS_UP", "from": "RPM", "to": "WST", "direction": "UP", "track_type": "SUBURBAN_BYPASS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 3.0 },
+  { "id": "WST_RPM_SUBURBAN_BYPASS_DOWN", "from": "WST", "to": "RPM", "direction": "DOWN", "track_type": "SUBURBAN_BYPASS", "travel_time_min": 3.0, "capacity": 1, "headway_min": 3.0 },
+
+  { "id": "WST_KOK_SUBURBAN_BYPASS_UP", "from": "WST", "to": "KOK", "direction": "UP", "track_type": "SUBURBAN_BYPASS", "travel_time_min": 4.0, "capacity": 1, "headway_min": 3.0 },
+  { "id": "KOK_WST_SUBURBAN_BYPASS_DOWN", "from": "KOK", "to": "WST", "direction": "DOWN", "track_type": "SUBURBAN_BYPASS", "travel_time_min": 4.0, "capacity": 1, "headway_min": 3.0 }
+]

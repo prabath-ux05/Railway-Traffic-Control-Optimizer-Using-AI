@@ -1,0 +1,34 @@
+[
+  { "id": "CGL_RDY_CROSS_BYPASS_UP", "from": "CGL", "to": "RDY", "direction": "UP", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+  { "id": "RDY_CGL_CROSS_BYPASS_DOWN", "from": "RDY", "to": "CGL", "direction": "DOWN", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+
+  { "id": "RDY_VAM_CROSS_BYPASS_UP", "from": "RDY", "to": "VAM", "direction": "UP", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+  { "id": "VAM_RDY_CROSS_BYPASS_DOWN", "from": "VAM", "to": "RDY", "direction": "DOWN", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+
+  { "id": "VAM_PALR_CROSS_BYPASS_UP", "from": "VAM", "to": "PALR", "direction": "UP", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+  { "id": "PALR_VAM_CROSS_BYPASS_DOWN", "from": "PALR", "to": "VAM", "direction": "DOWN", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+
+  { "id": "PALR_PJS_CROSS_BYPASS_UP", "from": "PALR", "to": "PJS", "direction": "UP", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+  { "id": "PJS_PALR_CROSS_BYPASS_DOWN", "from": "PJS", "to": "PALR", "direction": "DOWN", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+
+  { "id": "PJS_WJ_CROSS_BYPASS_UP", "from": "PJS", "to": "WJ", "direction": "UP", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+  { "id": "WJ_PJS_CROSS_BYPASS_DOWN", "from": "WJ", "to": "PJS", "direction": "DOWN", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+
+  { "id": "WJ_NTT_CROSS_BYPASS_UP", "from": "WJ", "to": "NTT", "direction": "UP", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+  { "id": "NTT_WJ_CROSS_BYPASS_DOWN", "from": "NTT", "to": "WJ", "direction": "DOWN", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+
+  { "id": "NTT_CJE_CROSS_BYPASS_UP", "from": "NTT", "to": "CJE", "direction": "UP", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+  { "id": "CJE_NTT_CROSS_BYPASS_DOWN", "from": "CJE", "to": "NTT", "direction": "DOWN", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+
+  { "id": "CJE_CJ_CROSS_BYPASS_UP", "from": "CJE", "to": "CJ", "direction": "UP", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+  { "id": "CJ_CJE_CROSS_BYPASS_DOWN", "from": "CJ", "to": "CJE", "direction": "DOWN", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+
+  { "id": "CJ_TMLP_CROSS_BYPASS_UP", "from": "CJ", "to": "TMLP", "direction": "UP", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+  { "id": "TMLP_CJ_CROSS_BYPASS_DOWN", "from": "TMLP", "to": "CJ", "direction": "DOWN", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+
+  { "id": "TMLP_TKO_CROSS_BYPASS_UP", "from": "TMLP", "to": "TKO", "direction": "UP", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+  { "id": "TKO_TMLP_CROSS_BYPASS_DOWN", "from": "TKO", "to": "TMLP", "direction": "DOWN", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+
+  { "id": "TKO_AJJ_CROSS_BYPASS_UP", "from": "TKO", "to": "AJJ", "direction": "UP", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 },
+  { "id": "AJJ_TKO_CROSS_BYPASS_DOWN", "from": "AJJ", "to": "TKO", "direction": "DOWN", "track_type": "CROSS_BYPASS", "travel_time_min": 6.0, "capacity": 1, "headway_min": 10.0 }
+]

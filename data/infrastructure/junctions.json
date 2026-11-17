@@ -1,0 +1,116 @@
+[
+  {
+    "id": "JCT_BBQ",
+    "name": "Basin Bridge / Chennai Central Junction",
+    "station_id": "BBQ",
+    "junction_type": "CRITICAL_THROAT",
+    "description": "Shared railway throat connecting the Chennai Central area with the West and North corridors.",
+    "connected_routes": [
+      "RT_WEST_MAS_AJJ",
+      "RT_WEST_AJJ_MAS",
+      "RT_NORTH_MAS_SPE",
+      "RT_NORTH_SPE_MAS"
+    ],
+    "simulation_role": "RESOURCE_CONFLICT_POINT",
+    "capacity": 1,
+    "data_source": "PROJECT_ABSTRACTION"
+  },
+  {
+    "id": "JCT_VJM",
+    "name": "Villivakkam Junction",
+    "station_id": "VJM",
+    "junction_type": "CORRIDOR_DIVERGENCE",
+    "description": "Simulation abstraction representing the divergence between the West corridor and Chennai Beach-side routing.",
+    "connected_routes": [
+      "RT_WEST_MAS_AJJ",
+      "RT_WEST_AJJ_MAS",
+      "RT_WEST_MAS_TRL_SHORT",
+      "RT_WEST_TRL_MAIN_UP"
+    ],
+    "simulation_role": "ROUTE_CONFLICT_POINT",
+    "capacity": 1,
+    "data_source": "PROJECT_ABSTRACTION"
+  },
+  {
+    "id": "JCT_PAB",
+    "name": "Pattabiram Junction",
+    "station_id": "PAB",
+    "junction_type": "BRANCH",
+    "description": "Branching point for the Pattabiram Military Siding connection.",
+    "connected_routes": [
+      "RT_WEST_MAS_AJJ",
+      "RT_WEST_AJJ_MAS",
+      "RT_PTMS_MAS",
+      "RT_MAS_PTMS"
+    ],
+    "simulation_role": "BRANCH_CONFLICT_POINT",
+    "capacity": 1,
+    "data_source": "PROJECT_ABSTRACTION"
+  },
+  {
+    "id": "JCT_KOK",
+    "name": "Korukkupet Junction",
+    "station_id": "KOK",
+    "junction_type": "CORRIDOR_MERGE",
+    "description": "Simulation abstraction representing the merge of Chennai North and Beach-North bypass movements.",
+    "connected_routes": [
+      "RT_NORTH_MAS_SPE",
+      "RT_NORTH_SPE_MAS",
+      "RT_WEST_NORTH_BYPASS_MSB_SPE",
+      "RT_WEST_NORTH_BYPASS_SPE_MSB"
+    ],
+    "simulation_role": "MERGE_CONFLICT_POINT",
+    "capacity": 1,
+    "data_source": "PROJECT_ABSTRACTION"
+  },
+  {
+    "id": "JCT_MSB",
+    "name": "Chennai Beach Junction",
+    "station_id": "MSB",
+    "junction_type": "MULTI_CORRIDOR_HUB",
+    "description": "Multi-corridor hub connecting South, MRTS, and Beach-North bypass services.",
+    "connected_routes": [
+      "RT_WEST_NORTH_BYPASS_MSB_SPE",
+      "RT_WEST_NORTH_BYPASS_SPE_MSB",
+      "RT_MRTS_MSB_VLCY",
+      "RT_MRTS_VLCY_MSB",
+      "RT_SOUTH_MSB_CGL",
+      "RT_SOUTH_CGL_MSB"
+    ],
+    "simulation_role": "MULTI_ROUTE_RESOURCE",
+    "capacity": 1,
+    "data_source": "PROJECT_ABSTRACTION"
+  },
+  {
+    "id": "JCT_CGL",
+    "name": "Chengalpattu Junction",
+    "station_id": "CGL",
+    "junction_type": "CORRIDOR_DIVERGENCE",
+    "description": "Simulation abstraction representing the connection between the South corridor and the Cross Line toward Kanchipuram and Arakkonam.",
+    "connected_routes": [
+      "RT_SOUTH_MSB_CGL",
+      "RT_SOUTH_CGL_MSB",
+      "RT_CROSS_CGL_AJJ",
+      "RT_CROSS_AJJ_CGL"
+    ],
+    "simulation_role": "CROSS_CORRIDOR_CONFLICT_POINT",
+    "capacity": 1,
+    "data_source": "PROJECT_ABSTRACTION"
+  },
+  {
+    "id": "JCT_AJJ",
+    "name": "Arakkonam Junction",
+    "station_id": "AJJ",
+    "junction_type": "MULTI_CORRIDOR_HUB",
+    "description": "Simulation boundary and connection point for the West trunk and Cross Line.",
+    "connected_routes": [
+      "RT_WEST_MAS_AJJ",
+      "RT_WEST_AJJ_MAS",
+      "RT_CROSS_CGL_AJJ",
+      "RT_CROSS_AJJ_CGL"
+    ],
+    "simulation_role": "CORRIDOR_INTERCHANGE",
+    "capacity": 1,
+    "data_source": "PROJECT_ABSTRACTION"
+  }
+]

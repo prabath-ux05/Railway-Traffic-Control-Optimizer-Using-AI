@@ -1,0 +1,616 @@
+{
+  "phase": "32.2",
+  "generated_at": "2026-09-20T09:18:26.588920+00:00",
+  "total_services_profiled": 40,
+  "mean_knock_on_multiplier": 1.7,
+  "overall_damping_efficiency_pct": 68.4,
+  "delay_decompositions": [
+    {
+      "service_id": "SRV_12605_01",
+      "train_name": "Pallavan Superfast Express",
+      "corridor": "South Corridor",
+      "primary_delay_minutes": 20.0,
+      "secondary_delay_minutes": 5.0,
+      "total_delay_minutes": 25.0,
+      "knock_on_ratio": 0.25,
+      "absorbed_delay_minutes": 10.0,
+      "recovery_rate_pct": 40.0
+    },
+    {
+      "service_id": "SRV_12607_01",
+      "train_name": "Lalbagh SF Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 22.0,
+      "total_delay_minutes": 22.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 8.0,
+      "recovery_rate_pct": 36.4
+    },
+    {
+      "service_id": "SRV_12609_01",
+      "train_name": "Mysuru Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 18.0,
+      "total_delay_minutes": 18.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 6.0,
+      "recovery_rate_pct": 33.3
+    },
+    {
+      "service_id": "SRV_12610_01",
+      "train_name": "Chennai Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 4.0,
+      "total_delay_minutes": 4.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 4.0,
+      "recovery_rate_pct": 100.0
+    },
+    {
+      "service_id": "SRV_12635_01",
+      "train_name": "Vaigai Superfast Express",
+      "corridor": "South Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 2.0,
+      "total_delay_minutes": 2.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 2.0,
+      "recovery_rate_pct": 100.0
+    },
+    {
+      "service_id": "SRV_12636_01",
+      "train_name": "Vaigai Superfast Express",
+      "corridor": "South Corridor",
+      "primary_delay_minutes": 40.0,
+      "secondary_delay_minutes": 10.0,
+      "total_delay_minutes": 50.0,
+      "knock_on_ratio": 0.25,
+      "absorbed_delay_minutes": 10.0,
+      "recovery_rate_pct": 20.0
+    },
+    {
+      "service_id": "SRV_12639_01",
+      "train_name": "Brindavan Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 26.0,
+      "total_delay_minutes": 26.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 8.0,
+      "recovery_rate_pct": 30.8
+    },
+    {
+      "service_id": "SRV_12640_01",
+      "train_name": "Brindavan Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 15.0,
+      "total_delay_minutes": 15.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 6.0,
+      "recovery_rate_pct": 40.0
+    },
+    {
+      "service_id": "SRV_12656_01",
+      "train_name": "Navajeevan Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 0.0,
+      "total_delay_minutes": 0.0,
+      "knock_on_ratio": 0.0,
+      "absorbed_delay_minutes": 0.0,
+      "recovery_rate_pct": 0.0
+    },
+    {
+      "service_id": "SRV_12657_01",
+      "train_name": "Chennai\u2013Bengaluru Mail",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 4.0,
+      "total_delay_minutes": 4.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 4.0,
+      "recovery_rate_pct": 100.0
+    },
+    {
+      "service_id": "SRV_12675_01",
+      "train_name": "Kovai SF Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 30.0,
+      "secondary_delay_minutes": 5.0,
+      "total_delay_minutes": 35.0,
+      "knock_on_ratio": 0.17,
+      "absorbed_delay_minutes": 10.0,
+      "recovery_rate_pct": 28.6
+    },
+    {
+      "service_id": "SRV_12676_01",
+      "train_name": "Kovai SF Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 30.0,
+      "total_delay_minutes": 30.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 8.0,
+      "recovery_rate_pct": 26.7
+    },
+    {
+      "service_id": "SRV_12693_01",
+      "train_name": "Pearl City Express",
+      "corridor": "South Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 12.0,
+      "total_delay_minutes": 12.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 6.0,
+      "recovery_rate_pct": 50.0
+    },
+    {
+      "service_id": "SRV_12711_01",
+      "train_name": "Pinakini SF Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 2.0,
+      "total_delay_minutes": 2.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 2.0,
+      "recovery_rate_pct": 100.0
+    },
+    {
+      "service_id": "SRV_12712_01",
+      "train_name": "Pinakini SF Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 0.0,
+      "total_delay_minutes": 0.0,
+      "knock_on_ratio": 0.0,
+      "absorbed_delay_minutes": 0.0,
+      "recovery_rate_pct": 0.0
+    },
+    {
+      "service_id": "SRV_12842_01",
+      "train_name": "Coromandel Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 20.0,
+      "secondary_delay_minutes": 10.0,
+      "total_delay_minutes": 30.0,
+      "knock_on_ratio": 0.5,
+      "absorbed_delay_minutes": 10.0,
+      "recovery_rate_pct": 33.3
+    },
+    {
+      "service_id": "SRV_13351_01",
+      "train_name": "Dhanbad\u2013Alappuzha Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 18.0,
+      "total_delay_minutes": 18.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 8.0,
+      "recovery_rate_pct": 44.4
+    },
+    {
+      "service_id": "SRV_16057_01",
+      "train_name": "Sapthagiri Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 18.0,
+      "total_delay_minutes": 18.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 6.0,
+      "recovery_rate_pct": 33.3
+    },
+    {
+      "service_id": "SRV_16159_01",
+      "train_name": "Chennai Egmore\u2013Trichy Express",
+      "corridor": "South Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 4.0,
+      "total_delay_minutes": 4.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 4.0,
+      "recovery_rate_pct": 100.0
+    },
+    {
+      "service_id": "SRV_16203_01",
+      "train_name": "Garudadri Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 2.0,
+      "total_delay_minutes": 2.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 2.0,
+      "recovery_rate_pct": 100.0
+    },
+    {
+      "service_id": "SRV_20607_01",
+      "train_name": "Mysuru Vande Bharat Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 40.0,
+      "secondary_delay_minutes": 5.0,
+      "total_delay_minutes": 45.0,
+      "knock_on_ratio": 0.12,
+      "absorbed_delay_minutes": 10.0,
+      "recovery_rate_pct": 22.2
+    },
+    {
+      "service_id": "SRV_22625_01",
+      "train_name": "SBC Double Decker Express",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 22.0,
+      "total_delay_minutes": 22.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 8.0,
+      "recovery_rate_pct": 36.4
+    },
+    {
+      "service_id": "SRV_40001_01",
+      "train_name": "Chennai Beach\u2013Tambaram Local",
+      "corridor": "South Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 15.0,
+      "total_delay_minutes": 15.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 6.0,
+      "recovery_rate_pct": 40.0
+    },
+    {
+      "service_id": "SRV_41001_01",
+      "train_name": "Chennai Beach\u2013Velachery Local",
+      "corridor": "South Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 0.0,
+      "total_delay_minutes": 0.0,
+      "knock_on_ratio": 0.0,
+      "absorbed_delay_minutes": 0.0,
+      "recovery_rate_pct": 0.0
+    },
+    {
+      "service_id": "SRV_41002_01",
+      "train_name": "Velachery\u2013Chennai Beach Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 4.0,
+      "total_delay_minutes": 4.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 4.0,
+      "recovery_rate_pct": 100.0
+    },
+    {
+      "service_id": "SRV_41016_01",
+      "train_name": "Velachery\u2013Chennai Beach Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 30.0,
+      "secondary_delay_minutes": 10.0,
+      "total_delay_minutes": 40.0,
+      "knock_on_ratio": 0.33,
+      "absorbed_delay_minutes": 10.0,
+      "recovery_rate_pct": 25.0
+    },
+    {
+      "service_id": "SRV_42015_01",
+      "train_name": "Chennai\u2013Gummidipundi Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 26.0,
+      "total_delay_minutes": 26.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 8.0,
+      "recovery_rate_pct": 30.8
+    },
+    {
+      "service_id": "SRV_42411_01",
+      "train_name": "Chennai\u2013Sullurpeta Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 12.0,
+      "total_delay_minutes": 12.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 6.0,
+      "recovery_rate_pct": 50.0
+    },
+    {
+      "service_id": "SRV_42412_01",
+      "train_name": "Sullurpeta\u2013Chennai Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 2.0,
+      "total_delay_minutes": 2.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 2.0,
+      "recovery_rate_pct": 100.0
+    },
+    {
+      "service_id": "SRV_42601_01",
+      "train_name": "Chennai Beach\u2013Gummidipundi Local",
+      "corridor": "North Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 0.0,
+      "total_delay_minutes": 0.0,
+      "knock_on_ratio": 0.0,
+      "absorbed_delay_minutes": 0.0,
+      "recovery_rate_pct": 0.0
+    },
+    {
+      "service_id": "SRV_42602_01",
+      "train_name": "Gummidipundi\u2013Chennai Beach Local",
+      "corridor": "North Corridor",
+      "primary_delay_minutes": 20.0,
+      "secondary_delay_minutes": 5.0,
+      "total_delay_minutes": 25.0,
+      "knock_on_ratio": 0.25,
+      "absorbed_delay_minutes": 10.0,
+      "recovery_rate_pct": 40.0
+    },
+    {
+      "service_id": "SRV_43102_01",
+      "train_name": "Pattabiram Siding\u2013Chennai Central Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 30.0,
+      "total_delay_minutes": 30.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 8.0,
+      "recovery_rate_pct": 26.7
+    },
+    {
+      "service_id": "SRV_43116_01",
+      "train_name": "Pattabiram Siding\u2013Chennai Central Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 18.0,
+      "total_delay_minutes": 18.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 6.0,
+      "recovery_rate_pct": 33.3
+    },
+    {
+      "service_id": "SRV_43219_01",
+      "train_name": "Chennai\u2013Tiruvallur Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 4.0,
+      "total_delay_minutes": 4.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 4.0,
+      "recovery_rate_pct": 100.0
+    },
+    {
+      "service_id": "SRV_43223_01",
+      "train_name": "Chennai\u2013Tiruvallur Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 2.0,
+      "total_delay_minutes": 2.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 2.0,
+      "recovery_rate_pct": 100.0
+    },
+    {
+      "service_id": "SRV_43411_01",
+      "train_name": "Chennai\u2013Arakkonam Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 40.0,
+      "secondary_delay_minutes": 10.0,
+      "total_delay_minutes": 50.0,
+      "knock_on_ratio": 0.25,
+      "absorbed_delay_minutes": 10.0,
+      "recovery_rate_pct": 20.0
+    },
+    {
+      "service_id": "SRV_43412_01",
+      "train_name": "Arakkonam\u2013Chennai Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 18.0,
+      "total_delay_minutes": 18.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 8.0,
+      "recovery_rate_pct": 44.4
+    },
+    {
+      "service_id": "SRV_43413_01",
+      "train_name": "Chennai\u2013Arakkonam Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 15.0,
+      "total_delay_minutes": 15.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 6.0,
+      "recovery_rate_pct": 40.0
+    },
+    {
+      "service_id": "SRV_43501_01",
+      "train_name": "Chennai\u2013Tiruttani Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 0.0,
+      "total_delay_minutes": 0.0,
+      "knock_on_ratio": 0.0,
+      "absorbed_delay_minutes": 0.0,
+      "recovery_rate_pct": 0.0
+    },
+    {
+      "service_id": "SRV_43507_01",
+      "train_name": "Chennai\u2013Tiruttani Local",
+      "corridor": "West Corridor",
+      "primary_delay_minutes": 0.0,
+      "secondary_delay_minutes": 4.0,
+      "total_delay_minutes": 4.0,
+      "knock_on_ratio": 1.0,
+      "absorbed_delay_minutes": 4.0,
+      "recovery_rate_pct": 100.0
+    }
+  ],
+  "propagation_chains": [
+    {
+      "chain_id": "CHAIN_01_MAS_OUTBOUND_RIPPLE",
+      "root_service_id": "SRV_12607_01",
+      "root_disruption_cause": "30-minute late departure at Chennai Central (MAS) due to late rake shunting",
+      "chain_depth": 3,
+      "total_services_affected": 4,
+      "total_propagated_delay_minutes": 54.0,
+      "attenuation_rate_pct": 28.5,
+      "nodes": [
+        {
+          "parent_service_id": null,
+          "child_service_id": "SRV_12607_01",
+          "trigger_type": "PLATFORM_OCCUPANCY",
+          "trigger_location": "Chennai Central (MAS) Platform 3",
+          "delay_transferred_minutes": 30.0,
+          "timestamp_minutes": 360.0
+        },
+        {
+          "parent_service_id": "SRV_12607_01",
+          "child_service_id": "SRV_43001_01",
+          "trigger_type": "HEADWAY_FOLLOWING",
+          "trigger_location": "MAS - BBQ Down Main Throat",
+          "delay_transferred_minutes": 15.0,
+          "timestamp_minutes": 365.0
+        },
+        {
+          "parent_service_id": "SRV_43001_01",
+          "child_service_id": "SRV_43003_01",
+          "trigger_type": "HEADWAY_FOLLOWING",
+          "trigger_location": "Perambur (PER) Down Local",
+          "delay_transferred_minutes": 6.0,
+          "timestamp_minutes": 380.0
+        },
+        {
+          "parent_service_id": "SRV_12607_01",
+          "child_service_id": "SRV_12675_01",
+          "trigger_type": "JUNCTION_CONFLICT",
+          "trigger_location": "Basin Bridge Junction (BBQ)",
+          "delay_transferred_minutes": 3.0,
+          "timestamp_minutes": 370.0
+        }
+      ]
+    },
+    {
+      "chain_id": "CHAIN_02_BBQ_DIAMOND_CROSS_INTERFERENCE",
+      "root_service_id": "SRV_42001_01",
+      "root_disruption_cause": "15-minute intermediate signal delay on North Line at Ennore (ENR)",
+      "chain_depth": 2,
+      "total_services_affected": 3,
+      "total_propagated_delay_minutes": 24.0,
+      "attenuation_rate_pct": 40.0,
+      "nodes": [
+        {
+          "parent_service_id": null,
+          "child_service_id": "SRV_42001_01",
+          "trigger_type": "ROUTE_LOCKING",
+          "trigger_location": "Ennore (ENR) Block Section",
+          "delay_transferred_minutes": 15.0,
+          "timestamp_minutes": 420.0
+        },
+        {
+          "parent_service_id": "SRV_42001_01",
+          "child_service_id": "SRV_12609_01",
+          "trigger_type": "JUNCTION_CONFLICT",
+          "trigger_location": "Basin Bridge Diamond Crossing (BBQ)",
+          "delay_transferred_minutes": 6.0,
+          "timestamp_minutes": 445.0
+        },
+        {
+          "parent_service_id": "SRV_12609_01",
+          "child_service_id": "SRV_43005_01",
+          "trigger_type": "HEADWAY_FOLLOWING",
+          "trigger_location": "Vyasarpadi Jnc Merge",
+          "delay_transferred_minutes": 3.0,
+          "timestamp_minutes": 455.0
+        }
+      ]
+    },
+    {
+      "chain_id": "CHAIN_03_ABU_TRL_TSR_CASCADE",
+      "root_service_id": "SRV_12609_01",
+      "root_disruption_cause": "Temporary Speed Restriction (30 km/h) between Avadi (ABU) and Tiruvallur (TRL)",
+      "chain_depth": 2,
+      "total_services_affected": 3,
+      "total_propagated_delay_minutes": 18.0,
+      "attenuation_rate_pct": 50.0,
+      "nodes": [
+        {
+          "parent_service_id": null,
+          "child_service_id": "SRV_12609_01",
+          "trigger_type": "ROUTE_LOCKING",
+          "trigger_location": "Avadi - Tiruvallur TSR Section",
+          "delay_transferred_minutes": 10.0,
+          "timestamp_minutes": 480.0
+        },
+        {
+          "parent_service_id": "SRV_12609_01",
+          "child_service_id": "SRV_43007_01",
+          "trigger_type": "HEADWAY_FOLLOWING",
+          "trigger_location": "Tiruvallur (TRL) Approach",
+          "delay_transferred_minutes": 5.0,
+          "timestamp_minutes": 492.0
+        },
+        {
+          "parent_service_id": "SRV_43007_01",
+          "child_service_id": "SRV_43009_01",
+          "trigger_type": "HEADWAY_FOLLOWING",
+          "trigger_location": "Kadambattur Block Section",
+          "delay_transferred_minutes": 3.0,
+          "timestamp_minutes": 505.0
+        }
+      ]
+    }
+  ],
+  "corridor_profiles": [
+    {
+      "corridor_name": "West Corridor (MAS - PER - ABU - TRL - AJJ)",
+      "total_disruption_events": 18,
+      "mean_primary_delay_min": 16.5,
+      "mean_secondary_delay_min": 14.2,
+      "mean_knock_on_ratio": 0.86,
+      "damping_efficiency_pct": 62.5,
+      "primary_propagation_chokepoints": [
+        "MAS_BBQ_THROAT",
+        "JNC_BBQ",
+        "JNC_PER_VJP"
+      ]
+    },
+    {
+      "corridor_name": "North Corridor (MAS / BBQ - TNP - ENR - PON - GPD)",
+      "total_disruption_events": 6,
+      "mean_primary_delay_min": 10.0,
+      "mean_secondary_delay_min": 6.5,
+      "mean_knock_on_ratio": 0.65,
+      "damping_efficiency_pct": 72.0,
+      "primary_propagation_chokepoints": [
+        "JNC_BBQ",
+        "SEC_TNP_ENR"
+      ]
+    },
+    {
+      "corridor_name": "South Corridor (MS - MBM - TBM - CGL)",
+      "total_disruption_events": 8,
+      "mean_primary_delay_min": 12.0,
+      "mean_secondary_delay_min": 7.8,
+      "mean_knock_on_ratio": 0.65,
+      "damping_efficiency_pct": 68.0,
+      "primary_propagation_chokepoints": [
+        "MS_EGMORE_THROAT",
+        "JNC_TBM"
+      ]
+    },
+    {
+      "corridor_name": "Southwest Mainline (AJJ - KPD - JTJ - KJM / SBC)",
+      "total_disruption_events": 4,
+      "mean_primary_delay_min": 8.5,
+      "mean_secondary_delay_min": 3.2,
+      "mean_knock_on_ratio": 0.38,
+      "damping_efficiency_pct": 84.0,
+      "primary_propagation_chokepoints": [
+        "JNC_AJJ",
+        "JNC_KJM"
+      ]
+    }
+  ],
+  "infeasible_boundary_explanation": "Under disruption scenario EXP_31_3_12_BLK_SEVERE (complete physical blockage of MAS_BBQ_THROAT_SEGMENT_DOWN for 120 minutes), delay propagation is theoretically infinite. Because Chennai Central terminal possesses zero redundant bypass routes in the model, all incoming trains queue indefinitely, causing 100% terminal starvation and total outbound deadlock. This scenario is isolated as a hard topological boundary that cannot be resolved by retiming alone."
+}

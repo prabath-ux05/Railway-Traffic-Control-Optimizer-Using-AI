@@ -1,0 +1,271 @@
+{
+  "timestamp": "2026-09-20T09:26:43.419462+00:00",
+  "summary": {
+    "total_recommendations": 3,
+    "infrastructure_bottleneck_count": 2,
+    "transient_disruption_count": 0,
+    "infeasible_cliff_count": 1,
+    "total_delay_savings_minutes": 45.0,
+    "mean_confidence_score": 0.667,
+    "mean_priority_score": 77.02
+  },
+  "recommendations": [
+    {
+      "recommendation_id": "REC_OPT_SCEN_PEAK_01",
+      "scenario_id": "SCEN_PEAK_01",
+      "title": "CP-SAT Dispatch Slot Optimization: West Corridor Peak Concurrency",
+      "recommendation_type": "JUNCTION_SLOT_RESCHEDULING",
+      "category": "dispatch sequencing",
+      "classification": "INFRASTRUCTURE_BOTTLENECK",
+      "priority_tier": "CRITICAL",
+      "priority_score": 84.45,
+      "confidence_score": 1.0,
+      "traceability_chain": {
+        "trigger": "Operational perturbation in 'West Corridor Peak Concurrency' causing 45.5m primary delay and triggering conflicts [CONF_HEADWAY_01] across services SRV_12607_01.",
+        "bottleneck": "Resource 'SEC_BBQ_KOK_UP' (TRACK_SECTION) experiencing 78.5% capacity utilization with BSI of 62.4 and 6 recorded contention events.",
+        "constraint": "Physical safety invariants enforced: minimum 3.0 min headway buffer, single-track occupancy rule, platform capacity limits, and route interlocking mutual exclusion.",
+        "decision": "Dispatch Directive [DISPATCH SEQUENCING]: CP-SAT Dispatch Slot Optimization: West Corridor Peak Concurrency. Optimizes departure slots and headway spacing through shared junction throats, mitigating 45.0m delay.",
+        "outcome": "Mitigates 45.0m total delay (reducing baseline 101.0m to 56.0m), damping secondary knock-on propagation from 2.22x to controlled state.",
+        "steps": [
+          {
+            "step_number": 1,
+            "phase": "TRIGGER",
+            "title": "Perturbation Detected",
+            "detail": "Operational perturbation in 'West Corridor Peak Concurrency' causing 45.5m primary delay and triggering conflicts [CONF_HEADWAY_01] across services SRV_12607_01."
+          },
+          {
+            "step_number": 2,
+            "phase": "BOTTLENECK",
+            "title": "Choke-Point Isolated",
+            "detail": "Resource 'SEC_BBQ_KOK_UP' (TRACK_SECTION) experiencing 78.5% capacity utilization with BSI of 62.4 and 6 recorded contention events."
+          },
+          {
+            "step_number": 3,
+            "phase": "CONSTRAINT",
+            "title": "Safety Bounds Verified",
+            "detail": "Physical safety invariants enforced: minimum 3.0 min headway buffer, single-track occupancy rule, platform capacity limits, and route interlocking mutual exclusion."
+          },
+          {
+            "step_number": 4,
+            "phase": "DECISION",
+            "title": "Directive: Dispatch Sequencing",
+            "detail": "Dispatch Directive [DISPATCH SEQUENCING]: CP-SAT Dispatch Slot Optimization: West Corridor Peak Concurrency. Optimizes departure slots and headway spacing through shared junction throats, mitigating 45.0m delay."
+          },
+          {
+            "step_number": 5,
+            "phase": "OUTCOME",
+            "title": "Delay & Knock-on Mitigated",
+            "detail": "Mitigates 45.0m total delay (reducing baseline 101.0m to 56.0m), damping secondary knock-on propagation from 2.22x to controlled state."
+          }
+        ]
+      },
+      "evidence": {
+        "triggering_conflicts": [
+          "CONF_HEADWAY_01"
+        ],
+        "contested_resource_id": "SEC_BBQ_KOK_UP",
+        "contested_resource_type": "TRACK_SECTION",
+        "affected_service_ids": [
+          "SRV_12607_01"
+        ],
+        "primary_delay_minutes": 45.45,
+        "secondary_delay_minutes": 55.55,
+        "knock_on_multiplier": 2.22,
+        "contention_frequency": 6,
+        "resource_utilization_pct": 78.5,
+        "bottleneck_severity_index": 62.4,
+        "attributed_delay_savings_min": 45.0
+      },
+      "baseline_delay_minutes": 101.0,
+      "expected_delay_minutes": 56.0,
+      "expected_delay_savings": 45.0,
+      "action_details": {
+        "strategy": "SLOT_RESCHEDULING",
+        "services": [
+          "SRV_12607_01"
+        ]
+      },
+      "is_actionable": true,
+      "solver_status": "OPTIMAL"
+    },
+    {
+      "recommendation_id": "REC_0001",
+      "scenario_id": "SCEN_BBQ_CAUTION",
+      "title": "Speed Management Caution Order: MAS_BBQ_THROAT_SEGMENT_DOWN (+8.0m)",
+      "recommendation_type": "SPEED_RESTRICTION_ADJUSTMENT",
+      "category": "speed management",
+      "classification": "INFRASTRUCTURE_BOTTLENECK",
+      "priority_tier": "HIGH",
+      "priority_score": 47.6,
+      "confidence_score": 1.0,
+      "traceability_chain": {
+        "trigger": "Operational perturbation in 'Basin Bridge TSR Caution Order' causing 3.6m primary delay and triggering conflicts [CONF_HEADWAY_01] across services SRV_12607_01.",
+        "bottleneck": "Resource 'MAS_BBQ_THROAT_SEGMENT_DOWN' (TRACK_SECTION) experiencing 65.0% capacity utilization with BSI of 45.0 and 3 recorded contention events.",
+        "constraint": "Physical safety invariants enforced: minimum 3.0 min headway buffer, single-track occupancy rule, platform capacity limits, and route interlocking mutual exclusion.",
+        "decision": "Dispatch Directive [SPEED MANAGEMENT]: Speed Management Caution Order: MAS_BBQ_THROAT_SEGMENT_DOWN (+8.0m). Impose regulated speed caution on track section 'MAS_BBQ_THROAT_SEGMENT_DOWN' (+8.0m traversal time) to guarantee stopping sight distance and safe corridor block clearance.",
+        "outcome": "Mitigates 0.0m total delay (reducing baseline 8.0m to 8.0m), damping secondary knock-on propagation from 2.22x to controlled state.",
+        "steps": [
+          {
+            "step_number": 1,
+            "phase": "TRIGGER",
+            "title": "Perturbation Detected",
+            "detail": "Operational perturbation in 'Basin Bridge TSR Caution Order' causing 3.6m primary delay and triggering conflicts [CONF_HEADWAY_01] across services SRV_12607_01."
+          },
+          {
+            "step_number": 2,
+            "phase": "BOTTLENECK",
+            "title": "Choke-Point Isolated",
+            "detail": "Resource 'MAS_BBQ_THROAT_SEGMENT_DOWN' (TRACK_SECTION) experiencing 65.0% capacity utilization with BSI of 45.0 and 3 recorded contention events."
+          },
+          {
+            "step_number": 3,
+            "phase": "CONSTRAINT",
+            "title": "Safety Bounds Verified",
+            "detail": "Physical safety invariants enforced: minimum 3.0 min headway buffer, single-track occupancy rule, platform capacity limits, and route interlocking mutual exclusion."
+          },
+          {
+            "step_number": 4,
+            "phase": "DECISION",
+            "title": "Directive: Speed Management",
+            "detail": "Dispatch Directive [SPEED MANAGEMENT]: Speed Management Caution Order: MAS_BBQ_THROAT_SEGMENT_DOWN (+8.0m). Impose regulated speed caution on track section 'MAS_BBQ_THROAT_SEGMENT_DOWN' (+8.0m traversal time) to guarantee stopping sight distance and safe corridor block clearance."
+          },
+          {
+            "step_number": 5,
+            "phase": "OUTCOME",
+            "title": "Delay & Knock-on Mitigated",
+            "detail": "Mitigates 0.0m total delay (reducing baseline 8.0m to 8.0m), damping secondary knock-on propagation from 2.22x to controlled state."
+          }
+        ]
+      },
+      "evidence": {
+        "triggering_conflicts": [
+          "CONF_HEADWAY_01"
+        ],
+        "contested_resource_id": "MAS_BBQ_THROAT_SEGMENT_DOWN",
+        "contested_resource_type": "TRACK_SECTION",
+        "affected_service_ids": [
+          "SRV_12607_01"
+        ],
+        "primary_delay_minutes": 3.6,
+        "secondary_delay_minutes": 4.4,
+        "knock_on_multiplier": 2.22,
+        "contention_frequency": 3,
+        "resource_utilization_pct": 65.0,
+        "bottleneck_severity_index": 45.0,
+        "attributed_delay_savings_min": 0.0
+      },
+      "baseline_delay_minutes": 8.0,
+      "expected_delay_minutes": 8.0,
+      "expected_delay_savings": 0.0,
+      "action_details": {
+        "track_section_id": "MAS_BBQ_THROAT_SEGMENT_DOWN",
+        "extra_travel_time_minutes": 8.0
+      },
+      "is_actionable": true,
+      "solver_status": "OPTIMAL"
+    },
+    {
+      "recommendation_id": "REC_INFR_CLIFF_01",
+      "scenario_id": "SCEN_MAS_BBQ_BLOCKED",
+      "title": "Emergency Infrastructure Boundary: MAS-BBQ Throat Impassable",
+      "recommendation_type": "MAINTAIN_CURRENT_SCHEDULE",
+      "category": "emergency constraint",
+      "classification": "INFEASIBLE_TOPOLOGICAL_CLIFF",
+      "priority_tier": "CRITICAL",
+      "priority_score": 99.0,
+      "confidence_score": 0.0,
+      "traceability_chain": {
+        "trigger": "Complete physical track outage on MAS_BBQ_THROAT_SEGMENT_DOWN with 0 alternative bypass paths.",
+        "bottleneck": "Single-point-of-failure interlock throat MAS_BBQ_THROAT_SEGMENT_DOWN (100% capacity block).",
+        "constraint": "Absolute physical impassability: no train can traverse blocked section.",
+        "decision": "NON_ACTIONABLE_EMERGENCY_HOLD: Hold all departures outside MAS throat; initiate single-line bi-directional working.",
+        "outcome": "Optimizer correctly reports INFEASIBLE; operational dispatching safety maintained without hallucinated schedules.",
+        "steps": [
+          {
+            "step_number": 1,
+            "phase": "TRIGGER",
+            "title": "Complete Outage Injected",
+            "detail": "Physical obstruction detected on MAS-BBQ throat."
+          },
+          {
+            "step_number": 2,
+            "phase": "BOTTLENECK",
+            "title": "Single Point of Failure",
+            "detail": "Down-line throat completely impassable."
+          },
+          {
+            "step_number": 3,
+            "phase": "CONSTRAINT",
+            "title": "Block Exclusion",
+            "detail": "Zero path capacity available in normal configuration."
+          },
+          {
+            "step_number": 4,
+            "phase": "DECISION",
+            "title": "Emergency Protocol Alert",
+            "detail": "Suspend normal automatic dispatching; alert Section Controller."
+          },
+          {
+            "step_number": 5,
+            "phase": "OUTCOME",
+            "title": "Safety Boundary Enforced",
+            "detail": "Mathematical optimization identifies boundary infeasibility."
+          }
+        ]
+      },
+      "evidence": {
+        "triggering_conflicts": [
+          "CONF_TOTAL_BLOCKAGE_01"
+        ],
+        "contested_resource_id": "MAS_BBQ_THROAT_SEGMENT_DOWN",
+        "contested_resource_type": "TRACK_SECTION",
+        "affected_service_ids": [
+          "SRV_12622_01",
+          "SRV_12607_01"
+        ],
+        "primary_delay_minutes": 120.0,
+        "secondary_delay_minutes": 240.0,
+        "knock_on_multiplier": 3.0,
+        "contention_frequency": 12,
+        "resource_utilization_pct": 100.0,
+        "bottleneck_severity_index": 99.9,
+        "attributed_delay_savings_min": 0.0
+      },
+      "baseline_delay_minutes": 360.0,
+      "expected_delay_minutes": 360.0,
+      "expected_delay_savings": 0.0,
+      "action_details": {
+        "protocol": "SINGLE_LINE_WORKING",
+        "section": "MAS_BBQ_THROAT_SEGMENT_DOWN"
+      },
+      "is_actionable": false,
+      "solver_status": "INFEASIBLE"
+    }
+  ],
+  "scenario_evaluations": {
+    "SCEN_PEAK_01": {
+      "name": "West Corridor Peak Concurrency",
+      "solver_status": "OPTIMAL",
+      "baseline_delay_minutes": 101.0,
+      "optimized_delay_minutes": 56.0,
+      "delay_savings_minutes": 45.0,
+      "recommendations_count": 1
+    },
+    "SCEN_BBQ_CAUTION": {
+      "name": "Basin Bridge TSR Caution Order",
+      "solver_status": "OPTIMAL",
+      "baseline_delay_minutes": 34.0,
+      "optimized_delay_minutes": 34.0,
+      "delay_savings_minutes": 0.0,
+      "recommendations_count": 1
+    },
+    "SCEN_PER_DWELL": {
+      "name": "Perambur Dwell Extension",
+      "solver_status": "OPTIMAL",
+      "baseline_delay_minutes": 46.0,
+      "optimized_delay_minutes": 46.0,
+      "delay_savings_minutes": 0.0,
+      "recommendations_count": 0
+    }
+  }
+}

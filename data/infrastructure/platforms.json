@@ -1,0 +1,16 @@
+[
+  {"id": "MAS_P1", "station_id": "MAS", "platform_number": 1, "platform_type": "Suburban", "capacity": 12},
+  {"id": "MAS_P2", "station_id": "MAS", "platform_number": 2, "platform_type": "Suburban", "capacity": 12},
+  {"id": "BBQ_P1", "station_id": "BBQ", "platform_number": 1, "platform_type": "Suburban", "capacity": 12},
+  {"id": "BBQ_P2", "station_id": "BBQ", "platform_number": 2, "platform_type": "Suburban", "capacity": 12},
+  {"id": "MSB_P1", "station_id": "MSB", "platform_number": 1, "platform_type": "Suburban", "capacity": 12},
+  {"id": "MSB_P2", "station_id": "MSB", "platform_number": 2, "platform_type": "Suburban", "capacity": 12},
+  {"id": "MS_P1", "station_id": "MS", "platform_number": 1, "platform_type": "Suburban", "capacity": 12},
+  {"id": "MS_P2", "station_id": "MS", "platform_number": 2, "platform_type": "Suburban", "capacity": 12},
+  {"id": "TBM_P1", "station_id": "TBM", "platform_number": 1, "platform_type": "Suburban", "capacity": 12},
+  {"id": "TBM_P2", "station_id": "TBM", "platform_number": 2, "platform_type": "Suburban", "capacity": 12},
+  {"id": "CGL_P1", "station_id": "CGL", "platform_number": 1, "platform_type": "Suburban", "capacity": 12},
+  {"id": "CGL_P2", "station_id": "CGL", "platform_number": 2, "platform_type": "Suburban", "capacity": 12},
+  {"id": "AJJ_P1", "station_id": "AJJ", "platform_number": 1, "platform_type": "Suburban", "capacity": 12},
+  {"id": "AJJ_P2", "station_id": "AJJ", "platform_number": 2, "platform_type": "Suburban", "capacity": 12}
+]

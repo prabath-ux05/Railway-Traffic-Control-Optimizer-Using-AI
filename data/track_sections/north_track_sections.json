@@ -1,0 +1,91 @@
+[
+  { "id": "BBQ_KOK_SUBURBAN_NORTH_UP", "from": "BBQ", "to": "KOK", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "KOK_BBQ_SUBURBAN_NORTH_DOWN", "from": "KOK", "to": "BBQ", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "BBQ_KOK_MAIN_NORTH_UP", "from": "BBQ", "to": "KOK", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "KOK_BBQ_MAIN_NORTH_DOWN", "from": "KOK", "to": "BBQ", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "KOK_TNPM_SUBURBAN_NORTH_UP", "from": "KOK", "to": "TNPM", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "TNPM_KOK_SUBURBAN_NORTH_DOWN", "from": "TNPM", "to": "KOK", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "KOK_TNPM_MAIN_NORTH_UP", "from": "KOK", "to": "TNPM", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "TNPM_KOK_MAIN_NORTH_DOWN", "from": "TNPM", "to": "KOK", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "TNPM_VOCN_SUBURBAN_NORTH_UP", "from": "TNPM", "to": "VOCN", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "VOCN_TNPM_SUBURBAN_NORTH_DOWN", "from": "VOCN", "to": "TNPM", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "TNPM_VOCN_MAIN_NORTH_UP", "from": "TNPM", "to": "VOCN", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "VOCN_TNPM_MAIN_NORTH_DOWN", "from": "VOCN", "to": "TNPM", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "VOCN_TVT_SUBURBAN_NORTH_UP", "from": "VOCN", "to": "TVT", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "TVT_VOCN_SUBURBAN_NORTH_DOWN", "from": "TVT", "to": "VOCN", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "VOCN_TVT_MAIN_NORTH_UP", "from": "VOCN", "to": "TVT", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "TVT_VOCN_MAIN_NORTH_DOWN", "from": "TVT", "to": "VOCN", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "TVT_WCN_SUBURBAN_NORTH_UP", "from": "TVT", "to": "WCN", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "WCN_TVT_SUBURBAN_NORTH_DOWN", "from": "WCN", "to": "TVT", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "TVT_WCN_MAIN_NORTH_UP", "from": "TVT", "to": "WCN", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "WCN_TVT_MAIN_NORTH_DOWN", "from": "WCN", "to": "TVT", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "WCN_KAVM_SUBURBAN_NORTH_UP", "from": "WCN", "to": "KAVM", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "KAVM_WCN_SUBURBAN_NORTH_DOWN", "from": "KAVM", "to": "WCN", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "WCN_KAVM_MAIN_NORTH_UP", "from": "WCN", "to": "KAVM", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "KAVM_WCN_MAIN_NORTH_DOWN", "from": "KAVM", "to": "WCN", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "KAVM_ENR_SUBURBAN_NORTH_UP", "from": "KAVM", "to": "ENR", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "ENR_KAVM_SUBURBAN_NORTH_DOWN", "from": "ENR", "to": "KAVM", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "KAVM_ENR_MAIN_NORTH_UP", "from": "KAVM", "to": "ENR", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "ENR_KAVM_MAIN_NORTH_DOWN", "from": "ENR", "to": "KAVM", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "ENR_AIP_SUBURBAN_NORTH_UP", "from": "ENR", "to": "AIP", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "AIP_ENR_SUBURBAN_NORTH_DOWN", "from": "AIP", "to": "ENR", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "ENR_AIP_MAIN_NORTH_UP", "from": "ENR", "to": "AIP", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "AIP_ENR_MAIN_NORTH_DOWN", "from": "AIP", "to": "ENR", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "AIP_ATU_SUBURBAN_NORTH_UP", "from": "AIP", "to": "ATU", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "ATU_AIP_SUBURBAN_NORTH_DOWN", "from": "ATU", "to": "AIP", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "AIP_ATU_MAIN_NORTH_UP", "from": "AIP", "to": "ATU", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "ATU_AIP_MAIN_NORTH_DOWN", "from": "ATU", "to": "AIP", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "ATU_NPKM_SUBURBAN_NORTH_UP", "from": "ATU", "to": "NPKM", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "NPKM_ATU_SUBURBAN_NORTH_DOWN", "from": "NPKM", "to": "ATU", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "ATU_NPKM_MAIN_NORTH_UP", "from": "ATU", "to": "NPKM", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "NPKM_ATU_MAIN_NORTH_DOWN", "from": "NPKM", "to": "ATU", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "NPKM_MJR_SUBURBAN_NORTH_UP", "from": "NPKM", "to": "MJR", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "MJR_NPKM_SUBURBAN_NORTH_DOWN", "from": "MJR", "to": "NPKM", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "NPKM_MJR_MAIN_NORTH_UP", "from": "NPKM", "to": "MJR", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "MJR_NPKM_MAIN_NORTH_DOWN", "from": "MJR", "to": "NPKM", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "MJR_APB_SUBURBAN_NORTH_UP", "from": "MJR", "to": "APB", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "APB_MJR_SUBURBAN_NORTH_DOWN", "from": "APB", "to": "MJR", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "MJR_APB_MAIN_NORTH_UP", "from": "MJR", "to": "APB", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "APB_MJR_MAIN_NORTH_DOWN", "from": "APB", "to": "MJR", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "APB_PON_SUBURBAN_NORTH_UP", "from": "APB", "to": "PON", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "PON_APB_SUBURBAN_NORTH_DOWN", "from": "PON", "to": "APB", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "APB_PON_MAIN_NORTH_UP", "from": "APB", "to": "PON", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "PON_APB_MAIN_NORTH_DOWN", "from": "PON", "to": "APB", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "PON_KVP_SUBURBAN_NORTH_UP", "from": "PON", "to": "KVP", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "KVP_PON_SUBURBAN_NORTH_DOWN", "from": "KVP", "to": "PON", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "PON_KVP_MAIN_NORTH_UP", "from": "PON", "to": "KVP", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "KVP_PON_MAIN_NORTH_DOWN", "from": "KVP", "to": "PON", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+
+  { "id": "KVP_GPD_SUBURBAN_NORTH_UP", "from": "KVP", "to": "GPD", "direction": "UP", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "GPD_KVP_SUBURBAN_NORTH_DOWN", "from": "GPD", "to": "KVP", "direction": "DOWN", "track_type": "SUBURBAN_NORTH", "travel_time_min": 3.5, "capacity": 1, "headway_min": 3.0 },
+  { "id": "KVP_GPD_MAIN_NORTH_UP", "from": "KVP", "to": "GPD", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  { "id": "GPD_KVP_MAIN_NORTH_DOWN", "from": "GPD", "to": "KVP", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 2.0, "capacity": 1, "headway_min": 4.0 },
+  
+  { "id": "GPD_ELR_MAIN_NORTH_UP", "from": "GPD", "to": "ELR", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 4.0, "capacity": 1, "headway_min": 5.0 },
+  { "id": "ELR_GPD_MAIN_NORTH_DOWN", "from": "ELR", "to": "GPD", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 4.0, "capacity": 1, "headway_min": 5.0 },
+  
+  { "id": "ELR_AKM_MAIN_NORTH_UP", "from": "ELR", "to": "AKM", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 4.0, "capacity": 1, "headway_min": 5.0 },
+  { "id": "AKM_ELR_MAIN_NORTH_DOWN", "from": "AKM", "to": "ELR", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 4.0, "capacity": 1, "headway_min": 5.0 },
+  
+  { "id": "AKM_TADA_MAIN_NORTH_UP", "from": "AKM", "to": "TADA", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 4.0, "capacity": 1, "headway_min": 5.0 },
+  { "id": "TADA_AKM_MAIN_NORTH_DOWN", "from": "TADA", "to": "AKM", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 4.0, "capacity": 1, "headway_min": 5.0 },
+  
+  { "id": "TADA_AKAT_MAIN_NORTH_UP", "from": "TADA", "to": "AKAT", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 4.0, "capacity": 1, "headway_min": 5.0 },
+  { "id": "AKAT_TADA_MAIN_NORTH_DOWN", "from": "AKAT", "to": "TADA", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 4.0, "capacity": 1, "headway_min": 5.0 },
+  
+  { "id": "AKAT_SPE_MAIN_NORTH_UP", "from": "AKAT", "to": "SPE", "direction": "UP", "track_type": "MAIN_NORTH", "travel_time_min": 4.0, "capacity": 1, "headway_min": 5.0 },
+  { "id": "SPE_AKAT_MAIN_NORTH_DOWN", "from": "SPE", "to": "AKAT", "direction": "DOWN", "track_type": "MAIN_NORTH", "travel_time_min": 4.0, "capacity": 1, "headway_min": 5.0 }
+]

@@ -1,0 +1,194 @@
+[
+  {
+    "id": "RT_WEST_MAS_AJJ",
+    "name": "Chennai Central to Arakkonam Trunk Route",
+    "origin": "MAS",
+    "destination": "AJJ",
+    "service_type": "ALL_CLASS",
+    "ordered_nodes": ["MAS", "BBQ", "VJM", "PER", "PCW", "PEW", "VLK", "KOTR", "PVM", "ABU", "TMVL", "ANNR", "AVD", "HC", "PAB", "NEC", "TI", "VEU", "SVR", "PTLR", "TRL", "EGT", "KBT", "SPAM", "MAF", "TO", "MSU", "PLMG", "AJJ"]
+  },
+  {
+    "id": "RT_WEST_AJJ_MAS",
+    "name": "Arakkonam to Chennai Central Trunk Route",
+    "origin": "AJJ",
+    "destination": "MAS",
+    "service_type": "ALL_CLASS",
+    "ordered_nodes": ["AJJ", "PLMG", "MSU", "TO", "MAF", "SPAM", "KBT", "EGT", "TRL", "PTLR", "SVR", "VEU", "TI", "NEC", "PAB", "HC", "AVD", "ANNR", "TMVL", "ABU", "PVM", "KOTR", "VLK", "PEW", "PCW", "PER", "VJM", "BBQ", "MAS"]
+  },
+  {
+    "id": "RT_PTMS_MAS",
+    "name": "Pattabiram Siding to Chennai Central",
+    "origin": "PTMS",
+    "destination": "MAS",
+    "service_type": "SUBURBAN",
+    "ordered_nodes": ["PTMS", "PAB", "HC", "AVD", "ANNR", "TMVL", "ABU", "PVM", "KOTR", "VLK", "PEW", "PCW", "PER", "VJM", "BBQ", "MAS"]
+  },
+  {
+    "id": "RT_MAS_PTMS",
+    "name": "Chennai Central to Pattabiram Siding",
+    "origin": "MAS",
+    "destination": "PTMS",
+    "service_type": "SUBURBAN",
+    "ordered_nodes": ["MAS", "BBQ", "VJM", "PER", "PCW", "PEW", "VLK", "KOTR", "PVM", "ABU", "TMVL", "ANNR", "AVD", "HC", "PAB", "PTMS"]
+  },
+  {
+    "id": "RT_WEST_MAS_TRL_SHORT",
+    "name": "Chennai Central to Tiruvallur Short Route",
+    "origin": "MAS",
+    "destination": "TRL",
+    "service_type": "SUBURBAN",
+    "ordered_nodes": ["MAS", "BBQ", "VJM", "PER", "PCW", "PEW", "VLK", "KOTR", "PVM", "ABU", "TMVL", "ANNR", "AVD", "HC", "PAB", "NEC", "TI", "VEU", "SVR", "PTLR", "TRL"]
+  },
+  {
+    "id": "RT_WEST_TRL_MAIN_UP",
+    "name": "Tiruvallur to Chennai Central Short Route",
+    "origin": "TRL",
+    "destination": "MAS",
+    "service_type": "SUBURBAN",
+    "ordered_nodes": ["TRL", "PTLR", "SVR", "VEU", "TI", "NEC", "PAB", "HC", "AVD", "ANNR", "TMVL", "ABU", "PVM", "KOTR", "VLK", "PEW", "PCW", "PER", "VJM", "BBQ", "MAS"]
+  },
+  {
+    "id": "RT_NORTH_MAS_SPE",
+    "name": "Chennai Central to Sullurpeta (North)",
+    "origin": "MAS",
+    "destination": "SPE",
+    "service_type": "Suburban",
+    "ordered_nodes": ["MAS", "BBQ", "KOK", "TNPM", "VOCN", "TVT", "WCN", "KAVM", "ENR", "AIP", "ATU", "NPKM", "MJR", "APB", "PON", "KVP", "GPD", "ELR", "AKM", "TADA", "AKAT", "SPE"]
+  },
+  {
+    "id": "RT_NORTH_SPE_MAS",
+    "name": "Sullurpeta to Chennai Central (North)",
+    "origin": "SPE",
+    "destination": "MAS",
+    "service_type": "Suburban",
+    "ordered_nodes": ["SPE", "AKAT", "TADA", "AKM", "ELR", "GPD", "KVP", "PON", "APB", "MJR", "NPKM", "ATU", "AIP", "ENR", "KAVM", "WCN", "TVT", "VOCN", "TNPM", "KOK", "BBQ", "MAS"]
+  },
+  {
+    "id": "RT_WEST_NORTH_BYPASS_MSB_SPE",
+    "name": "Chennai Beach to Sullurpeta (North Bypass)",
+    "origin": "MSB",
+    "destination": "SPE",
+    "service_type": "Suburban",
+    "ordered_nodes": ["MSB", "RPM", "WST", "KOK", "TNPM", "VOCN", "TVT", "WCN", "KAVM", "ENR", "AIP", "ATU", "NPKM", "MJR", "APB", "PON", "KVP", "GPD", "ELR", "AKM", "TADA", "AKAT", "SPE"]
+  },
+  {
+    "id": "RT_WEST_NORTH_BYPASS_SPE_MSB",
+    "name": "Sullurpeta to Chennai Beach (North Bypass)",
+    "origin": "SPE",
+    "destination": "MSB",
+    "service_type": "Suburban",
+    "ordered_nodes": ["SPE", "AKAT", "TADA", "AKM", "ELR", "GPD", "KVP", "PON", "APB", "MJR", "NPKM", "ATU", "AIP", "ENR", "KAVM", "WCN", "TVT", "VOCN", "TNPM", "KOK", "WST", "RPM", "MSB"]
+  },
+  {
+    "id": "RT_MRTS_MSB_VLCY",
+    "name": "Chennai Beach to Velachery (MRTS)",
+    "origin": "MSB",
+    "destination": "VLCY",
+    "service_type": "MRTS",
+    "ordered_nodes": ["MSB", "MSF", "MPKT", "MCPT", "MCPK", "MTCN", "MLHS", "MKAK", "MTMY", "MNDY", "GWYR", "KTPM", "KTBR", "INDR", "TYMR", "TRMN", "PRGD", "VLCY"]
+  },
+  {
+    "id": "RT_MRTS_VLCY_MSB",
+    "name": "Velachery to Chennai Beach (MRTS)",
+    "origin": "VLCY",
+    "destination": "MSB",
+    "service_type": "MRTS",
+    "ordered_nodes": ["VLCY", "PRGD", "TRMN", "TYMR", "INDR", "KTBR", "KTPM", "GWYR", "MNDY", "MTMY", "MKAK", "MLHS", "MTCN", "MCPK", "MCPT", "MPKT", "MSF", "MSB"]
+  },
+  {
+    "id": "RT_SOUTH_MSB_CGL",
+    "name": "Chennai Beach to Chengalpattu (South)",
+    "origin": "MSB",
+    "destination": "CGL",
+    "service_type": "Suburban",
+    "ordered_nodes": ["MSB", "MSF", "MPK", "MS", "MSC", "NBK", "MKK", "MBM", "SP", "GDY", "STM", "PZA", "MN", "TLM", "PV", "CMP", "TBMS", "TBM", "PRGL", "VDR", "UPM", "GI", "POT", "CTM", "MMNK", "SKL", "PWU", "CGL"]
+  },
+  {
+    "id": "RT_SOUTH_CGL_MSB",
+    "name": "Chengalpattu to Chennai Beach (South)",
+    "origin": "CGL",
+    "destination": "MSB",
+    "service_type": "Suburban",
+    "ordered_nodes": ["CGL", "PWU", "SKL", "MMNK", "CTM", "POT", "GI", "UPM", "VDR", "PRGL", "TBM", "TBMS", "CMP", "PV", "TLM", "MN", "PZA", "STM", "GDY", "SP", "MBM", "MKK", "NBK", "MSC", "MS", "MPK", "MSF", "MSB"]
+  },
+  {
+    "id": "RT_CROSS_CGL_AJJ",
+    "name": "Chengalpattu to Arakkonam (Cross Line)",
+    "origin": "CGL",
+    "destination": "AJJ",
+    "service_type": "Passenger",
+    "ordered_nodes": ["CGL", "RDY", "VAM", "PALR", "PJS", "WJ", "NTT", "CJE", "CJ", "TMLP", "TKO", "AJJ"]
+  },
+  {
+    "id": "RT_CROSS_AJJ_CGL",
+    "name": "Arakkonam to Chengalpattu (Cross Line)",
+    "origin": "AJJ",
+    "destination": "CGL",
+    "service_type": "Passenger",
+    "ordered_nodes": ["AJJ", "TKO", "TMLP", "CJ", "CJE", "NTT", "WJ", "PJS", "PALR", "VAM", "RDY", "CGL"]
+  },
+  {
+    "id": "RT_NORTH_MAS_GPD_SHORT",
+    "name": "Chennai Central to Gummidipoondi Short (North)",
+    "origin": "MAS",
+    "destination": "GPD",
+    "service_type": "Suburban",
+    "ordered_nodes": ["MAS", "BBQ", "KOK", "TVT", "ENR", "GPD"]
+  },
+  {
+    "id": "RT_SOUTH_MSB_TBM_SHORT",
+    "name": "Chennai Beach to Tambaram Short (South)",
+    "origin": "MSB",
+    "destination": "TBM",
+    "service_type": "Suburban",
+    "ordered_nodes": ["MSB", "MSF", "MPK", "MS", "MBM", "GDY", "TBM"]
+  },
+  {
+    "id": "RT_SOUTH_MAINLINE_REVERSE",
+    "name": "Chengalpattu to Chennai Beach Reverse (South)",
+    "origin": "CGL",
+    "destination": "MSB",
+    "service_type": "Suburban",
+    "ordered_nodes": ["CGL", "TBM", "GDY", "MBM", "MS", "MPK", "MSF", "MSB"]
+  },
+  {
+    "id": "RT_MRTS_ELEVATED_REV",
+    "name": "Velachery to Chennai Beach (MRTS Reverse)",
+    "origin": "VLCY",
+    "destination": "MSB",
+    "service_type": "MRTS",
+    "ordered_nodes": ["VLCY", "PRGD", "TRMN", "TYMR", "INDR", "KTBR", "KTPM", "GWYR", "MYND", "MTMY", "MKAK", "MLHS", "MTCN", "MCPK", "MCPT", "MPKT", "MSF", "MSB"]
+  },
+  {
+    "id": "RT_BEACH_NORTH_BYPASS_REV",
+    "name": "Gummidipoondi to Chennai Beach (North Bypass Reverse)",
+    "origin": "GPD",
+    "destination": "MSB",
+    "service_type": "Suburban",
+    "ordered_nodes": ["GPD", "ENR", "TVT", "KOK", "WST", "RPM", "MSB"]
+  },
+  {
+    "id": "RT_SOUTH_MS_CGL_EXPRESS",
+    "name": "Chennai Egmore to Chengalpattu Express (South)",
+    "origin": "MS",
+    "destination": "CGL",
+    "service_type": "Suburban",
+    "ordered_nodes": ["MS", "TBM", "CGL"]
+  },
+  {
+    "id": "RT_SOUTH_CGL_MS_EXPRESS",
+    "name": "Chengalpattu to Chennai Egmore Express (South)",
+    "origin": "CGL",
+    "destination": "MS",
+    "service_type": "Suburban",
+    "ordered_nodes": ["CGL", "TBM", "MS"]
+  },
+  {
+    "id": "RT_BEACH_NORTH_BYPASS",
+    "name": "Chennai Beach to Gummidipoondi (North Bypass)",
+    "origin": "MSB",
+    "destination": "GPD",
+    "service_type": "Suburban",
+    "ordered_nodes": ["MSB", "RPM", "WST", "KOK", "TVT", "ENR", "GPD"]
+  }
+]

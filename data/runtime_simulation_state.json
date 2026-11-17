@@ -1,0 +1,47 @@
+{
+  "start_minute": 360.0,
+  "end_minute": 540.0,
+  "current_minute": 930.0,
+  "current_time_str": "15:30",
+  "is_playing": true,
+  "playback_speed": 2,
+  "selected_service_ids": [
+    "SRV_12607_01"
+  ],
+  "departure_delays": {
+    "SRV_43501_01": 12.0,
+    "SRV_12607_01": 25.0
+  },
+  "last_updated_ist": "18:57:51",
+  "last_snapshot": {
+    "simulation_time_str": "15:30",
+    "total_services_simulated": 1,
+    "delayed_services_count": 1,
+    "total_network_delay_minutes": 25.0,
+    "active_occupancies_count": 0,
+    "train_positions": [
+      {
+        "service_id": "SRV_12607_01",
+        "train_id": "TR_12607",
+        "train_name": "Lalbagh SF Express",
+        "service_type": "EXPRESS",
+        "train_type": "EXPRESS",
+        "corridor": "West",
+        "corridor_name": "West",
+        "origin": "MAS",
+        "destination": "AJJ",
+        "scheduled_departure": "15:30",
+        "scheduled_arrival": "16:28",
+        "priority_class": "HIGH",
+        "status": "SCHEDULED",
+        "current_node": "MAS",
+        "current_station": "MAS",
+        "current_track_section": null,
+        "delay_minutes": 25.0,
+        "occupied_resources": []
+      }
+    ],
+    "active_occupancies": [],
+    "detected_conflicts": []
+  }
+}
