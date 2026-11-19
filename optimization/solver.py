@@ -10,9 +10,13 @@ conflicts, enforce physical running and dwell times, and minimize weighted train
 Returns an OptimizationResult conforming to the Batch 8 optimization interface.
 """
 
+import os
 import time
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Set, Tuple
+
+# Feature flag for platform conflicts (disabled by default to maintain paper baseline)
+ENABLE_PLATFORM_CONFLICTS = os.environ.get("ENABLE_PLATFORM_CONFLICTS", "0").lower() in ("1", "true")
 
 from ortools.sat.python import cp_model
 
@@ -57,11 +61,13 @@ class CPSATScheduler(BaseScheduler):
         num_search_workers: int = 8,
         log_search_progress: bool = False,
         objective: Optional[OptimizationObjective] = None,
+        objective_mode: str = "WEIGHTED",
     ):
         self.time_limit_seconds = time_limit_seconds
         self.num_search_workers = num_search_workers
         self.log_search_progress = log_search_progress
         self.objective = objective or OptimizationObjective()
+        self.objective_mode = objective_mode
 
     def schedule(self, request: OptimizationRequest) -> OptimizationResult:
         """Formulate and solve the railway optimization problem for the given request."""
@@ -327,15 +333,32 @@ class CPSATScheduler(BaseScheduler):
                 dev_weight = int(round(weights.schedule_deviation_weight * 10))
                 dev_terms.append((dev_var, max(1, dev_weight)))
 
-        # Combined minimization objective
-        obj_expr = []
-        for var, coeff in delay_terms:
-            obj_expr.append(var * coeff)
-        for var, coeff in dev_terms:
-            obj_expr.append(var * coeff)
-        obj_expr.append(max_delay_var * int(round(weights.max_delay_weight * 10)))
+        # Combined minimization objective based on objective_mode
+        active_mode = getattr(request, "objective_mode", None) or self.objective_mode or "WEIGHTED"
+        if active_mode.upper() == "TOTAL_DELAY":
+            model.Minimize(sum(var for var, _ in delay_terms))
+        else:
+            obj_expr = []
+            for var, coeff in delay_terms:
+                obj_expr.append(var * coeff)
+            for var, coeff in dev_terms:
+                obj_expr.append(var * coeff)
+            obj_expr.append(max_delay_var * int(round(weights.max_delay_weight * 10)))
+            model.Minimize(sum(obj_expr))
 
-        model.Minimize(sum(obj_expr))
+        # Provide FIFO schedule as a solver hint if available
+        if getattr(request, "fifo_timetables", None):
+            for s_id, adjs in request.fifo_timetables.items():
+                if s_id in service_nodes:
+                    nodes = service_nodes[s_id]
+                    stn_to_idx = {n: i for i, n in enumerate(nodes)}
+                    for adj in adjs:
+                        if adj.station_id in stn_to_idx:
+                            idx = stn_to_idx[adj.station_id]
+                            if adj.adjusted_arrival is not None and (s_id, idx) in arr_vars:
+                                model.AddHint(arr_vars[(s_id, idx)], int(round(adj.adjusted_arrival)))
+                            if adj.adjusted_departure is not None and (s_id, idx) in dep_vars:
+                                model.AddHint(dep_vars[(s_id, idx)], int(round(adj.adjusted_departure)))
 
         # 11. Execute CP-SAT Solver
         solver = cp_model.CpSolver()
@@ -394,8 +417,17 @@ class CPSATScheduler(BaseScheduler):
                 orig_dep = time_to_minutes(tt_entry.departure) if (tt_entry and tt_entry.departure) else None
 
                 seq = tt_entry.stop_sequence if tt_entry else (i + 1)
-                assigned_pf = request.platforms.get(f"PF_{node}_01")
-                pf_id = assigned_pf.id if assigned_pf else None
+                pf_id = None
+                if getattr(request, "enable_platform_conflicts", False) or ENABLE_PLATFORM_CONFLICTS:
+                    # Platforms in platforms.json follow {station_id}_P1 / {station_id}_P2 format
+                    candidate_pfs = [p for p in request.platforms.values() if p.station_id == node]
+                    if candidate_pfs:
+                        pf_idx = abs(hash(s_id)) % len(candidate_pfs)
+                        pf_id = candidate_pfs[pf_idx].id
+                else:
+                    # Legacy behavior: looked up PF_{node}_01 which returns None
+                    assigned_pf = request.platforms.get(f"PF_{node}_01")
+                    pf_id = assigned_pf.id if assigned_pf else None
 
                 # Directional section if in transit
                 sec_id = None
@@ -514,3 +546,37 @@ class CPSATScheduler(BaseScheduler):
             unresolved_conflicts=[],
             computation_time_seconds=elapsed_sec,
         )
+
+    def check_schedule_feasibility(
+        self,
+        request: OptimizationRequest,
+        schedule_timetables: Dict[str, List[ServiceTimetableAdjustment]],
+    ) -> Tuple[bool, List[str]]:
+        """Verify whether a candidate timetable schedule (e.g. FIFO baseline) satisfies CP-SAT model constraints."""
+        violations: List[str] = []
+        for s_id, adjs in schedule_timetables.items():
+            service = request.services.get(s_id)
+            if not service:
+                continue
+            route = request.routes.get(service.route_id)
+            if not route:
+                continue
+            dir_hint = "UP" if "UP" in route.id else ("DOWN" if "DOWN" in route.id else None)
+            adj_map = {a.station_id: a for a in adjs}
+            nodes = route.ordered_nodes
+            for i in range(len(nodes) - 1):
+                u, v = nodes[i], nodes[i + 1]
+                cand = [ts for ts in request.track_sections.values() if ts.from_node == u and ts.to_node == v]
+                ts = next((c for c in cand if c.direction == dir_hint), cand[0]) if cand else None
+                req_tt = int(round(ts.travel_time_minutes)) if ts else 3
+                req_tt = max(1, req_tt)
+
+                u_adj = adj_map.get(u)
+                v_adj = adj_map.get(v)
+                if u_adj and v_adj and u_adj.adjusted_departure is not None and v_adj.adjusted_arrival is not None:
+                    actual_tt = v_adj.adjusted_arrival - u_adj.adjusted_departure
+                    if actual_tt < req_tt - 1e-4:
+                        violations.append(
+                            f"Service {s_id} between {u}->{v}: travel time {actual_tt:.2f}m < required {req_tt}m"
+                        )
+        return len(violations) == 0, violations

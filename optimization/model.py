@@ -206,6 +206,9 @@ class OptimizationRequest:
     time_horizon: Tuple[float, float] = (0.0, 1440.0)  # (start_min, end_min)
     time_step_minutes: float = 1.0
     weights: ObjectiveWeights = field(default_factory=ObjectiveWeights)
+    objective_mode: str = "WEIGHTED"
+    fifo_timetables: Optional[Dict[str, List[ServiceTimetableAdjustment]]] = None
+    enable_platform_conflicts: bool = False
 
     @classmethod
     def from_network_and_state(

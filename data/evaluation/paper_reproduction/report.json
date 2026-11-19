@@ -1,0 +1,95 @@
+{
+  "status": "PASSED",
+  "total_checks": 10,
+  "passed_checks": 10,
+  "failed_checks": 0,
+  "checks": [
+    {
+      "id": "CHECK_01_EXP_COUNTS",
+      "description": "45 total experiments, 44 feasible, 1 infeasible",
+      "expected": "total=45, feasible=44, infeasible=1",
+      "actual": "total=45, feasible=44, infeasible=1",
+      "passed": true
+    },
+    {
+      "id": "CHECK_02_DELAY_MEANS",
+      "description": "Mean FIFO delay 331.375, CP-SAT delay 314.386, saving 16.989 min, ratio 5.13%",
+      "expected": "FIFO=331.375, CPSAT=314.386, saving=16.989, ratio=5.13%",
+      "actual": "FIFO=331.375, CPSAT=314.386, saving=16.989, ratio=5.13%",
+      "passed": true
+    },
+    {
+      "id": "CHECK_03_MAX_SAVINGS",
+      "description": "Maximum saving 125.5 min and maximum relative reduction 55.16%",
+      "expected": "max_saving=125.5 min, max_pct=55.16%",
+      "actual": "max_saving=125.5 min, max_pct=55.16%",
+      "passed": true
+    },
+    {
+      "id": "CHECK_04_PEAK_REDUCTION",
+      "description": "Mean peak-delay reduction 6.42 min",
+      "expected": "mean_peak_reduction=6.42 min",
+      "actual": "mean_peak_reduction=6.42 min",
+      "passed": true
+    },
+    {
+      "id": "CHECK_05_SOLVER_TIME",
+      "description": "Solver time: mean 0.337 s, maximum 0.926 s",
+      "expected": "mean_solve=0.337 s, max_solve=0.926 s",
+      "actual": "mean_solve=0.337 s, max_solve=0.926 s",
+      "passed": true
+    },
+    {
+      "id": "CHECK_06_CONFLICTS",
+      "description": "Conflicts: 22 initial, 22 resolved",
+      "expected": "initial=22, resolved=22",
+      "actual": "initial=22, resolved=22",
+      "passed": true
+    },
+    {
+      "id": "CHECK_07_DEP_SEVERITY",
+      "description": "Departure-delay severity savings (mild, moderate, severe): 0%, 14.9%, 27.1%",
+      "expected": "mild=0.0%, moderate=14.9%, severe=27.1%",
+      "actual": "mild=0.0%, moderate=14.9%, severe=27.1%",
+      "passed": true
+    },
+    {
+      "id": "CHECK_08_SCALABILITY_COMPOUND",
+      "description": "Scalability compound disruption: 52.5m (37.1%) at load 4; 61.5m (2.9%) at load 40",
+      "expected": "load 4: saving=52.5m, rel=37.1%; load 40: saving=61.5m, rel=2.9%",
+      "actual": "load 4: saving=52.5m, rel=37.1%; load 40: saving=61.5m, rel=2.9%",
+      "passed": true
+    },
+    {
+      "id": "CHECK_09_TABLE_II_ROWS",
+      "description": "Table II rows: Nominal 32->32; Peak 101->56; BBQ TSR 34->34; PER Dwell 46->46; Severe Compound 573->477",
+      "expected": "Nominal=32->32, Peak=101->56, BBQ=34->34, PER=46->46, Severe=573->477",
+      "actual": "Nominal=32.0->32.0, Peak=101.0->56.0, BBQ=34.0->34.0, PER=46.0->46.0, Severe=573.0->477.0",
+      "passed": true
+    },
+    {
+      "id": "CHECK_10_SAVINGS_SIGN_DISTRIBUTION",
+      "description": "Sign of savings among 44 feasible runs: 19 negative, 8 zero, 17 positive",
+      "expected": "negative=19, zero=8, positive=17",
+      "actual": "negative=19, zero=8, positive=17",
+      "passed": true
+    }
+  ],
+  "unverified_paper_values": [
+    {
+      "claim": "Compound Disruption 183 to 123 (saving 60.0 min, 32.8%)",
+      "status": "NOT REPRODUCIBLE",
+      "evidence": "Audited all compound disruption runs in stored datasets. In Phase 31.3: EXP_31_3_16 is 195.0->191.0 (4.0m, 2.05%); EXP_31_3_17 is 318.0->288.0 (30.0m, 9.43%); EXP_31_3_18 is 573.0->477.0 (96.0m, 16.75%). In Phase 31.1: EXP_31_1_07A is 209.0->149.0 (60.0m, 28.71%); EXP_31_1_07B is 262.0->149.0 (113.0m, 43.13%). No stored record contains baseline delay 183.0 or CP-SAT delay 123.0."
+    },
+    {
+      "claim": "20.5% mean reduction over '6 core experiments'",
+      "status": "NOT REPRODUCIBLE",
+      "evidence": "Audited all group aggregations and experiment classes in stored results. The 6 disruption classes in severity_summaries yield mean savings: Departure=13.98%, Dwell=-9.44%, Speed=-3.76%, Blocked=N/A, Junction=-11.28%, Compound=9.41% (overall average: -0.22%). The 5 What-If scenarios yield an average savings of 11.14%. No subset of 6 core experiments in the stored datasets averages to 20.5%."
+    },
+    {
+      "claim": "44.3% for the most aggressive compound scenario",
+      "status": "NOT REPRODUCIBLE",
+      "evidence": "Audited all compound scenarios in stored datasets. The most aggressive compound scenario in Phase 31.3 (EXP_31_3_18_CMP_SEVERE) achieves a 16.75% reduction (96.0m saving). In Phase 31.1, EXP_31_1_07B (Multi-Corridor Peak Compound) achieves 43.13% (113.0m saving). In What-If, SCEN_PEAK_CONCURRENCY achieves 44.55% (45.0m saving), but this is peak concurrency, not compound disruption. No stored compound scenario yields 44.3%."
+    }
+  ]
+}

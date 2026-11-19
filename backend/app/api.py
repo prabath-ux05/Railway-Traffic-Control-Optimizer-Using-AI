@@ -13,9 +13,11 @@ Exposes controller-facing endpoints:
 
 import os
 import time
-from typing import Any, Dict, List, Optional
+from collections import defaultdict
+from typing import Any, Dict, List, Optional, Set
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Header, HTTPException, status
+from fastapi.responses import StreamingResponse
 
 from simulation.clock import SimulationClock, minutes_to_time_str, time_to_minutes
 from simulation.conflicts import ConflictDetector
@@ -33,6 +35,7 @@ from simulation.state_manager import (
 )
 from optimization.scenarios import Scenario, ScenarioRunner
 from backend.app.pipeline import PipelineOrchestrator, _load_default_network
+from backend.app.runtime_engine import get_live_engine
 from evaluation.consolidation import run_consolidated_research
 from backend.app.schemas import (
     AnalyticsResponse,
@@ -42,9 +45,14 @@ from backend.app.schemas import (
     OptimizeRequest,
     OptimizeResponse,
     PlatformSummary,
+    ProposalActionResponse,
+    ReoptimizationProposal,
+    RouteNodeSummary,
     RouteSummary,
     ServiceSummary,
     SimulationControlRequest,
+    SimulationEventCreateRequest,
+    SimulationEventRecord,
     SimulationStateResponse,
     SimulateRequest,
     SimulateResponse,
@@ -123,6 +131,10 @@ def get_health() -> HealthResponse:
     ist_time_str = get_ist_time_str(include_seconds=True)
     ist_date_str = get_ist_date_str()
 
+    warning_count = len(net.data_integrity_warnings)
+    integrity_summary = net.get_integrity_summary() if hasattr(net, "get_integrity_summary") else {}
+    integrity_status = "WARNINGS" if warning_count > 0 else "CLEAN"
+
     return HealthResponse(
         status="healthy" if datasets_ok else "degraded",
         version="1.0.0",
@@ -130,6 +142,9 @@ def get_health() -> HealthResponse:
         ist_time_str=ist_time_str,
         ist_date_str=ist_date_str,
         timezone="Asia/Kolkata (IST)",
+        integrity_warning_count=warning_count,
+        integrity_summary=integrity_summary,
+        datasets_integrity_status=integrity_status,
         network_status={
             "loaded_stations": stations_count,
             "loaded_junctions": junctions_count,
@@ -137,6 +152,9 @@ def get_health() -> HealthResponse:
             "loaded_services": services_count,
             "loaded_trains": trains_count,
             "datasets_intact": datasets_ok,
+            "integrity_warning_count": warning_count,
+            "integrity_summary": integrity_summary,
+            "datasets_integrity_status": integrity_status,
         },
     )
 
@@ -237,6 +255,58 @@ def get_network_topology() -> NetworkResponse:
                 corridor_name=get_corridor_name_for_route(s.route_id),
                 scheduled_departure=dep_str,
                 scheduled_arrival=arr_str,
+                active=getattr(s, "active", True),
+                exclusion_reason=getattr(s, "exclusion_reason", None),
+            )
+        )
+
+    # Route node registry derivation across all 107 unique route nodes
+    all_route_nodes: Set[str] = set()
+    node_corridors_map: Dict[str, Set[str]] = defaultdict(set)
+    for r in net.routes.values():
+        all_route_nodes.update(r.ordered_nodes)
+        corr = get_corridor_name_for_route(r.id)
+        for n in r.ordered_nodes:
+            if corr:
+                node_corridors_map[n].add(corr)
+
+    platform_counts_by_node: Dict[str, int] = defaultdict(int)
+    for p in net.platforms.values():
+        platform_counts_by_node[p.station_id] += 1
+
+    junction_nodes = {j.station_id: j for j in net.junctions.values() if getattr(j, "station_id", None)}
+
+    nodes: List[RouteNodeSummary] = []
+    for node_id in sorted(list(all_route_nodes)):
+        stn = net.stations.get(node_id)
+        jct = junction_nodes.get(node_id)
+        has_stn = stn is not None
+
+        if stn:
+            name = stn.name
+        elif jct:
+            name = jct.name
+        else:
+            name = None
+
+        if jct or (stn and "junction" in stn.station_type.lower()):
+            node_type = "JUNCTION"
+        elif stn:
+            node_type = "STATION"
+        else:
+            node_type = "WAYPOINT"
+
+        corridors = sorted(list(node_corridors_map[node_id]))
+        plat_cnt = platform_counts_by_node[node_id]
+
+        nodes.append(
+            RouteNodeSummary(
+                id=node_id,
+                name=name,
+                has_station_record=has_stn,
+                node_type=node_type,
+                corridors=corridors,
+                platform_count=plat_cnt,
             )
         )
 
@@ -278,20 +348,27 @@ def get_network_topology() -> NetworkResponse:
         for ts in net.track_sections.values()
     ]
 
+    active_cnt = len([s for s in net.services.values() if getattr(s, "active", True)])
+    excluded_cnt = len([s for s in net.services.values() if not getattr(s, "active", True)])
+
     return NetworkResponse(
         station_count=len(stations),
         junction_count=len(junctions),
         route_count=len(routes),
         service_count=len(services),
+        active_service_count=active_cnt,
+        excluded_service_count=excluded_cnt,
         train_count=len(net.trains),
         track_section_count=len(net.track_sections),
         stations=stations,
         junctions=junctions,
         routes=routes,
         services=services,
+        nodes=nodes,
         timetable=timetable,
         platforms=platforms,
         track_sections=track_sections,
+        data_provenance=net.get_data_provenance() if hasattr(net, "get_data_provenance") else None,
     )
 
 
@@ -319,7 +396,7 @@ def get_simulation_state() -> SimulationStateResponse:
 )
 def control_simulation(req: SimulationControlRequest) -> SimulationStateResponse:
     net = get_network()
-    sim_mgr = get_simulation_manager(net)
+    engine = get_live_engine(net)
 
     if req.service_ids:
         for s_id in req.service_ids:
@@ -327,6 +404,11 @@ def control_simulation(req: SimulationControlRequest) -> SimulationStateResponse
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"Invalid service_id '{s_id}' not found in network service catalogue.",
+                )
+            if not getattr(net.services[s_id], "active", True):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Service '{s_id}' is excluded from operational scheduling: {net.services[s_id].exclusion_reason}.",
                 )
 
     if req.departure_delays:
@@ -337,16 +419,7 @@ def control_simulation(req: SimulationControlRequest) -> SimulationStateResponse
                     detail=f"Invalid departure_delays key '{s_id}' not found in network service catalogue.",
                 )
 
-    updated = sim_mgr.update_control(
-        current_minute=req.current_minute,
-        current_time_str=req.current_time_str,
-        start_minute=req.start_minute,
-        end_minute=req.end_minute,
-        is_playing=req.is_playing,
-        playback_speed=req.playback_speed,
-        service_ids=req.service_ids,
-        departure_delays=req.departure_delays,
-    )
+    updated = engine.update_control(req)
     return SimulationStateResponse(**updated)
 
 
@@ -358,9 +431,118 @@ def control_simulation(req: SimulationControlRequest) -> SimulationStateResponse
 )
 def reset_simulation(clear_delays: bool = False) -> SimulationStateResponse:
     net = get_network()
-    sim_mgr = get_simulation_manager(net)
-    res = sim_mgr.reset_state(clear_delays=clear_delays)
+    engine = get_live_engine(net)
+    res = engine.reset(clear_delays=clear_delays)
     return SimulationStateResponse(**res)
+
+
+@router.get(
+    "/simulation/events",
+    response_model=List[SimulationEventRecord],
+    summary="List Active Injected Disruption Events",
+    description="Retrieve the log of all injected operational events and disruptions persisted in JSONL.",
+)
+def list_simulation_events() -> List[SimulationEventRecord]:
+    net = get_network()
+    engine = get_live_engine(net)
+    return engine.list_events()
+
+
+@router.post(
+    "/simulation/events",
+    response_model=SimulationEventRecord,
+    status_code=status.HTTP_201_CREATED,
+    summary="Inject Operational Disruption Event",
+    description="Inject a departure delay, dwell delay, speed restriction, or blocked track section. Events are validated, persisted to JSONL, and immediately recomputed.",
+)
+def inject_simulation_event(req: SimulationEventCreateRequest) -> SimulationEventRecord:
+    net = get_network()
+    engine = get_live_engine(net)
+    try:
+        return engine.inject_event(req)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.delete(
+    "/simulation/events/{event_id}",
+    summary="Remove Injected Disruption Event",
+    description="Deletes an injected event from the event log, re-evaluates the simulation state from scratch, and broadcasts the event_removed SSE message.",
+)
+def delete_simulation_event(event_id: str):
+    net = get_network()
+    engine = get_live_engine(net)
+    removed = engine.remove_event(event_id)
+    if not removed:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Disruption event '{event_id}' not found in active log.",
+        )
+    return {"status": "success", "message": f"Event '{event_id}' successfully removed."}
+
+
+@router.get(
+    "/simulation/stream",
+    summary="Server-Sent Events (SSE) Stream for Live Simulation",
+    description="Streams real-time simulation ticks, conflict alerts, disruption lifecycle events, and reoptimization proposals. Supports reconnection via Last-Event-ID header.",
+)
+async def simulation_stream(
+    last_event_id: Optional[str] = Header(None, alias="Last-Event-ID"),
+):
+    net = get_network()
+    engine = get_live_engine(net)
+    parsed_id = int(last_event_id) if last_event_id and last_event_id.isdigit() else None
+    return StreamingResponse(
+        engine.sse_event_stream(last_event_id=parsed_id),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+@router.post(
+    "/simulation/reoptimize",
+    response_model=ReoptimizationProposal,
+    summary="Trigger Live CP-SAT Reoptimization",
+    description="Evaluates active conflicts and disruptions against current state, solving for an optimal conflict-free schedule. Generates a proposal requiring human controller acceptance.",
+)
+def reoptimize_simulation() -> ReoptimizationProposal:
+    net = get_network()
+    engine = get_live_engine(net)
+    return engine.create_reoptimization_proposal()
+
+
+@router.post(
+    "/simulation/proposals/{proposal_id}/accept",
+    response_model=ProposalActionResponse,
+    summary="Accept and Apply Reoptimization Proposal",
+    description="Human controller action: accepts the mathematical optimization proposal, saving it to runtime plan and updating status to ACCEPTED.",
+)
+def accept_proposal(proposal_id: str) -> ProposalActionResponse:
+    net = get_network()
+    engine = get_live_engine(net)
+    try:
+        return engine.accept_proposal(proposal_id)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.post(
+    "/simulation/proposals/{proposal_id}/reject",
+    response_model=ProposalActionResponse,
+    summary="Reject Reoptimization Proposal",
+    description="Human controller action: rejects the proposed schedule modifications, marking proposal as REJECTED.",
+)
+def reject_proposal(proposal_id: str) -> ProposalActionResponse:
+    net = get_network()
+    engine = get_live_engine(net)
+    try:
+        return engine.reject_proposal(proposal_id)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 @router.post(
@@ -374,16 +556,26 @@ def run_simulation(req: SimulateRequest) -> SimulateResponse:
     sim_mgr = get_simulation_manager(net)
 
     # Validate requested service IDs
-    if req.service_ids:
-        for s_id in req.service_ids:
-            if s_id not in net.services:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Invalid service_id '{s_id}' not found in network service catalogue.",
-                )
-        selected_svcs = list(req.service_ids)
+    if req.service_ids is not None:
+        if len(req.service_ids) == 0:
+            # Explicit empty list allows full-division catalog simulation
+            selected_svcs = list(net.services.keys())
+        else:
+            for s_id in req.service_ids:
+                if s_id not in net.services:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Invalid service_id '{s_id}' not found in network service catalogue.",
+                    )
+                if not getattr(net.services[s_id], "active", True):
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Service '{s_id}' is excluded from operational scheduling: {net.services[s_id].exclusion_reason}.",
+                    )
+            selected_svcs = list(req.service_ids)
     else:
-        selected_svcs = list(net.services.keys())
+        # Default to active services with published timetable evidence
+        selected_svcs = sorted([s_id for s_id, s in net.services.items() if getattr(s, "active", True)])
 
     # Validate departure delay service keys
     if req.departure_delays:
@@ -438,16 +630,54 @@ def run_optimization(req: OptimizeRequest) -> OptimizeResponse:
     net = get_network()
     runner = get_scenario_runner()
 
-    if req.service_ids:
+    if req.service_ids is not None:
+        if len(req.service_ids) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="service_ids cannot be an empty list. Specify valid service IDs or omit the parameter.",
+            )
         for s_id in req.service_ids:
             if s_id not in net.services:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"Invalid service_id '{s_id}' not found in network service catalogue.",
                 )
+            if not getattr(net.services[s_id], "active", True):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Service '{s_id}' is excluded from operational scheduling: {net.services[s_id].exclusion_reason}.",
+                )
         selected_svcs = list(req.service_ids)
     else:
-        selected_svcs = sorted(list(net.services.keys()))[:4]
+        selected_svcs = sorted([s_id for s_id, s in net.services.items() if getattr(s, "active", True)])[:4]
+
+    # Validate departure delay service keys
+    if req.departure_delays:
+        for s_id in req.departure_delays:
+            if s_id not in net.services:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid departure_delays service key '{s_id}' not found in network service catalogue.",
+                )
+
+    # Validate station delay service keys
+    if req.station_delays:
+        for s_id in req.station_delays:
+            if s_id not in net.services:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid station_delays service key '{s_id}' not found in network service catalogue.",
+                )
+
+    # Validate blocked sections against network
+    if req.blocked_sections:
+        valid_sections = sorted(list(net.track_sections.keys()))
+        unknown_sections = [sec for sec in req.blocked_sections if sec not in net.track_sections]
+        if unknown_sections:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Unknown blocked_sections IDs: {unknown_sections}. Valid track section IDs are: {valid_sections}",
+            )
 
     scenario = Scenario(
         scenario_id="SCEN_API_OPTIMIZE",
@@ -457,33 +687,41 @@ def run_optimization(req: OptimizeRequest) -> OptimizeResponse:
         departure_delays=req.departure_delays or {},
         station_delays=req.station_delays or {},
         track_speed_restrictions=req.speed_restrictions or {},
+        blocked_sections=req.blocked_sections or [],
+        objective_mode=req.objective_mode or "WEIGHTED",
     )
 
     comparison = runner.run_scenario(scenario=scenario, time_horizon=req.time_horizon)
     opt_result = comparison.optimized_result
+    is_sol = opt_result.status in ("OPTIMAL", "FEASIBLE")
 
     adjusted_timetables: Dict[str, List[TimetableAdjustmentSummary]] = {}
-    for s_id, adjs in opt_result.adjusted_timetables.items():
-        adjusted_timetables[s_id] = [
-            TimetableAdjustmentSummary(
-                service_id=a.service_id,
-                station_id=a.station_id,
-                stop_sequence=a.stop_sequence,
-                original_arrival=a.original_arrival,
-                original_departure=a.original_departure,
-                adjusted_arrival=a.adjusted_arrival,
-                adjusted_departure=a.adjusted_departure,
-                adjusted_arrival_str=a.adjusted_arrival_str,
-                adjusted_departure_str=a.adjusted_departure_str,
-                delay_minutes=round(a.delay_minutes, 2),
-                assigned_platform=a.assigned_platform,
-            )
-            for a in adjs
-        ]
+    if is_sol:
+        for s_id, adjs in opt_result.adjusted_timetables.items():
+            adjusted_timetables[s_id] = [
+                TimetableAdjustmentSummary(
+                    service_id=a.service_id,
+                    station_id=a.station_id,
+                    stop_sequence=a.stop_sequence,
+                    original_arrival=a.original_arrival,
+                    original_departure=a.original_departure,
+                    adjusted_arrival=a.adjusted_arrival,
+                    adjusted_departure=a.adjusted_departure,
+                    adjusted_arrival_str=a.adjusted_arrival_str,
+                    adjusted_departure_str=a.adjusted_departure_str,
+                    delay_minutes=round(a.delay_minutes, 2),
+                    assigned_platform=a.assigned_platform,
+                )
+                for a in adjs
+            ]
 
     platform_allocations = [
         d.to_dict() for d in opt_result.resource_decisions if d.resource_type == "PLATFORM"
-    ]
+    ] if is_sol else []
+
+    precedence_decisions = [
+        d.to_dict() for d in opt_result.precedence_decisions
+    ] if is_sol else []
 
     feasible_timetables: Dict[str, List[TimetableAdjustmentSummary]] = {}
     if comparison.baseline_result and comparison.baseline_result.adjusted_timetables:
@@ -525,24 +763,28 @@ def run_optimization(req: OptimizeRequest) -> OptimizeResponse:
                 for a in adjs
             ]
 
-    three_tier_tt = comparison.build_three_tier_timetable(net)
+    three_tier_tt = comparison.build_three_tier_timetable(net) if is_sol else []
 
     return OptimizeResponse(
         solver_status=opt_result.status,
+        solution_available=is_sol,
         computation_time_seconds=round(opt_result.computation_time_seconds, 3),
         feasible_baseline_delay_minutes=round(comparison.baseline_total_delay, 2),
-        optimized_total_delay_minutes=round(comparison.optimized_total_delay, 2),
-        net_delay_savings_minutes=round(comparison.delay_savings_minutes, 2),
-        net_delay_savings_percent=round(comparison.delay_savings_percent, 2),
+        optimized_total_delay_minutes=round(comparison.optimized_total_delay, 2) if (is_sol and comparison.optimized_total_delay is not None) else None,
+        net_delay_savings_minutes=round(comparison.delay_savings_minutes, 2) if (is_sol and comparison.delay_savings_minutes is not None) else None,
+        net_delay_savings_percent=round(comparison.delay_savings_percent, 2) if (is_sol and comparison.delay_savings_percent is not None) else None,
+        fifo_weighted_objective=round(comparison.fifo_weighted_objective, 2) if comparison.fifo_weighted_objective is not None else None,
+        optimized_weighted_objective=round(comparison.optimized_weighted_objective, 2) if (is_sol and comparison.optimized_weighted_objective is not None) else None,
+        objective_mode=getattr(comparison, "objective_mode", "WEIGHTED"),
         unresolved_conflicts_count=opt_result.metrics.remaining_conflict_count,
         adjusted_timetables=adjusted_timetables,
-        precedence_decisions=[d.to_dict() for d in opt_result.precedence_decisions],
+        precedence_decisions=precedence_decisions,
         platform_assignments=platform_allocations,
         published_reference_delay_minutes=round(getattr(comparison, "published_total_delay", 0.0), 2),
         feasible_adjusted_timetables=feasible_timetables,
         published_adjusted_timetables=published_timetables,
         three_tier_timetable=three_tier_tt,
-        corridor_performance=comparison.build_corridor_performance_summary(net),
+        corridor_performance=comparison.build_corridor_performance_summary(net) if is_sol else [],
     )
 
 
@@ -560,16 +802,54 @@ def run_what_if(req: WhatIfRequest) -> WhatIfResponse:
     net = get_network()
     orchestrator = get_orchestrator()
 
-    if req.service_ids:
+    if req.service_ids is not None:
+        if len(req.service_ids) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="service_ids cannot be an empty list. Specify valid service IDs or omit the parameter.",
+            )
         for s_id in req.service_ids:
             if s_id not in net.services:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"Invalid service_id '{s_id}' not found in network service catalogue.",
                 )
+            if not getattr(net.services[s_id], "active", True):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Service '{s_id}' is excluded from operational scheduling: {net.services[s_id].exclusion_reason}.",
+                )
         selected_svcs = list(req.service_ids)
     else:
-        selected_svcs = sorted(list(net.services.keys()))[:4]
+        selected_svcs = sorted([s_id for s_id, s in net.services.items() if getattr(s, "active", True)])[:4]
+
+    # Validate blocked sections against network
+    if req.blocked_sections:
+        valid_sections = sorted(list(net.track_sections.keys()))
+        unknown_sections = [sec for sec in req.blocked_sections if sec not in net.track_sections]
+        if unknown_sections:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Unknown blocked_sections IDs: {unknown_sections}. Valid track section IDs are: {valid_sections}",
+            )
+
+    # Validate departure delay service keys
+    if req.departure_delays:
+        for s_id in req.departure_delays:
+            if s_id not in net.services:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid departure_delays service key '{s_id}' not found in network service catalogue.",
+                )
+
+    # Validate station delay service keys
+    if req.station_delays:
+        for s_id in req.station_delays:
+            if s_id not in net.services:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid station_delays service key '{s_id}' not found in network service catalogue.",
+                )
 
     scenario = Scenario(
         scenario_id=req.scenario_id or "SCEN_CUSTOM",
@@ -580,13 +860,17 @@ def run_what_if(req: WhatIfRequest) -> WhatIfResponse:
         station_delays=req.station_delays or {},
         track_speed_restrictions=req.speed_restrictions or {},
         blocked_sections=req.blocked_sections or [],
+        objective_mode=req.objective_mode or "WEIGHTED",
     )
 
     result = orchestrator.run_pipeline(
         scenario=scenario,
         service_ids=selected_svcs,
         time_horizon=req.time_horizon,
+        objective_mode=req.objective_mode or "WEIGHTED",
     )
+
+    is_sol = result.solver_status in ("OPTIMAL", "FEASIBLE")
 
     top_action = (
         result.recommendations[0].title
@@ -596,8 +880,9 @@ def run_what_if(req: WhatIfRequest) -> WhatIfResponse:
 
     controller_summary = {
         "solver_status": result.solver_status,
+        "solution_available": is_sol,
         "operational_severity": result.assessment.situation.severity.value,
-        "net_delay_savings_minutes": round(result.net_delay_savings_minutes, 2),
+        "net_delay_savings_minutes": round(result.net_delay_savings_minutes, 2) if (is_sol and result.net_delay_savings_minutes is not None) else None,
         "recommendation_count": len(result.recommendations),
         "top_recommendation": top_action,
     }
@@ -610,10 +895,14 @@ def run_what_if(req: WhatIfRequest) -> WhatIfResponse:
         active_services_count=result.active_services_count,
         delayed_services_count=result.delayed_services_count,
         total_baseline_delay_minutes=round(result.total_baseline_delay_minutes, 2),
-        total_optimized_delay_minutes=round(result.total_optimized_delay_minutes, 2),
-        net_delay_savings_minutes=round(result.net_delay_savings_minutes, 2),
-        net_delay_savings_percent=round(result.net_delay_savings_percent, 2),
+        total_optimized_delay_minutes=round(result.total_optimized_delay_minutes, 2) if (is_sol and result.total_optimized_delay_minutes is not None) else None,
+        net_delay_savings_minutes=round(result.net_delay_savings_minutes, 2) if (is_sol and result.net_delay_savings_minutes is not None) else None,
+        net_delay_savings_percent=round(result.net_delay_savings_percent, 2) if (is_sol and result.net_delay_savings_percent is not None) else None,
         solver_status=result.solver_status,
+        solution_available=is_sol,
+        fifo_weighted_objective=round(result.fifo_weighted_objective, 2) if result.fifo_weighted_objective is not None else None,
+        optimized_weighted_objective=round(result.optimized_weighted_objective, 2) if (is_sol and result.optimized_weighted_objective is not None) else None,
+        objective_mode=result.objective_mode,
         solve_time_seconds=round(result.solve_time_seconds, 3),
         execution_time_seconds=round(result.execution_time_seconds, 3),
         deterministic_hash=result.deterministic_hash,
@@ -624,7 +913,7 @@ def run_what_if(req: WhatIfRequest) -> WhatIfResponse:
         baseline_comparison=result.baseline_comparison.to_dict(),
         controller_summary=controller_summary,
         metadata=result.metadata,
-        corridor_performance=result.baseline_comparison.corridor_performance if hasattr(result.baseline_comparison, "corridor_performance") else None,
+        corridor_performance=result.baseline_comparison.corridor_performance if (hasattr(result.baseline_comparison, "corridor_performance") and is_sol) else None,
     )
 
 

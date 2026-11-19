@@ -85,10 +85,28 @@ class SimulationStateManager:
         self._lock = threading.RLock()
 
         if state_file_path is None:
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            self.state_file_path = os.path.join(base_dir, "data", "runtime_simulation_state.json")
+            runtime_dir = os.environ.get("RAILWAY_RUNTIME_DIR")
+            if runtime_dir:
+                self.state_file_path = os.path.join(runtime_dir, "runtime_simulation_state.json")
+            else:
+                base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                self.state_file_path = os.path.join(base_dir, "runtime", "runtime_simulation_state.json")
         else:
             self.state_file_path = state_file_path
+
+        # If the new file is absent, read the legacy data/ file once (copy it, do not delete it)
+        legacy_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "data",
+            "runtime_simulation_state.json",
+        )
+        if not os.path.exists(self.state_file_path) and os.path.exists(legacy_path):
+            try:
+                os.makedirs(os.path.dirname(self.state_file_path), exist_ok=True)
+                import shutil
+                shutil.copyfile(legacy_path, self.state_file_path)
+            except Exception:
+                pass
 
         # Defaults
         self.start_minute: float = 360.0   # 06:00
@@ -96,9 +114,11 @@ class SimulationStateManager:
         self.current_minute: float = 360.0 # 06:00
         self.is_playing: bool = False
         self.playback_speed: int = 1
-        # Defaults to all network services across all train types
+        # Defaults to all active network services across all train types
         self.selected_service_ids: List[str] = (
-            list(self.network.services.keys())
+            list(self.network.active_services.keys())
+            if self.network and hasattr(self.network, "active_services") and self.network.active_services
+            else list(self.network.services.keys())
             if self.network and self.network.services
             else [
                 "SRV_43501_01",  # Suburban MAS -> AJJ
@@ -130,7 +150,10 @@ class SimulationStateManager:
             self.start_minute = float(data.get("start_minute", self.start_minute))
             self.end_minute = float(data.get("end_minute", self.end_minute))
             self.current_minute = float(data.get("current_minute", self.current_minute))
-            self.is_playing = bool(data.get("is_playing", False))
+            if self.current_minute > self.end_minute or self.current_minute < self.start_minute:
+                self.current_minute = self.start_minute
+            # Always start paused; a persisted is_playing=true must never auto-run after restart
+            self.is_playing = False
             self.playback_speed = int(data.get("playback_speed", 1))
 
             svcs = data.get("selected_service_ids")
@@ -222,6 +245,7 @@ class SimulationStateManager:
         playback_speed: Optional[int] = None,
         service_ids: Optional[List[str]] = None,
         departure_delays: Optional[Dict[str, float]] = None,
+        seek_minute: Optional[float] = None,
     ) -> Dict[str, Any]:
         """Update controller parameters, recalculate snapshot, and persist."""
         with self._lock:
@@ -230,13 +254,18 @@ class SimulationStateManager:
             if end_minute is not None:
                 self.end_minute = float(end_minute)
 
-            if current_time_str is not None:
-                self.current_minute = time_to_minutes(current_time_str)
+            if seek_minute is not None:
+                self.current_minute = max(self.start_minute, min(self.end_minute, float(seek_minute)))
+            elif current_time_str is not None:
+                self.current_minute = max(self.start_minute, min(self.end_minute, time_to_minutes(current_time_str)))
             elif current_minute is not None:
-                self.current_minute = float(current_minute)
+                self.current_minute = max(self.start_minute, min(self.end_minute, float(current_minute)))
 
             if is_playing is not None:
                 self.is_playing = bool(is_playing)
+                if self.is_playing and self.current_minute >= self.end_minute:
+                    self.is_playing = False
+
             if playback_speed is not None:
                 self.playback_speed = int(playback_speed)
 
@@ -282,7 +311,11 @@ class SimulationStateManager:
         # Ensure all services exist in network
         selected_svcs = [s for s in svcs_to_run if s in self.network.services]
         if not selected_svcs:
-            selected_svcs = list(self.network.services.keys())
+            selected_svcs = (
+                list(self.network.active_services.keys())
+                if hasattr(self.network, "active_services") and self.network.active_services
+                else list(self.network.services.keys())
+            )
 
         delays = departure_delays if departure_delays is not None else self.departure_delays
 
@@ -494,9 +527,14 @@ class SimulationStateManager:
 _sim_manager_cache: Optional[SimulationStateManager] = None
 
 
-def get_simulation_manager(network: Network) -> SimulationStateManager:
+def get_simulation_manager(
+    network: Network,
+    state_file_path: Optional[str] = None,
+) -> SimulationStateManager:
     """Return shared singleton of the SimulationStateManager."""
     global _sim_manager_cache
     if _sim_manager_cache is None:
-        _sim_manager_cache = SimulationStateManager(network=network)
+        _sim_manager_cache = SimulationStateManager(network=network, state_file_path=state_file_path)
+    elif state_file_path is not None and _sim_manager_cache.state_file_path != state_file_path:
+        _sim_manager_cache = SimulationStateManager(network=network, state_file_path=state_file_path)
     return _sim_manager_cache

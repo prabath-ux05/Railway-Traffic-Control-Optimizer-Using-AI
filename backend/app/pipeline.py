@@ -69,9 +69,9 @@ class PipelineExecutionResult:
     active_services_count: int
     delayed_services_count: int
     total_baseline_delay_minutes: float
-    total_optimized_delay_minutes: float
-    net_delay_savings_minutes: float
-    net_delay_savings_percent: float
+    total_optimized_delay_minutes: Optional[float]
+    net_delay_savings_minutes: Optional[float]
+    net_delay_savings_percent: Optional[float]
     solver_status: str
     solve_time_seconds: float
     prioritized_conflicts: List[PrioritizedConflict]
@@ -81,6 +81,10 @@ class PipelineExecutionResult:
     baseline_comparison: BaselineOptimizationComparison
     assessment: DecisionSupportAssessment
     deterministic_hash: str
+    solution_available: bool = True
+    fifo_weighted_objective: Optional[float] = None
+    optimized_weighted_objective: Optional[float] = None
+    objective_mode: str = "WEIGHTED"
     execution_time_seconds: float = 0.0
     raw_state: Optional[SimulationState] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -94,10 +98,14 @@ class PipelineExecutionResult:
             "active_services_count": self.active_services_count,
             "delayed_services_count": self.delayed_services_count,
             "total_baseline_delay_minutes": round(self.total_baseline_delay_minutes, 2),
-            "total_optimized_delay_minutes": round(self.total_optimized_delay_minutes, 2),
-            "net_delay_savings_minutes": round(self.net_delay_savings_minutes, 2),
-            "net_delay_savings_percent": round(self.net_delay_savings_percent, 2),
+            "total_optimized_delay_minutes": round(self.total_optimized_delay_minutes, 2) if self.total_optimized_delay_minutes is not None else None,
+            "net_delay_savings_minutes": round(self.net_delay_savings_minutes, 2) if self.net_delay_savings_minutes is not None else None,
+            "net_delay_savings_percent": round(self.net_delay_savings_percent, 2) if self.net_delay_savings_percent is not None else None,
             "solver_status": self.solver_status,
+            "solution_available": self.solution_available,
+            "fifo_weighted_objective": round(self.fifo_weighted_objective, 2) if self.fifo_weighted_objective is not None else None,
+            "optimized_weighted_objective": round(self.optimized_weighted_objective, 2) if self.optimized_weighted_objective is not None else None,
+            "objective_mode": self.objective_mode,
             "solve_time_seconds": round(self.solve_time_seconds, 3),
             "execution_time_seconds": round(self.execution_time_seconds, 3),
             "deterministic_hash": self.deterministic_hash,
@@ -114,13 +122,17 @@ class PipelineExecutionResult:
         return json.dumps(self.to_dict(), indent=indent)
 
     def generate_ascii_summary(self) -> str:
+        opt_d_str = f"{self.total_optimized_delay_minutes:.1f}m" if self.total_optimized_delay_minutes is not None else "N/A (Infeasible)"
+        sav_m_str = f"{self.net_delay_savings_minutes:.1f}m" if self.net_delay_savings_minutes is not None else "N/A"
+        sav_p_str = f"{self.net_delay_savings_percent:.1f}%" if self.net_delay_savings_percent is not None else "N/A"
+
         lines = [
             "=" * 96,
             "END-TO-END RAILWAY TRAFFIC OPTIMIZATION PIPELINE RESULT",
             "=" * 96,
             f"Scenario: {self.scenario_name:<30} | Timestamp: {self.simulation_timestamp_str:<8} | Solver: {self.solver_status} ({self.solve_time_seconds:.3f}s)",
             f"Active Services: {self.active_services_count:<4} | Delayed Services: {self.delayed_services_count:<4} | Severity: {self.assessment.situation.severity.value}",
-            f"Feasible Baseline Delay: {self.total_baseline_delay_minutes:.1f}m -> Optimized Delay: {self.total_optimized_delay_minutes:.1f}m (Savings: {self.net_delay_savings_minutes:.1f}m | {self.net_delay_savings_percent:.1f}%)",
+            f"Feasible Baseline Delay: {self.total_baseline_delay_minutes:.1f}m -> Optimized Delay: {opt_d_str} (Savings: {sav_m_str} | {sav_p_str})",
             "-" * 96,
             f"PRIORITIZED CONFLICTS DETECTED ({len(self.prioritized_conflicts)}):",
         ]
@@ -198,6 +210,7 @@ class PipelineOrchestrator:
         service_ids: Optional[List[str]] = None,
         departure_delays: Optional[Dict[str, float]] = None,
         time_horizon: Optional[float] = None,
+        objective_mode: str = "WEIGHTED",
     ) -> PipelineExecutionResult:
         """Execute complete 6-stage end-to-end optimization and decision-support pipeline."""
         t_start = time.perf_counter()
@@ -214,6 +227,7 @@ class PipelineOrchestrator:
                 description="Standard operational timetable execution with dynamic state evaluation.",
                 affected_service_ids=selected_svcs,
                 departure_delays=dep_delays,
+                objective_mode=objective_mode,
             )
         else:
             if service_ids:
@@ -221,6 +235,8 @@ class PipelineOrchestrator:
             if departure_delays:
                 for s, d in departure_delays.items():
                     scenario.departure_delays[s] = d
+            if hasattr(scenario, "objective_mode") and objective_mode != "WEIGHTED":
+                scenario.objective_mode = objective_mode
 
         # Step 2: Run simulation & dynamic state progression
         sim_clock = SimulationClock(start_time="00:00")
@@ -257,6 +273,8 @@ class PipelineOrchestrator:
             f"{scenario.scenario_id}_{comparison.baseline_total_delay}_{comparison.optimized_total_delay}_{len(assessment.recommendations)}_{comparison.optimization_status}".encode()
         ).hexdigest()[:12]
 
+        is_sol = comparison.optimization_status in ("OPTIMAL", "FEASIBLE")
+
         return PipelineExecutionResult(
             scenario_id=scenario.scenario_id,
             scenario_name=scenario.name,
@@ -265,10 +283,14 @@ class PipelineOrchestrator:
             active_services_count=len(selected_svcs),
             delayed_services_count=len(scenario.departure_delays) + len(scenario.station_delays),
             total_baseline_delay_minutes=comparison.baseline_total_delay,
-            total_optimized_delay_minutes=comparison.optimized_total_delay,
-            net_delay_savings_minutes=comparison.delay_savings_minutes,
-            net_delay_savings_percent=comparison.delay_savings_percent,
+            total_optimized_delay_minutes=comparison.optimized_total_delay if is_sol else None,
+            net_delay_savings_minutes=comparison.delay_savings_minutes if is_sol else None,
+            net_delay_savings_percent=comparison.delay_savings_percent if is_sol else None,
             solver_status=comparison.optimization_status,
+            solution_available=is_sol,
+            fifo_weighted_objective=comparison.fifo_weighted_objective,
+            optimized_weighted_objective=comparison.optimized_weighted_objective if is_sol else None,
+            objective_mode=getattr(scenario, "objective_mode", "WEIGHTED"),
             solve_time_seconds=comparison.computation_time_seconds,
             prioritized_conflicts=assessment.prioritized_conflicts,
             identified_bottlenecks=assessment.identified_bottlenecks,
@@ -280,15 +302,16 @@ class PipelineOrchestrator:
                 feasible_baseline_max_delay_minutes=comparison.baseline_max_delay,
                 feasible_baseline_conflicts_remaining=comparison.baseline_unresolved_conflicts if hasattr(comparison, "baseline_unresolved_conflicts") else 0,
                 feasible_baseline_throughput=len(selected_svcs),
-                optimized_delay_minutes=comparison.optimized_total_delay,
-                optimized_max_delay_minutes=comparison.optimized_max_delay,
+                optimized_delay_minutes=comparison.optimized_total_delay if is_sol else None,
+                optimized_max_delay_minutes=comparison.optimized_max_delay if is_sol else None,
                 optimized_conflicts_remaining=0,
-                optimized_throughput=len(selected_svcs),
-                delay_savings_minutes=comparison.delay_savings_minutes,
-                delay_savings_percent=comparison.delay_savings_percent,
+                optimized_throughput=len(selected_svcs) if is_sol else 0,
+                delay_savings_minutes=comparison.delay_savings_minutes if is_sol else None,
+                delay_savings_percent=comparison.delay_savings_percent if is_sol else None,
                 solver_status=comparison.optimization_status,
+                solution_available=is_sol,
                 solve_time_seconds=comparison.computation_time_seconds,
-                three_tier_timetable=comparison.build_three_tier_timetable(self.network),
+                three_tier_timetable=comparison.build_three_tier_timetable(self.network) if is_sol else [],
                 published_timetables={
                     s_id: [a.to_dict() for a in adjs]
                     for s_id, adjs in comparison.published_baseline_result.adjusted_timetables.items()
@@ -300,8 +323,8 @@ class PipelineOrchestrator:
                 optimized_timetables={
                     s_id: [a.to_dict() for a in adjs]
                     for s_id, adjs in comparison.optimized_result.adjusted_timetables.items()
-                } if comparison.optimized_result else {},
-                corridor_performance=comparison.build_corridor_performance_summary(self.network),
+                } if (comparison.optimized_result and is_sol) else {},
+                corridor_performance=comparison.build_corridor_performance_summary(self.network) if is_sol else [],
             ),
             assessment=assessment,
             deterministic_hash=h,
@@ -321,6 +344,7 @@ def run_pipeline(
     service_ids: Optional[List[str]] = None,
     departure_delays: Optional[Dict[str, float]] = None,
     time_horizon: Optional[float] = None,
+    objective_mode: str = "WEIGHTED",
     network: Optional[Network] = None,
 ) -> PipelineExecutionResult:
     """Convenience factory function to execute full end-to-end backend optimization pipeline."""
@@ -330,4 +354,5 @@ def run_pipeline(
         service_ids=service_ids,
         departure_delays=departure_delays,
         time_horizon=time_horizon,
+        objective_mode=objective_mode,
     )

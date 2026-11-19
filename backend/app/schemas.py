@@ -12,7 +12,7 @@ Defines controller-facing request and response models:
 """
 
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 # ---------------------------------------------------------------------------
@@ -27,6 +27,9 @@ class HealthResponse(BaseModel):
     ist_time_str: Optional[str] = Field(None, json_schema_extra={"example": "15:30:00"})
     ist_date_str: Optional[str] = Field(None, json_schema_extra={"example": "2026-09-26"})
     timezone: Optional[str] = Field("Asia/Kolkata (IST)", json_schema_extra={"example": "Asia/Kolkata (IST)"})
+    integrity_warning_count: int = Field(0, description="Total count of data integrity warnings logged during network loading.")
+    integrity_summary: Dict[str, int] = Field(default_factory=dict, description="Breakdown of data integrity warnings by category.")
+    datasets_integrity_status: str = Field("WARNINGS", description="Overall data integrity health: CLEAN or WARNINGS.")
     network_status: Dict[str, Any] = Field(
         ...,
         json_schema_extra={
@@ -109,6 +112,18 @@ class ServiceSummary(BaseModel):
     corridor_name: Optional[str] = None
     scheduled_departure: Optional[str] = None
     scheduled_arrival: Optional[str] = None
+    active: bool = Field(True, description="Whether the service has published timetable evidence.")
+    exclusion_reason: Optional[str] = Field(None, description="Reason if service is excluded from operational scheduling.")
+
+
+class RouteNodeSummary(BaseModel):
+    """Authoritative node registry entry across corridor routes."""
+    id: str = Field(..., description="Unique node identifier.")
+    name: Optional[str] = Field(None, description="Station or junction name from existing datasets; null when unknown.")
+    has_station_record: bool = Field(..., description="True if node has a record in stations.json.")
+    node_type: str = Field(..., description="Node classification: STATION, JUNCTION, or WAYPOINT.")
+    corridors: List[str] = Field(default_factory=list, description="List of railway corridors traversing this node.")
+    platform_count: int = Field(0, description="Platform count from platforms.json.")
 
 
 class NetworkResponse(BaseModel):
@@ -117,15 +132,19 @@ class NetworkResponse(BaseModel):
     junction_count: int
     route_count: int
     service_count: int
+    active_service_count: int = Field(40, description="Count of active services with timetable evidence.")
+    excluded_service_count: int = Field(7, description="Count of excluded services without published timetable evidence.")
     train_count: int
     track_section_count: int
     stations: List[StationSummary]
     junctions: List[JunctionSummary]
     routes: List[RouteSummary]
     services: List[ServiceSummary]
+    nodes: List[RouteNodeSummary] = Field(default_factory=list, description="Registry of all 107 route nodes across corridor routes.")
     timetable: Optional[List[Dict[str, Any]]] = None
     platforms: Optional[List[PlatformSummary]] = None
     track_sections: Optional[List[TrackSectionSummary]] = None
+    data_provenance: Optional[Dict[str, Any]] = Field(None, description="Dataset provenance metadata.")
 
 
 # ---------------------------------------------------------------------------
@@ -201,9 +220,10 @@ class SimulationControlRequest(BaseModel):
     start_minute: Optional[float] = Field(None, description="Simulation window start minute.")
     end_minute: Optional[float] = Field(None, description="Simulation window end minute.")
     is_playing: Optional[bool] = Field(None, description="Playback running status.")
-    playback_speed: Optional[int] = Field(None, description="Playback speed multiplier (1, 2, 5).")
+    playback_speed: Optional[int] = Field(None, description="Playback speed multiplier (1, 2, 5, 10, 30, 60).")
     service_ids: Optional[List[str]] = Field(None, description="Active fleet service IDs to simulate.")
     departure_delays: Optional[Dict[str, float]] = Field(None, description="Injected origin departure delays.")
+    seek_minute: Optional[float] = Field(None, description="Directly seek to simulation minute, clamped within start_minute and end_minute.")
 
 
 class SimulationStateResponse(BaseModel):
@@ -246,10 +266,38 @@ class OptimizeRequest(BaseModel):
         default_factory=dict,
         description="Track section speed restrictions {section_id: traversal_minutes}.",
     )
+    blocked_sections: Optional[List[str]] = Field(
+        default_factory=list,
+        description="List of completely blocked track section IDs.",
+    )
     time_horizon: Optional[float] = Field(
         None,
         description="Optimization lookahead horizon in minutes from midnight.",
     )
+    objective_mode: Optional[str] = Field(
+        "WEIGHTED",
+        description="Optimization objective mode: WEIGHTED (default, minimizing weighted penalty) or TOTAL_DELAY (minimizing plain sum of delays).",
+        json_schema_extra={"example": "WEIGHTED"},
+    )
+
+    @field_validator("departure_delays")
+    @classmethod
+    def validate_departure_delays(cls, v: Optional[Dict[str, float]]) -> Optional[Dict[str, float]]:
+        if v:
+            for s_id, delay in v.items():
+                if delay < 0:
+                    raise ValueError(f"Departure delay for service '{s_id}' cannot be negative ({delay} < 0).")
+        return v
+
+    @field_validator("station_delays")
+    @classmethod
+    def validate_station_delays(cls, v: Optional[Dict[str, Dict[str, float]]]) -> Optional[Dict[str, Dict[str, float]]]:
+        if v:
+            for s_id, stn_map in v.items():
+                for stn_id, delay in stn_map.items():
+                    if delay < 0:
+                        raise ValueError(f"Station dwell delay for service '{s_id}' at station '{stn_id}' cannot be negative ({delay} < 0).")
+        return v
 
 
 class TimetableAdjustmentSummary(BaseModel):
@@ -269,11 +317,15 @@ class TimetableAdjustmentSummary(BaseModel):
 class OptimizeResponse(BaseModel):
     """CP-SAT optimization results with schedule adjustments and delay savings."""
     solver_status: str
+    solution_available: bool = True
     computation_time_seconds: float
     feasible_baseline_delay_minutes: float
-    optimized_total_delay_minutes: float
-    net_delay_savings_minutes: float
-    net_delay_savings_percent: float
+    optimized_total_delay_minutes: Optional[float] = None
+    net_delay_savings_minutes: Optional[float] = None
+    net_delay_savings_percent: Optional[float] = None
+    fifo_weighted_objective: Optional[float] = None
+    optimized_weighted_objective: Optional[float] = None
+    objective_mode: str = "WEIGHTED"
     unresolved_conflicts_count: int
     adjusted_timetables: Dict[str, List[TimetableAdjustmentSummary]]
     precedence_decisions: List[Dict[str, Any]]
@@ -306,6 +358,30 @@ class WhatIfRequest(BaseModel):
     speed_restrictions: Optional[Dict[str, float]] = Field(default_factory=dict)
     blocked_sections: Optional[List[str]] = Field(default_factory=list)
     time_horizon: Optional[float] = None
+    objective_mode: Optional[str] = Field(
+        "WEIGHTED",
+        description="Optimization objective mode: WEIGHTED (default, minimizing weighted penalty) or TOTAL_DELAY (minimizing plain sum of delays).",
+        json_schema_extra={"example": "WEIGHTED"},
+    )
+
+    @field_validator("departure_delays")
+    @classmethod
+    def validate_departure_delays(cls, v: Optional[Dict[str, float]]) -> Optional[Dict[str, float]]:
+        if v:
+            for s_id, delay in v.items():
+                if delay < 0:
+                    raise ValueError(f"Departure delay for service '{s_id}' cannot be negative ({delay} < 0).")
+        return v
+
+    @field_validator("station_delays")
+    @classmethod
+    def validate_station_delays(cls, v: Optional[Dict[str, Dict[str, float]]]) -> Optional[Dict[str, Dict[str, float]]]:
+        if v:
+            for s_id, stn_map in v.items():
+                for stn_id, delay in stn_map.items():
+                    if delay < 0:
+                        raise ValueError(f"Station dwell delay for service '{s_id}' at station '{stn_id}' cannot be negative ({delay} < 0).")
+        return v
 
 
 class SupportingEvidenceSchema(BaseModel):
@@ -378,15 +454,22 @@ class WhatIfResponse(BaseModel):
     """Comprehensive end-to-end What-If evaluation and decision-support response."""
     scenario_id: Optional[str]
     scenario_name: str
-    simulation_timestamp_str: str
+    simulation_timestamp_str: str = Field(
+        ...,
+        description="Authoritative simulation clock timestamp (HH:MM) corresponding to the arrival time of the final simulated service in the evaluated cohort. Deterministic model time, not wall-clock based.",
+    )
     operational_severity: str
     active_services_count: int
     delayed_services_count: int
     total_baseline_delay_minutes: float
-    total_optimized_delay_minutes: float
-    net_delay_savings_minutes: float
-    net_delay_savings_percent: float
+    total_optimized_delay_minutes: Optional[float] = None
+    net_delay_savings_minutes: Optional[float] = None
+    net_delay_savings_percent: Optional[float] = None
     solver_status: str
+    solution_available: bool = True
+    fifo_weighted_objective: Optional[float] = None
+    optimized_weighted_objective: Optional[float] = None
+    objective_mode: str = "WEIGHTED"
     solve_time_seconds: float
     execution_time_seconds: float
     deterministic_hash: str
@@ -601,4 +684,81 @@ class AnalyticsResponse(BaseModel):
     scalability_analysis: AnalyticsScalabilityAnalysisSchema
     key_findings: List[AnalyticsFindingSchema]
     limitations: List[AnalyticsLimitationSchema]
+
+
+# ---------------------------------------------------------------------------
+# 8. Live Runtime Engine Event & Proposal Schemas
+# ---------------------------------------------------------------------------
+
+class SimulationEventCreateRequest(BaseModel):
+    """Payload to inject an operational disruption at the current or scheduled simulation time."""
+    event_type: str = Field(..., description="DEPARTURE_DELAY, DWELL_DELAY, SPEED_RESTRICTION, or BLOCKED_SECTION")
+    service_id: Optional[str] = Field(None, description="Target service ID for departure/dwell delay")
+    station_id: Optional[str] = Field(None, description="Station ID for dwell delay")
+    section_id: Optional[str] = Field(None, description="Track section ID for speed restriction or blockage")
+    delay_minutes: Optional[float] = Field(None, ge=0.0, description="Delay magnitude in minutes")
+    speed_kmh: Optional[float] = Field(None, ge=0.0, description="Speed restriction in km/h")
+    speed_factor: Optional[float] = Field(None, ge=1.0, description="Runtime multiplier (e.g. 2.0 = double runtime)")
+    from_minute: Optional[float] = Field(None, description="Disruption effective start minute (default: current sim minute)")
+    to_minute: Optional[float] = Field(None, description="Disruption effective end minute (default: horizon)")
+    description: Optional[str] = Field(None, description="Contextual description of operational disturbance")
+
+
+class SimulationEventRecord(BaseModel):
+    """Authoritative persistent record of an operational disruption event."""
+    id: str = Field(..., description="Unique event identifier (e.g. EVT_0001)")
+    event_type: str
+    service_id: Optional[str] = None
+    station_id: Optional[str] = None
+    section_id: Optional[str] = None
+    delay_minutes: Optional[float] = None
+    speed_kmh: Optional[float] = None
+    speed_factor: Optional[float] = None
+    from_minute: float
+    to_minute: float
+    description: Optional[str] = None
+    created_at_sim_minute: float
+    created_at_wall_clock: str
+
+
+class ReoptimizationProposal(BaseModel):
+    """Human-in-the-loop candidate reoptimization proposal produced by CP-SAT."""
+    proposal_id: str = Field(..., description="Unique proposal identifier (e.g. PROP_0001)")
+    created_at_sim_minute: float
+    created_at_wall_clock: str
+    solver_status: str
+    solution_available: bool = True
+    total_baseline_delay_minutes: float
+    total_optimized_delay_minutes: Optional[float] = None
+    net_delay_savings_minutes: Optional[float] = None
+    net_delay_savings_percent: Optional[float] = None
+    operational_severity: str
+    recommendations: List[Dict[str, Any]] = Field(default_factory=list)
+    adjusted_timetables: Dict[str, Any] = Field(default_factory=dict)
+    precedence_decisions: List[Dict[str, Any]] = Field(default_factory=list)
+    status: str = Field("PENDING", description="PENDING, ACCEPTED, or REJECTED")
+
+
+class ProposalActionResponse(BaseModel):
+    """Response returned upon accepting or rejecting a reoptimization proposal."""
+    proposal_id: str
+    action: str  # ACCEPT or REJECT
+    status: str  # ACCEPTED or REJECTED
+    message: str
+
+
+class SSETickData(BaseModel):
+    """Lightweight real-time tick payload streamed via Server-Sent Events."""
+    sim_minute: float
+    sim_time_str: str
+    ist_time_str: str
+    is_playing: bool
+    playback_speed: int
+    running_count: int
+    scheduled_count: int
+    arrived_count: int
+    delayed_count: int
+    active_conflict_count: int
+    total_delay_minutes: float
+
 

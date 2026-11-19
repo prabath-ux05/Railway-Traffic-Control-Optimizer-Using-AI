@@ -41,6 +41,7 @@ class RecommendationType(str, Enum):
     SPEED_RESTRICTION_ADJUSTMENT  = "SPEED_RESTRICTION_ADJUSTMENT"  # Impose or adjust speed caution orders
     EARLY_DISPATCH                = "EARLY_DISPATCH"                # Advance departure when line ahead is clear
     MAINTAIN_CURRENT_SCHEDULE     = "MAINTAIN_CURRENT_SCHEDULE"     # Normal operation without intervention
+    NO_FEASIBLE_SCHEDULE          = "NO_FEASIBLE_SCHEDULE"          # Mathematical solver proved infeasible with blocked resources
 
 
 class RecommendationCategory(str, Enum):
@@ -51,6 +52,7 @@ class RecommendationCategory(str, Enum):
     DISPATCH_SEQUENCING   = "dispatch sequencing"
     SPEED_MANAGEMENT      = "speed management"
     MAINTAIN_SCHEDULE     = "maintain schedule"
+    NO_FEASIBLE_SCHEDULE  = "no feasible schedule"
 
 
 def map_type_to_category(rec_type: RecommendationType) -> str:
@@ -63,6 +65,7 @@ def map_type_to_category(rec_type: RecommendationType) -> str:
         RecommendationType.SPEED_RESTRICTION_ADJUSTMENT: RecommendationCategory.SPEED_MANAGEMENT.value,
         RecommendationType.EARLY_DISPATCH: RecommendationCategory.DISPATCH_SEQUENCING.value,
         RecommendationType.MAINTAIN_CURRENT_SCHEDULE: RecommendationCategory.MAINTAIN_SCHEDULE.value,
+        RecommendationType.NO_FEASIBLE_SCHEDULE: RecommendationCategory.NO_FEASIBLE_SCHEDULE.value,
     }
     return mapping.get(rec_type, RecommendationCategory.MAINTAIN_SCHEDULE.value)
 
@@ -170,14 +173,15 @@ class BaselineOptimizationComparison:
     feasible_baseline_max_delay_minutes: float
     feasible_baseline_conflicts_remaining: int
     feasible_baseline_throughput: int
-    optimized_delay_minutes: float
-    optimized_max_delay_minutes: float
-    optimized_conflicts_remaining: int
-    optimized_throughput: int
-    delay_savings_minutes: float
-    delay_savings_percent: float
-    solver_status: str
-    solve_time_seconds: float
+    optimized_delay_minutes: Optional[float] = None
+    optimized_max_delay_minutes: Optional[float] = None
+    optimized_conflicts_remaining: int = 0
+    optimized_throughput: int = 0
+    delay_savings_minutes: Optional[float] = None
+    delay_savings_percent: Optional[float] = None
+    solver_status: str = "OPTIMAL"
+    solve_time_seconds: float = 0.0
+    solution_available: bool = True
     three_tier_timetable: List[Dict[str, Any]] = field(default_factory=list)
     published_timetables: Dict[str, List[Dict[str, Any]]] = field(default_factory=dict)
     feasible_timetables: Dict[str, List[Dict[str, Any]]] = field(default_factory=dict)
@@ -191,13 +195,14 @@ class BaselineOptimizationComparison:
             "feasible_baseline_max_delay_minutes": round(self.feasible_baseline_max_delay_minutes, 2),
             "feasible_baseline_conflicts_remaining": self.feasible_baseline_conflicts_remaining,
             "feasible_baseline_throughput": self.feasible_baseline_throughput,
-            "optimized_delay_minutes": round(self.optimized_delay_minutes, 2),
-            "optimized_max_delay_minutes": round(self.optimized_max_delay_minutes, 2),
+            "optimized_delay_minutes": round(self.optimized_delay_minutes, 2) if self.optimized_delay_minutes is not None else None,
+            "optimized_max_delay_minutes": round(self.optimized_max_delay_minutes, 2) if self.optimized_max_delay_minutes is not None else None,
             "optimized_conflicts_remaining": self.optimized_conflicts_remaining,
             "optimized_throughput": self.optimized_throughput,
-            "delay_savings_minutes": round(self.delay_savings_minutes, 2),
-            "delay_savings_percent": round(self.delay_savings_percent, 2),
+            "delay_savings_minutes": round(self.delay_savings_minutes, 2) if self.delay_savings_minutes is not None else None,
+            "delay_savings_percent": round(self.delay_savings_percent, 2) if self.delay_savings_percent is not None else None,
             "solver_status": self.solver_status,
+            "solution_available": self.solution_available,
             "solve_time_seconds": round(self.solve_time_seconds, 3),
             "three_tier_timetable": self.three_tier_timetable,
             "published_timetables": self.published_timetables,
@@ -448,10 +453,11 @@ class DecisionSupportAssessment:
     recommendations: List[Recommendation]
     what_if_scenario_id: Optional[str] = None
     baseline_total_delay: float = 0.0
-    optimized_total_delay: float = 0.0
-    net_delay_savings: float = 0.0
-    net_delay_savings_percent: float = 0.0
+    optimized_total_delay: Optional[float] = None
+    net_delay_savings: Optional[float] = None
+    net_delay_savings_percent: Optional[float] = None
     solver_status: str = "OPTIMAL"
+    solution_available: bool = True
     solve_time_seconds: float = 0.0
     deterministic_hash: str = ""
     prioritized_conflicts: List[PrioritizedConflict] = field(default_factory=list)
@@ -467,10 +473,11 @@ class DecisionSupportAssessment:
             "recommendations": [r.to_dict() for r in self.recommendations],
             "what_if_scenario_id": self.what_if_scenario_id,
             "baseline_total_delay": round(self.baseline_total_delay, 2),
-            "optimized_total_delay": round(self.optimized_total_delay, 2),
-            "net_delay_savings": round(self.net_delay_savings, 2),
-            "net_delay_savings_percent": round(self.net_delay_savings_percent, 2),
+            "optimized_total_delay": round(self.optimized_total_delay, 2) if self.optimized_total_delay is not None else None,
+            "net_delay_savings": round(self.net_delay_savings, 2) if self.net_delay_savings is not None else None,
+            "net_delay_savings_percent": round(self.net_delay_savings_percent, 2) if self.net_delay_savings_percent is not None else None,
             "solver_status": self.solver_status,
+            "solution_available": self.solution_available,
             "solve_time_seconds": round(self.solve_time_seconds, 3),
             "deterministic_hash": self.deterministic_hash,
             "prioritized_conflicts": [pc.to_dict() for pc in self.prioritized_conflicts],
@@ -482,18 +489,22 @@ class DecisionSupportAssessment:
         }
 
     def generate_summary_ascii(self) -> str:
+        opt_str = f"{self.optimized_total_delay:.1f}m" if self.optimized_total_delay is not None else "N/A (Infeasible)"
+        sav_str = f"{self.net_delay_savings:.1f}m" if self.net_delay_savings is not None else "N/A"
+        sav_pct_str = f"{self.net_delay_savings_percent:.1f}%" if self.net_delay_savings_percent is not None else "N/A"
+
         lines = [
             "=" * 96,
             "DYNAMIC DECISION-SUPPORT ASSESSMENT REPORT",
             "=" * 96,
             f"Timestamp: {self.situation.timestamp_str:<8} | Severity: {self.situation.severity.value:<10} | Active Trains: {self.situation.active_train_count} | Active Delay: {self.situation.total_active_delay_minutes:.1f}m",
-            f"Conflicts Detected: {len(self.situation.active_conflicts)} | Solver: {self.solver_status} ({self.solve_time_seconds:.3f}s) | Savings: {self.net_delay_savings:.1f}m ({self.net_delay_savings_percent:.1f}%)",
+            f"Conflicts Detected: {len(self.situation.active_conflicts)} | Solver: {self.solver_status} ({self.solve_time_seconds:.3f}s) | Savings: {sav_str} ({sav_pct_str})",
             "-" * 96,
             "CONTROLLER SITUATION SUMMARY:",
             f"  Scenario: {self.controller_summary.get('scenario_name', self.what_if_scenario_id or 'Live Simulation')}",
             f"  Severity Assessment: {self.situation.severity.value} (Peak Delay: {self.situation.peak_delay_minutes:.1f}m on {self.situation.peak_delay_service or 'N/A'})",
             f"  Bottlenecks Identified: {len(self.identified_bottlenecks)} ({', '.join(b.resource_id for b in self.identified_bottlenecks) if self.identified_bottlenecks else 'None'})",
-            f"  Comparative Impact: Feasible Baseline {self.baseline_total_delay:.1f}m -> CP-SAT {self.optimized_total_delay:.1f}m (Savings: {self.net_delay_savings:.1f}m | {self.net_delay_savings_percent:.1f}%)",
+            f"  Comparative Impact: Feasible Baseline {self.baseline_total_delay:.1f}m -> CP-SAT {opt_str} (Savings: {sav_str} | {sav_pct_str})",
             "-" * 96,
             "RANKED OPERATIONAL RECOMMENDATIONS:",
         ]
@@ -516,6 +527,9 @@ class DecisionSupportAssessment:
         return "\n".join(lines)
 
     def generate_markdown(self) -> str:
+        opt_str = f"`{self.optimized_total_delay:.1f} min`" if self.optimized_total_delay is not None else "`N/A (Infeasible)`"
+        sav_str = f"**`{self.net_delay_savings:.1f} min` ({self.net_delay_savings_percent:.1f}%)**" if self.net_delay_savings is not None else "**`N/A`**"
+
         lines = [
             "# Dynamic Decision-Support Assessment",
             "",
@@ -530,7 +544,7 @@ class DecisionSupportAssessment:
             "## 2. Comparative Impact Summary (Feasible Baseline vs CP-SAT)",
             "| Metric | Feasible Baseline (FIFO) | Recommended (CP-SAT) | Net Savings |",
             "|---|:---:|:---:|:---:|",
-            f"| **Total Delay** | `{self.baseline_total_delay:.1f} min` | `{self.optimized_total_delay:.1f} min` | **`{self.net_delay_savings:.1f} min` ({self.net_delay_savings_percent:.1f}%)** |",
+            f"| **Total Delay** | `{self.baseline_total_delay:.1f} min` | {opt_str} | {sav_str} |",
             f"| **Solver Status** | Physical FIFO | `{self.solver_status}` | `{self.solve_time_seconds:.3f}s solve` |",
             "",
         ]

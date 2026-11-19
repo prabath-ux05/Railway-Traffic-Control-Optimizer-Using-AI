@@ -151,6 +151,7 @@ class Scenario:
     junction_capacity_overrides: Dict[str, int] = field(default_factory=dict)
     custom_headway_overrides: Dict[str, float] = field(default_factory=dict)
     injected_conflicts: List[Conflict] = field(default_factory=list)
+    objective_mode: str = "WEIGHTED"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -165,6 +166,7 @@ class Scenario:
             "junction_capacity_overrides": self.junction_capacity_overrides,
             "custom_headway_overrides": self.custom_headway_overrides,
             "injected_conflicts": [c.to_dict() for c in self.injected_conflicts],
+            "objective_mode": self.objective_mode,
         }
 
 
@@ -209,20 +211,25 @@ class ScenarioComparison:
     published_baseline_result: Optional[OptimizationResult] = None
     feasible_baseline_result: Optional[OptimizationResult] = None
     baseline_total_delay: float = 0.0
-    optimized_total_delay: float = 0.0
+    optimized_total_delay: Optional[float] = None
     published_total_delay: float = 0.0
-    delay_savings_minutes: float = 0.0
-    delay_savings_percent: float = 0.0
+    delay_savings_minutes: Optional[float] = None
+    delay_savings_percent: Optional[float] = None
     baseline_max_delay: float = 0.0
-    optimized_max_delay: float = 0.0
+    optimized_max_delay: Optional[float] = None
     throughput: int = 0
     initial_conflicts: int = 0
     remaining_conflicts: int = 0
     resolved_conflicts: int = 0
     on_time_performance_percent: float = 100.0
     optimization_status: str = "OPTIMAL"
-    optimization_cost: float = 0.0
+    optimization_cost: Optional[float] = None
     computation_time_seconds: float = 0.0
+    solution_available: bool = True
+    fifo_weighted_objective: Optional[float] = None
+    optimized_weighted_objective: Optional[float] = None
+    objective_mode: str = "WEIGHTED"
+    scenario: Optional[Any] = None
     detected_conflicts: List[Conflict] = field(default_factory=list)
     network: Optional[Any] = None
 
@@ -870,6 +877,7 @@ class ScenarioRunner:
             junction_constraints=junctions_const,
             time_horizon=horizon,
             weights=self.objective_weights,
+            objective_mode=getattr(scenario, "objective_mode", "WEIGHTED"),
         )
 
         # 3. Detect Conflicts on Scenario State (throat sections & corridor headway)
@@ -950,20 +958,36 @@ class ScenarioRunner:
         feasible_scheduler = FeasibleBaselineScheduler(objective=OptimizationObjective(weights=self.objective_weights))
         feasible_result = feasible_scheduler.schedule(request)
 
-        # 5. Execute CP-SAT Solver
+        # 5. Execute CP-SAT Solver with FIFO hints
+        # request.fifo_timetables = feasible_result.adjusted_timetables
         cpsat_solver = CPSATScheduler(
             time_limit_seconds=self.time_limit_seconds,
             objective=OptimizationObjective(weights=self.objective_weights),
+            objective_mode=getattr(scenario, "objective_mode", "WEIGHTED"),
         )
         opt_result = cpsat_solver.schedule(request)
 
         # 6. Compute Comparative Metrics
+        is_feasible = opt_result.status in ("OPTIMAL", "FEASIBLE")
         pub_delay = passive_result.metrics.total_delay_minutes
         base_delay = feasible_result.metrics.total_delay_minutes
-        opt_delay = opt_result.metrics.total_delay_minutes
-        savings = base_delay - opt_delay
-        savings_pct = (savings / base_delay * 100.0) if base_delay > 0 else 0.0
 
+        if is_feasible:
+            opt_delay = opt_result.metrics.total_delay_minutes
+            savings = base_delay - opt_delay
+            savings_pct = (savings / base_delay * 100.0) if base_delay > 0 else 0.0
+            opt_max_delay = opt_result.metrics.max_delay_minutes
+            opt_cost = opt_result.cost_breakdown.total_cost
+            opt_weighted_obj = opt_result.cost_breakdown.total_cost
+        else:
+            opt_delay = None
+            savings = None
+            savings_pct = None
+            opt_max_delay = None
+            opt_cost = None
+            opt_weighted_obj = None
+
+        fifo_weighted_obj = feasible_result.cost_breakdown.total_cost
         init_conflicts = len(request.active_conflicts)
         rem_conflicts = opt_result.metrics.remaining_conflict_count
         res_conflicts = max(0, init_conflicts - rem_conflicts)
@@ -982,15 +1006,20 @@ class ScenarioRunner:
             delay_savings_minutes=savings,
             delay_savings_percent=savings_pct,
             baseline_max_delay=feasible_result.metrics.max_delay_minutes,
-            optimized_max_delay=opt_result.metrics.max_delay_minutes,
+            optimized_max_delay=opt_max_delay,
             throughput=opt_result.throughput,
             initial_conflicts=init_conflicts,
             remaining_conflicts=rem_conflicts,
             resolved_conflicts=res_conflicts,
             on_time_performance_percent=opt_result.metrics.on_time_performance_percent,
             optimization_status=opt_result.status,
-            optimization_cost=opt_result.cost_breakdown.total_cost,
+            optimization_cost=opt_cost,
             computation_time_seconds=opt_result.computation_time_seconds,
+            solution_available=is_feasible,
+            fifo_weighted_objective=fifo_weighted_obj,
+            optimized_weighted_objective=opt_weighted_obj,
+            objective_mode=getattr(scenario, "objective_mode", "WEIGHTED"),
+            scenario=scenario,
             detected_conflicts=list(request.active_conflicts),
             network=self.network,
         )

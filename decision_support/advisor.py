@@ -713,9 +713,74 @@ class DecisionSupportAdvisor:
         scenario_comparison: Optional[ScenarioComparison] = None,
         operational_context: str = "LIVE_OPERATIONAL",
         track_speed_restrictions: Optional[Dict[str, float]] = None,
+        blocked_sections: Optional[List[str]] = None,
     ) -> List[Recommendation]:
         """Synthesize explainable recommendations from situation analysis and optimization comparisons."""
         recommendations: List[Recommendation] = []
+
+        # Case INFEASIBLE: When solver proves no feasible schedule can be constructed
+        if optimization_result is not None and optimization_result.status not in ("OPTIMAL", "FEASIBLE"):
+            situation.severity = OperationalSeverity.EMERGENCY
+            blocked_list = []
+            if blocked_sections:
+                blocked_list.extend(blocked_sections)
+            if scenario_comparison and hasattr(scenario_comparison, "scenario") and scenario_comparison.scenario:
+                scen = scenario_comparison.scenario
+                if scen.blocked_sections:
+                    for b in scen.blocked_sections:
+                        if b not in blocked_list:
+                            blocked_list.append(b)
+                if scen.track_speed_restrictions:
+                    for sec_id, tt in scen.track_speed_restrictions.items():
+                        if tt >= 9000.0 and sec_id not in blocked_list:
+                            blocked_list.append(sec_id)
+            if not blocked_list and situation.affected_resources:
+                blocked_list = list(situation.affected_resources)
+            blocked_str = ", ".join(sorted(blocked_list)) if blocked_list else "None"
+
+            title = f"No feasible schedule with the blocked resources: {blocked_str}"
+            reason = f"The mathematical optimization solver proved INFEASIBLE: no conflict-free timetable can be constructed with blocked resources ({blocked_str}). Physical track capacity is 0."
+            cat, ev, da, cf, cm, ce, re, st = self._build_explainability(
+                rec_type=RecommendationType.NO_FEASIBLE_SCHEDULE,
+                title=title,
+                reason=reason,
+                affected_services=situation.affected_services,
+                affected_resources=sorted(blocked_list),
+                baseline_delay_minutes=situation.total_active_delay_minutes,
+                expected_delay_minutes=situation.total_active_delay_minutes,
+                expected_delay_savings=0.0,
+                confidence_score=1.0,
+                priority_tier=PriorityTier.CRITICAL,
+                situation=situation,
+                operational_context=operational_context,
+                optimization_result=optimization_result,
+            )
+            re = f"Ranked #1 (CRITICAL) - Emergency Directive: {title}"
+            rec = Recommendation(
+                recommendation_id=self._next_rec_id(),
+                recommendation_type=RecommendationType.NO_FEASIBLE_SCHEDULE,
+                category=cat,
+                title=title,
+                reason=reason,
+                affected_services=situation.affected_services,
+                affected_resources=sorted(blocked_list),
+                baseline_delay_minutes=situation.total_active_delay_minutes,
+                expected_delay_minutes=situation.total_active_delay_minutes,
+                expected_delay_savings=0.0,
+                confidence_score=1.0,
+                priority_tier=PriorityTier.CRITICAL,
+                evidence_basis="Mathematical Solver Feasibility Proof (INFEASIBLE)",
+                is_actionable=True,
+                operational_context=operational_context,
+                supporting_evidence=ev,
+                delay_analysis=da,
+                counterfactual_analysis=cf,
+                confidence_metrics=cm,
+                constraint_explanation=ce,
+                ranking_explanation=re,
+                reasoning_path=st,
+            )
+            return [rec]
 
         # Case A: Normal operation with no active conflicts or significant delay
         if (
@@ -1182,6 +1247,8 @@ class DecisionSupportAdvisor:
             baseline_result=comparison.baseline_result,
         )
 
+        is_sol = comparison.optimization_status in ("OPTIMAL", "FEASIBLE")
+
         # 4. Formulate OperationalSituation
         situation = OperationalSituation(
             timestamp=0.0,
@@ -1195,7 +1262,8 @@ class DecisionSupportAdvisor:
             affected_services=affected_svcs,
             affected_resources=bottleneck_ids,
             severity=(
-                OperationalSeverity.CRITICAL if comparison.baseline_total_delay > 60.0
+                OperationalSeverity.EMERGENCY if not is_sol
+                else OperationalSeverity.CRITICAL if comparison.baseline_total_delay > 60.0
                 else OperationalSeverity.WARNING if comparison.baseline_total_delay > 20.0
                 else OperationalSeverity.ADVISORY if comparison.baseline_total_delay > 5.0
                 else OperationalSeverity.NORMAL
@@ -1216,6 +1284,7 @@ class DecisionSupportAdvisor:
             scenario_comparison=comparison,
             operational_context=ctx,
             track_speed_restrictions=scenario.track_speed_restrictions,
+            blocked_sections=scenario.blocked_sections,
         )
 
         # 6. Build BaselineOptimizationComparison
@@ -1223,7 +1292,7 @@ class DecisionSupportAdvisor:
         if pub_ref_delay is None:
             pub_ref_delay = getattr(comparison, "published_baseline_total_delay", 0.0)
 
-        three_tier_tt = comparison.build_three_tier_timetable(self.network)
+        three_tier_tt = comparison.build_three_tier_timetable(self.network) if is_sol else []
         pub_tt = {
             s_id: [a.to_dict() for a in adjs]
             for s_id, adjs in comparison.published_baseline_result.adjusted_timetables.items()
@@ -1235,7 +1304,7 @@ class DecisionSupportAdvisor:
         optimized_tt = {
             s_id: [a.to_dict() for a in adjs]
             for s_id, adjs in comparison.optimized_result.adjusted_timetables.items()
-        } if comparison.optimized_result else {}
+        } if (comparison.optimized_result and is_sol) else {}
 
         comp_detail = BaselineOptimizationComparison(
             published_reference_delay_minutes=pub_ref_delay,
@@ -1243,19 +1312,20 @@ class DecisionSupportAdvisor:
             feasible_baseline_max_delay_minutes=comparison.baseline_max_delay,
             feasible_baseline_conflicts_remaining=comparison.baseline_unresolved_conflicts if hasattr(comparison, "baseline_unresolved_conflicts") else len(conflicts_list),
             feasible_baseline_throughput=comparison.baseline_throughput if hasattr(comparison, "baseline_throughput") else len(affected_svcs),
-            optimized_delay_minutes=comparison.optimized_total_delay,
-            optimized_max_delay_minutes=comparison.optimized_max_delay,
-            optimized_conflicts_remaining=comparison.optimized_unresolved_conflicts if hasattr(comparison, "optimized_unresolved_conflicts") else 0,
-            optimized_throughput=comparison.optimized_throughput if hasattr(comparison, "optimized_throughput") else len(affected_svcs),
-            delay_savings_minutes=comparison.delay_savings_minutes,
-            delay_savings_percent=comparison.delay_savings_percent,
+            optimized_delay_minutes=comparison.optimized_total_delay if is_sol else None,
+            optimized_max_delay_minutes=comparison.optimized_max_delay if is_sol else None,
+            optimized_conflicts_remaining=comparison.optimized_unresolved_conflicts if (hasattr(comparison, "optimized_unresolved_conflicts") and is_sol) else 0,
+            optimized_throughput=comparison.optimized_throughput if (hasattr(comparison, "optimized_throughput") and is_sol) else len(affected_svcs),
+            delay_savings_minutes=comparison.delay_savings_minutes if is_sol else None,
+            delay_savings_percent=comparison.delay_savings_percent if is_sol else None,
             solver_status=solver_status,
+            solution_available=is_sol,
             solve_time_seconds=solve_time,
             three_tier_timetable=three_tier_tt,
             published_timetables=pub_tt,
             feasible_timetables=feasible_tt,
             optimized_timetables=optimized_tt,
-            corridor_performance=comparison.build_corridor_performance_summary(self.network),
+            corridor_performance=comparison.build_corridor_performance_summary(self.network) if is_sol else [],
         )
 
         # 7. Build Controller Summary
@@ -1267,14 +1337,15 @@ class DecisionSupportAdvisor:
             "critical_conflicts_count": len(prioritized_conflicts),
             "bottlenecks_count": len(bottlenecks_obj),
             "baseline_delay_minutes": round(comparison.baseline_total_delay, 2),
-            "optimized_delay_minutes": round(comparison.optimized_total_delay, 2),
-            "delay_savings_minutes": round(comparison.delay_savings_minutes, 2),
-            "delay_savings_percent": round(comparison.delay_savings_percent, 2),
+            "optimized_delay_minutes": round(comparison.optimized_total_delay, 2) if (is_sol and comparison.optimized_total_delay is not None) else None,
+            "delay_savings_minutes": round(comparison.delay_savings_minutes, 2) if (is_sol and comparison.delay_savings_minutes is not None) else None,
+            "delay_savings_percent": round(comparison.delay_savings_percent, 2) if (is_sol and comparison.delay_savings_percent is not None) else None,
             "solver_status": solver_status,
+            "solution_available": is_sol,
         }
 
         h = hashlib.sha256(
-            f"{scenario.scenario_id}_{comparison.baseline_total_delay}_{comparison.optimized_total_delay}_{len(recommendations)}".encode()
+            f"{scenario.scenario_id}_{comparison.baseline_total_delay}_{comparison.optimized_total_delay}_{len(recommendations)}_{solver_status}".encode()
         ).hexdigest()[:12]
 
         return DecisionSupportAssessment(
@@ -1282,10 +1353,11 @@ class DecisionSupportAdvisor:
             recommendations=recommendations,
             what_if_scenario_id=scenario.scenario_id,
             baseline_total_delay=comparison.baseline_total_delay,
-            optimized_total_delay=comparison.optimized_total_delay,
-            net_delay_savings=comparison.delay_savings_minutes,
-            net_delay_savings_percent=comparison.delay_savings_percent,
+            optimized_total_delay=comparison.optimized_total_delay if is_sol else None,
+            net_delay_savings=comparison.delay_savings_minutes if is_sol else None,
+            net_delay_savings_percent=comparison.delay_savings_percent if is_sol else None,
             solver_status=solver_status,
+            solution_available=is_sol,
             solve_time_seconds=solve_time,
             deterministic_hash=h,
             prioritized_conflicts=prioritized_conflicts,

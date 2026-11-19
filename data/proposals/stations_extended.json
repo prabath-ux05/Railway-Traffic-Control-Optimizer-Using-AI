@@ -1,0 +1,695 @@
+[
+  {
+    "id": "AIP",
+    "name": "Attipattu Pudunagar",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "AKAT",
+    "name": "Akkaraivattam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "AKM",
+    "name": "Arambakkam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "ANNR",
+    "name": "Annanur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "APB",
+    "name": "Anuppampattu",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "ATU",
+    "name": "Attipattu",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "CJE",
+    "name": "Kanchipuram East",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "CMP",
+    "name": "Chromepet",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "CTM",
+    "name": "Kattangulathur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "EGT",
+    "name": "Egattur",
+    "source_url": "https://erail.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "UNVERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "ELR",
+    "name": "Elavur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "GI",
+    "name": "Guduvancheri",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "GWYR",
+    "name": "Greenways Road",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "HC",
+    "name": "Hindu College",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "INDR",
+    "name": "Indira Nagar",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "KAVM",
+    "name": "Kathivakkam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "KBT",
+    "name": "Kadambattur",
+    "source_url": "https://erail.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "UNVERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "KOTR",
+    "name": "Korattur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "KTBR",
+    "name": "Kasturibai Nagar",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "KTPM",
+    "name": "Kotturpuram",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "KVP",
+    "name": "Kavaraippettai",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MAF",
+    "name": "Manavur",
+    "source_url": "https://erail.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "UNVERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MCPK",
+    "name": "Chepauk",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MCPT",
+    "name": "Chintadripet",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MJR",
+    "name": "Minjur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MKAK",
+    "name": "Mundakakanni Amman Koil",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MKK",
+    "name": "Kodambakkam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MMNK",
+    "name": "Maraimalai Nagar Kamarajar",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MN",
+    "name": "Minambakkam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MNDY",
+    "name": "Mandaveli",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MSC",
+    "name": "Chetpet",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MSU",
+    "name": "Mosur",
+    "source_url": "https://erail.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "UNVERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "MTMY",
+    "name": "Thirumayilai",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "NBK",
+    "name": "Nungambakkam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "NEC",
+    "name": "Nemilichery",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "NPKM",
+    "name": "Nandiambakkam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "NTT",
+    "name": "Nathapettai",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PAB",
+    "name": "Pattabiram Junction",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PALR",
+    "name": "Palur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PCW",
+    "name": "Perambur Carriage Works",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PEW",
+    "name": "Perambur Loco Works",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PJS",
+    "name": "Pazhayanur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PLMG",
+    "name": "Puliyamangalam",
+    "source_url": "https://erail.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "UNVERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PON",
+    "name": "Ponneri",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "POT",
+    "name": "Potheri",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PRGD",
+    "name": "Perungudi",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PRGL",
+    "name": "Perungalathur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PTLR",
+    "name": "Putlur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PTMS",
+    "name": "Pattabiram Military Siding",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PV",
+    "name": "Pallavaram",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PVM",
+    "name": "Pattaravakkam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PWU",
+    "name": "Paranur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "PZA",
+    "name": "Palavanthangal",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "RDY",
+    "name": "Reddipalaiyam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "SKL",
+    "name": "Singaperumal Koil",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "SP",
+    "name": "Saidapet",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "SPAM",
+    "name": "Senji Panambakkam",
+    "source_url": "https://erail.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "UNVERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "STM",
+    "name": "St. Thomas Mount",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "SVR",
+    "name": "Sevvapet Road",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "TADA",
+    "name": "Tada",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "TBMS",
+    "name": "Tambaram Sanatorium",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "TI",
+    "name": "Tiruninravur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "TKO",
+    "name": "Takkolam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "TLM",
+    "name": "Tirusulam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "TMLP",
+    "name": "Tirumalpur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "TMVL",
+    "name": "Tirumullaivayil",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "TNPM",
+    "name": "Tondiarpet",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "TO",
+    "name": "Tiruvalangadu",
+    "source_url": "https://erail.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "UNVERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "TRMN",
+    "name": "Taramani",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "TYMR",
+    "name": "Thiruvanmiyur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "UPM",
+    "name": "Urapakkam",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "VAM",
+    "name": "Walajah Road / Villiyanallur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "VDR",
+    "name": "Vandalur",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "VEU",
+    "name": "Veppampattu",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "VOCN",
+    "name": "V.O.C. Nagar",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "WCN",
+    "name": "Wimco Nagar",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  },
+  {
+    "id": "WJ",
+    "name": "Walajabad",
+    "source_url": "https://sr.indianrailways.gov.in",
+    "accessed_on": "2026-11-17",
+    "verification_status": "VERIFIED",
+    "station_type": null,
+    "platform_count": null
+  }
+]

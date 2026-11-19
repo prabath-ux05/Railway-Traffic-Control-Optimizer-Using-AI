@@ -3,7 +3,7 @@ import os
 import glob
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 
 # ---------------------------------------------------------------------------
@@ -85,6 +85,8 @@ class Service:
     priority_class: str
     delay_penalty_weight: float
     simulation_profile: str
+    active: bool = True
+    exclusion_reason: Optional[str] = None
 
 
 @dataclass
@@ -121,6 +123,11 @@ class Network:
 
         # Data quality: non-fatal issues discovered during load/validation
         self.data_integrity_warnings: List[str] = []
+
+        # Provenance: timetable row sources and dataset integrity
+        self.timetable_raw_sources: Dict[str, int] = defaultdict(int)
+        self.timetable_domain_sources: Dict[str, int] = defaultdict(int)
+        self.timetable_data_sources: Dict[str, int] = defaultdict(int)
 
     # ------------------------------------------------------------------
     # Public: infrastructure loader (unchanged behaviour)
@@ -395,6 +402,15 @@ class Network:
 
     def _parse_timetable_entry(self, data: dict):
         d = dict(data)
+        # Capture raw data provenance before stripping
+        if "source" in d and d["source"]:
+            src = str(d["source"])
+            self.timetable_raw_sources[src] += 1
+            domain = src.replace("https://", "").replace("http://", "").split("/")[0]
+            self.timetable_domain_sources[domain] += 1
+        if "data_source" in d and d["data_source"]:
+            self.timetable_data_sources[str(d["data_source"])] += 1
+
         # Normalize field names: timetable.json uses scheduled_arrival/departure
         if "scheduled_arrival" in d and "arrival" not in d:
             d["arrival"] = d.pop("scheduled_arrival")
@@ -576,6 +592,69 @@ class Network:
                         )
             else:
                 pass  # no track data loaded — skip coverage check silently
+
+        # Derive active / excluded status from published timetable evidence
+        services_with_tt = {e.service_id for e in self.timetable}
+        for svc in self.services.values():
+            if svc.id in services_with_tt:
+                svc.active = True
+                svc.exclusion_reason = None
+            else:
+                svc.active = False
+                svc.exclusion_reason = "No published timetable evidence"
+
+    @property
+    def active_services(self) -> Dict[str, Service]:
+        """Services that have at least one published timetable entry."""
+        return {s_id: s for s_id, s in self.services.items() if s.active}
+
+    @property
+    def excluded_services(self) -> Dict[str, Service]:
+        """Services excluded due to lack of published timetable evidence."""
+        return {s_id: s for s_id, s in self.services.items() if not s.active}
+
+    def get_integrity_summary(self) -> Dict[str, int]:
+        """Categorize and count data integrity warnings."""
+        summary = {
+            "station_record_missing_for_route_node": 0,
+            "no_track_section_for_hop": 0,
+            "timetable_references_unknown_station": 0,
+            "junction_references_unknown_route": 0,
+            "other": 0,
+        }
+        for w in self.data_integrity_warnings:
+            if "absent from stations.json and junctions.json" in w:
+                summary["station_record_missing_for_route_node"] += 1
+            elif "no track section covers" in w:
+                summary["no_track_section_for_hop"] += 1
+            elif "absent from stations.json — entry excluded" in w:
+                summary["timetable_references_unknown_station"] += 1
+            elif "references route not in routes.json" in w:
+                summary["junction_references_unknown_route"] += 1
+            else:
+                summary["other"] += 1
+        return summary
+
+    def get_data_provenance(self) -> Dict[str, Any]:
+        """Return dataset provenance including timetable sources, snapshot date, and file hashes."""
+        import hashlib, glob
+        hashes = {}
+        repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        data_dir = os.path.join(repo_root, "data")
+        for json_file in sorted(glob.glob(os.path.join(data_dir, "**", "*.json"), recursive=True)):
+            rel_path = os.path.relpath(json_file, data_dir).replace("\\", "/")
+            if "evaluation" in rel_path or "proposals" in rel_path or "runtime" in rel_path or ".system_generated" in rel_path:
+                continue
+            with open(json_file, "rb") as fp:
+                hashes[rel_path] = hashlib.sha256(fp.read()).hexdigest()
+
+        return {
+            "snapshot_date": "2026-09-26",
+            "timetable_sources": dict(self.timetable_domain_sources),
+            "timetable_raw_sources": dict(self.timetable_raw_sources),
+            "timetable_data_sources": dict(self.timetable_data_sources),
+            "dataset_sha256_hashes": hashes,
+        }
 
     # ------------------------------------------------------------------
     # Reporting
