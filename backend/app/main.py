@@ -44,8 +44,9 @@ from backend.app.runtime_engine import get_live_engine
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Initialize LiveSimulationEngine (startup paused guarantee)
+    # Startup: Initialize LiveSimulationEngine and start background loop (always running, idle when paused)
     engine = get_live_engine()
+    engine.start_background_loop()
     try:
         yield
     finally:
@@ -59,6 +60,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 # Configure CORS restricted to configured frontend origins (defaults to local Next.js frontend)

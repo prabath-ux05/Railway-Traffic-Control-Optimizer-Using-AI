@@ -249,29 +249,6 @@ class LiveSimulationEngine:
             # Emit tick and conflict diff events
             self._emit_tick_and_conflict_events(snap)
             return snap
-            if not self.state_manager.is_playing:
-                return None
-
-            speed = self.state_manager.playback_speed
-            sim_minutes_per_real_second = speed / 60.0
-            delta_sim_minutes = elapsed_real_seconds * sim_minutes_per_real_second
-
-            prev_min = self.state_manager.current_minute
-            next_min = prev_min + delta_sim_minutes
-
-            # Bounds check
-            if next_min >= self.state_manager.end_minute:
-                next_min = self.state_manager.end_minute
-                self.state_manager.is_playing = False
-
-            self.state_manager.current_minute = next_min
-            snap = self.compute_snapshot_at(next_min)
-            self.state_manager.last_snapshot = snap.model_dump() if hasattr(snap, "model_dump") else snap.dict()
-            self.state_manager.save_to_disk()
-
-            # Emit tick and conflict diff events
-            self._emit_tick_and_conflict_events(snap)
-            return snap
 
     # -----------------------------------------------------------------------
     # Pure Function Deterministic State Evaluation

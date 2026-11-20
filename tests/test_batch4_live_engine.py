@@ -396,3 +396,29 @@ def test_api_batch4_endpoints_integration(isolated_runtime_dir):
         res = client.post(f"/api/v1/simulation/proposals/{prop_id}/accept")
         assert res.status_code == 200
         assert res.json()["status"] == "ACCEPTED"
+
+
+def test_live_engine_advances_clock_at_60x_integration(isolated_runtime_dir):
+    """Integration test: lifespan background loop advances current_minute over 3s at 60x speed."""
+    import time
+    with TestClient(app) as client:
+        # Reset engine state to known baseline
+        res = client.post(
+            "/api/v1/simulation/control",
+            json={"is_playing": True, "playback_speed": 60, "seek_minute": 360.0},
+        )
+        assert res.status_code == 200
+        data = res.json()
+        assert data["is_playing"] is True
+        assert data["playback_speed"] == 60
+
+        # Wait 3.2 seconds: at 60x speed, 1 real second = 1 sim minute
+        time.sleep(3.2)
+
+        st = client.get("/api/v1/simulation/state").json()
+        assert st["is_playing"] is True
+        assert st["current_minute"] >= 362.5
+
+        # Clean up: pause simulation
+        client.post("/api/v1/simulation/control", json={"is_playing": False})
+
