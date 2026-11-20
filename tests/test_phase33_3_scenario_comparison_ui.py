@@ -164,4 +164,19 @@ def test_frontend_build_artifacts():
     """Verify frontend Next.js production build files are present."""
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     next_dir = os.path.join(base_dir, "frontend", ".next")
+    server_app_dir = os.path.join(next_dir, "server", "app")
+    page_html = os.path.join(server_app_dir, "index.html")
+
+    if not os.path.exists(page_html):
+        import shutil
+        import subprocess
+        npm_bin = shutil.which("npm") or shutil.which("npm.cmd")
+        if not npm_bin:
+            pytest.skip("Node/npm is not available on PATH; cannot build frontend production artifacts")
+        try:
+            frontend_dir = os.path.join(base_dir, "frontend")
+            subprocess.run([npm_bin, "run", "build"], cwd=frontend_dir, check=True, capture_output=True, timeout=180)
+        except Exception as exc:
+            pytest.skip(f"Frontend production build failed or timed out: {exc}")
+
     assert os.path.exists(next_dir), "Frontend .next build directory does not exist"

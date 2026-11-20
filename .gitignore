@@ -5,3 +5,6 @@ __pycache__/
 runtime/
 .env
 .pytest_cache/
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
