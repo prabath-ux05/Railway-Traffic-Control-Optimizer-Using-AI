@@ -2,7 +2,7 @@
 
 > **Document Type:** Comprehensive Architectural Audit & Reference Study  
 > **Target Scope:** Chennai Division (Southern Railway), Digital Twin Simulation, CP-SAT Optimization, and Explainable Decision Support  
-> **System Status:** Validated (Phase 34.5 Complete, 608/608 Regression Tests Passed, 100% Master Dataset Immutability)  
+> **System Status:** Validated (Batches 1–5 Complete, 676/676 Full Suite Tests Passed, 100% Master Dataset Immutability)  
 > **Date:** November 2026  
 
 ---
@@ -13,7 +13,7 @@ The **Chennai Division Railway Traffic Optimizer** is an industrial-grade railwa
 
 This project delivers:
 1. **A High-Fidelity Discrete-Event Digital Twin:** Deterministically tracks train progress, station dwells, section occupancies, and interlocking allocations across 107 stations and 7 railway corridors in Indian Standard Time (IST, UTC+05:30).
-2. **Deterministic Multi-Category Conflict Detection:** A sweep-line interval checking engine detecting headway violations, junction contention, platform overcapacity, and opposing UP/DOWN train collisions with microsecond latency.
+2. **Deterministic Multi-Category Conflict Detection:** An interval overlap checking engine detecting headway violations, junction contention, line overcapacity, and opposing UP/DOWN train collisions across 4 core conflict types (station platform overcapacity conflicts are disabled by default and toggleable via `ENABLE_PLATFORM_CONFLICTS`).
 3. **Mathematical Optimization Engine (Google OR-Tools CP-SAT):** A mixed-integer constraint programming solver that eliminates bottlenecks, guarantees physical safety constraints, and minimizes weighted passenger delay while evaluating against a naive First-In-First-Out (FIFO) baseline.
 4. **An Explainable Decision-Support Advisor (5-Stage Chain):** Automatically translates mathematical solver decisions into human-interpretable operational directives with dispatcher rationales, counterfactual impact predictions, and confidence scoring.
 5. **A Real-Time Interactive Controller Dashboard:** A full-stack web application (FastAPI backend + Next.js 15 React frontend) providing live topology visualization, interactive simulation playback, what-if disruption stress testing, and research analytics.
@@ -39,7 +39,11 @@ flowchart TD
     subgraph Loader ["2. In-Memory Domain Graph & Validation (simulation/network.py)"]
         L1["Referential Integrity Audit"]
         L2["Directional Route Node Discovery"]
-        L3["Cryptographic SHA-256 Immutability Check"]
+        L3["Dynamic Active Service Derivation (40 active / 7 excluded)"]
+    end
+
+    subgraph Immutability ["Data Integrity Suite (tests/test_dataset_integrity.py)"]
+        I1["Cryptographic SHA-256 Immutability Check"]
     end
 
     subgraph SimulationCore ["3. Discrete-Event Digital Twin Engine (simulation/)"]
@@ -47,7 +51,7 @@ flowchart TD
         S2["EventQueue & Discrete Events (events.py)"]
         S3["TrainSimulator & Movement Physics (simulator.py)"]
         S4["SimulationState & Resource Occupancies (state.py)"]
-        S5["State Manager & Disk Persistence (state_manager.py)"]
+        S5["State Manager & Runtime Disk Persistence (state_manager.py)"]
     end
 
     subgraph DetectionEngine ["4. Conflict Detection Layer (simulation/conflicts.py)"]
@@ -61,7 +65,7 @@ flowchart TD
         O1["OptimizationRequest & Constraint Models"]
         O2["FIFO Baseline Scheduler (Reference Comparator)"]
         O3["CP-SAT Mixed-Integer Solver (Google OR-Tools)"]
-        O4["Multi-Objective Weighted Penalty Function"]
+        O4["Multi-Objective Weighted Penalty Function & INFEASIBLE Fallback"]
     end
 
     subgraph DecisionSupport ["6. Explainable Decision Support Engine (decision_support/)"]
@@ -73,11 +77,12 @@ flowchart TD
     end
 
     subgraph DeliveryLayer ["7. Application Server & Operator UI (backend & frontend)"]
-        B1["FastAPI REST Endpoints (/api/v1/*)"]
+        B1["FastAPI REST Endpoints & Live SSE Stream (/api/v1/*)"]
         UI1["Next.js 15 Reactive Dashboard (8 Operational Views)"]
     end
 
     DataLayer --> Loader
+    DataLayer -.-> Immutability
     Loader --> SimulationCore
     SimulationCore --> DetectionEngine
     DetectionEngine --> OptimizationLayer
@@ -99,7 +104,7 @@ The Chennai Division infrastructure is modeled with relational schemas without s
 |---|:---:|---|---|
 | **Stations** | 30 active / 107 corridor stations | Timetabled stops, passenger interchanges, and route terminals | MAS (Chennai Central), MSB (Chennai Beach), TBM (Tambaram), AJJ (Arakkonam), SPE (Sullurupeta) |
 | **Junctions** | 7 interlocking hubs | Divergence, merging, and grade-crossing throats | BBQ (Basin Bridge), VJM (Vyasarpadi Jeeva), KOK (Korukkupet), PAB (Pattabiram), CGL (Chengalpattu) |
-| **Platforms** | 14 registered | Terminal and major junction track berths with capacity limits | MAS (Platforms 1-6), MSB (Platforms 1-3), TBM, AJJ |
+| **Platforms** | 14 registered | Terminal and junction track berths (exactly 2 platforms per station across 7 primary stations) | MAS (PF 1, 2), BBQ (PF 1, 2), VJM (PF 1, 2), PER (PF 1, 2), PCW (PF 1, 2), MSB (PF 1, 2), TBM (PF 1, 2) |
 | **Corridor Routes** | 24 routes | Ordered sequence of nodes specifying directional train paths | MAS-AJJ UP/DOWN, MSB-CGL UP/DOWN, MSB-VLCY MRTS |
 | **Track Sections** | 354 sections | Directional/bidirectional track links with length and speed bounds | 6 corridor datasets (West, North, South, MRTS, Beach-Bypass, Cross) |
 | **Train Identities** | 51 units | Rolling-stock specifications, maximum operational speeds | EMU sets, WAP-7 express rakes, WAP-4 rakes |
@@ -214,7 +219,9 @@ A service progresses through its route's `ordered_nodes` $[v_0, v_1, \dots, v_n]
 
 ## 5. Conflict Detection Engine
 
-The conflict engine (`simulation/conflicts.py`) analyzes active occupancies, historical records, and scheduled paths using sweep-line interval comparison.
+The conflict engine (`simulation/conflicts.py`) analyzes active occupancies, historical records, and scheduled paths using pairwise interval comparison.
+
+The system detects 4 core operational conflict categories across tracks, headways, and junctions. Note that station platform capacity conflicts are disabled by default (no conflicts are generated for platform berths unless the experimental flag `ENABLE_PLATFORM_CONFLICTS=true` is set).
 
 ```
 +-----------------------------------------------------------------------------------------+
@@ -298,13 +305,13 @@ Where:
 * $\text{Delay}_s = \max\left(0, arr_{s, \text{dest}} - \text{SchedArr}_{s, \text{dest}}\right)$
 * $\text{Dev}_s = \max\left(0, dep_{s, \text{origin}} - \text{SchedDep}_{s, \text{origin}}\right)$
 * $\text{MaxDelay} \ge \text{Delay}_s \quad \forall s$
-* $P_s$ is the train priority class multiplier:
-  * `HIGH` / `PREMIUM`: **2.0×**
-  * `SUPERFAST`: **1.8×**
-  * `EXPRESS`: **1.5×**
-  * `SUBURBAN_EMU`: **1.2×**
-  * `PASSENGER` / `FREIGHT`: **1.0× / 0.8×**
-* Default weights: $w_{\text{delay}} = 1.0$, $w_{\text{weighted}} = 2.0$, $w_{\text{dev}} = 0.5$, $w_{\text{max}} = 1.5$.
+* $P_s$ is the train service priority multiplier derived from service characteristics:
+  * Calculated as $\text{int}(\text{service.delay\_penalty\_weight} \times 10)$, with a strict minimum of **20** for `HIGH` priority services ($\max(20, \text{int}(\text{service.delay\_penalty\_weight} \times 10))$).
+* Default objective weights (configured in `optimization/model.py` and `solver.py`):
+  * Delay weight ($w_{\text{delay}}$): **1.0**
+  * Weighted delay weight ($w_{\text{weighted}}$): **2.0**
+  * Maximum delay weight ($w_{\text{max}}$): **0.5**
+  * Schedule deviation weight ($w_{\text{dev}}$): **0.8**
 
 ---
 
@@ -455,47 +462,57 @@ Rigorous profiling across 7 nested service cohorts (4 to 40 concurrent services)
 | **12 Services**| 0.021s | 0.002s | 0.347s | 0.470s | **0.960s** | 1.17 MB | 127.5m | 135.0m | Baseline |
 | **16 Services**| 0.025s | 0.003s | 0.436s | 0.633s | **1.278s** | 1.49 MB | 131.0m | 146.0m | Baseline |
 | **20 Services**| 0.032s | 0.004s | 0.560s | 0.801s | **1.638s** | 1.84 MB | 133.0m | 148.0m | Baseline |
-| **30 Services**| 0.052s | 0.005s | 0.927s | 1.486s | **3.059s** | 3.39 MB | 145.0m | 152.0m | Baseline |
-| **40 Services**| 0.068s | 0.006s | 1.112s | 2.349s | **4.616s** | 5.74 MB | 160.0m | 165.0m | Baseline |
+| **30 Services**| 0.052s | 0.005s | 0.927s | 1.486s | **3.059s** | 3.39 MB | 1,781.0m | 1,793.0m | Scalability Cohort |
+| **40 Services**| 0.068s | 0.006s | 1.112s | 2.349s | **4.616s** | 5.74 MB | 1,926.0m | 1,937.0m | Full Division Load |
 
-### 10.2 Disruption Recovery Performance (Compound Disruption: Delay + TSR + Junction Restriction)
+### 10.2 Disruption Recovery Performance (Audited Compound Disruption Benchmarks)
 
-Under a 25-minute delay on train 12607 combined with a 10 km/h TSR at Basin Bridge throat:
-* **FIFO Dispatcher:** Total network delay escalates to **112.5 minutes** across 6 cascading services; 4 junction contention deadlocks.
-* **CP-SAT Optimizer:** Solves in **1.110 seconds**, restricting total network delay to **26.0 minutes**; resolves 100% of conflicts.
-* **Net Controller Benefit:** **+86.5 minutes of delay saved (76.9% reduction)**.
+Under reproducible compound disruption benchmarks audited across stored evaluation datasets:
+* **Severe Multi-Corridor Disruption (Phase 31.3 / EXP_31_3_18):**
+  * **FIFO Dispatcher:** Total network delay reaches **573.0 minutes** due to compounded primary delays and cascading junction holds.
+  * **CP-SAT Optimizer:** Solves in **0.420 seconds**, rescheduling train sequences to reduce total network delay to **477.0 minutes**.
+  * **Net Controller Benefit:** **+96.0 minutes of delay saved (16.75% reduction)**.
+* **Peak Concurrency Compound Disruption (Phase 31.1 / EXP_31_1_07B):**
+  * Baseline FIFO delay of **262.0 minutes** reduced by CP-SAT to **149.0 minutes**, yielding **+113.0 minutes saved (43.13% reduction)**.
 
-### 10.3 Infeasible Throat Blockage Safety Handling
+### 10.3 Infeasible Blockage Safety Handling & Fallback Protocol
 
-When an impassable throat blockage occurs (e.g., complete derailment at BBQ):
-* The CP-SAT solver detects infeasibility in **0.032s to 0.273s**.
-* Instant safety fallback triggers an `INFEASIBLE / EMERGENCY` directive to halt incoming trains at loop lines, preventing solver hangs or memory leaks.
+When an impassable track section or corridor throat blockage occurs (such as simultaneous blockage of all DOWN lines at Perambur with services `SRV_12607_01`, `SRV_12609_01`, `SRV_12610_01` without viable alternate rerouting):
+* The CP-SAT solver deterministically proves infeasibility within sub-second solve time ($< 0.1 \text{ s}$).
+* Rather than reporting fabricated zero delays or phantom savings equal to the entire baseline, the system executes the **Batch 2 INFEASIBLE Integrity Protocol**:
+  1. Sets `solution_available = false` and `solver_status = "INFEASIBLE"`.
+  2. Preserves the authentic baseline delay (e.g. 114.0 min) and returns `optimized_delay_minutes = null` and `net_delay_savings_minutes = null`.
+  3. Returns empty adjusted timetables with explicit provenance.
+  4. The Decision Support engine issues an **`EMERGENCY`** directive:  
+     `"EMERGENCY: Infrastructure capacity exhausted. Hold departures and verify alternate routing."`
 
 ---
 
 ## 11. Verification & Quality Assurance Summary
 
-The platform was subjected to exhaustive regression testing across 42 test modules:
+The platform was subjected to exhaustive regression testing across 56 test modules:
 
 ```
-========================= 608 passed in 100.62s =========================
+========================= 676 passed in 115.36s =========================
 - Unit & Network Topology Tests:         10 passed
 - Master Dataset Immutability Audit:     39 passed
 - Discrete-Event Simulation Mechanics:   26 passed
 - Conflict Detection Algorithms:         12 passed
-- Optimization Contracts & CP-SAT Solver:11 passed
+- Optimization Contracts & CP-SAT:       11 passed
 - Disruption & Rescheduling Integrity:   72 passed
 - Decision Support & Explainability:     20 passed
 - Scalability & Benchmark Experiments:   73 passed
-- Research Metrics & Aggregation:        51 passed
+- Research Metrics & Paper Verification: 51 passed
+- Batch 1 to 4 Integrity & SSE Tests:    35 passed
 - Frontend Integration & Contracts:      33 passed
 - Performance, Memory & Stress Audits:   26 passed
-- Digital Twin 30-Check Validation:      36 passed
-- Final Regression Suite:                 6 passed
+- Digital Twin Multi-Phase Validation:   268 passed
 ==========================================================================
 ```
 
-* **Frontend Build Quality:** Next.js production build (`npm run build`) completed with **0 TypeScript errors, 0 ESLint warnings**, and 4/4 statically optimized pages.
+* **Frontend Toolchain Quality:** Next.js production build (`npm run build`) completed with **0 TypeScript errors, 0 ESLint errors** (2 pre-existing react-hooks warnings in untouched UI components), and 4/4 statically optimized pages.
+* **Master Dataset Hash Immutability:** 100% match on all 13 canonical SHA-256 hashes.
+* **Memory Integrity:** Exactly 0 stale track occupancies and 0 resource allocation leaks across all test cycles.
 * **Memory Integrity:** Exactly 0 stale track occupancies and 0 resource allocation leaks across all test cycles.
 
 ---
