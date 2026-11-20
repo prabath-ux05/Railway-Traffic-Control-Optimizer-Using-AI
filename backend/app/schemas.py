@@ -279,6 +279,10 @@ class OptimizeRequest(BaseModel):
         description="Optimization objective mode: WEIGHTED (default, minimizing weighted penalty) or TOTAL_DELAY (minimizing plain sum of delays).",
         json_schema_extra={"example": "WEIGHTED"},
     )
+    apply_midnight_wrap: Optional[bool] = Field(
+        False,
+        description="Opt-in flag (default False). When True, applies +1440 minute day wrap to services crossing midnight.",
+    )
 
     @field_validator("departure_delays")
     @classmethod
@@ -362,6 +366,10 @@ class WhatIfRequest(BaseModel):
         "WEIGHTED",
         description="Optimization objective mode: WEIGHTED (default, minimizing weighted penalty) or TOTAL_DELAY (minimizing plain sum of delays).",
         json_schema_extra={"example": "WEIGHTED"},
+    )
+    apply_midnight_wrap: Optional[bool] = Field(
+        False,
+        description="Opt-in flag (default False). When True, applies +1440 minute day wrap to services crossing midnight.",
     )
 
     @field_validator("departure_delays")

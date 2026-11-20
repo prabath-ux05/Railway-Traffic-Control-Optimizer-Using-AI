@@ -777,6 +777,7 @@ class ScenarioRunner:
         self,
         scenario: Scenario,
         time_horizon: Optional[Tuple[float, float]] = None,
+        apply_midnight_wrap: Optional[bool] = None,
     ) -> ScenarioComparison:
         """Execute a What-If scenario and compute comparative metrics."""
         # 1. Select target services
@@ -862,6 +863,8 @@ class ScenarioRunner:
             if d_delay > 0:
                 current_delays[s_id] = d_delay
 
+        apply_wrap = apply_midnight_wrap if apply_midnight_wrap is not None else getattr(scenario, "apply_midnight_wrap", False)
+
         # Build OptimizationRequest
         request = OptimizationRequest(
             services=target_services,
@@ -878,6 +881,7 @@ class ScenarioRunner:
             time_horizon=horizon,
             weights=self.objective_weights,
             objective_mode=getattr(scenario, "objective_mode", "WEIGHTED"),
+            apply_midnight_wrap=apply_wrap,
         )
 
         # 3. Detect Conflicts on Scenario State (throat sections & corridor headway)

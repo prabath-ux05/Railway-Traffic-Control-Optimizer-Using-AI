@@ -691,7 +691,11 @@ def run_optimization(req: OptimizeRequest) -> OptimizeResponse:
         objective_mode=req.objective_mode or "WEIGHTED",
     )
 
-    comparison = runner.run_scenario(scenario=scenario, time_horizon=req.time_horizon)
+    comparison = runner.run_scenario(
+        scenario=scenario,
+        time_horizon=req.time_horizon,
+        apply_midnight_wrap=req.apply_midnight_wrap,
+    )
     opt_result = comparison.optimized_result
     is_sol = opt_result.status in ("OPTIMAL", "FEASIBLE")
 
@@ -868,6 +872,7 @@ def run_what_if(req: WhatIfRequest) -> WhatIfResponse:
         service_ids=selected_svcs,
         time_horizon=req.time_horizon,
         objective_mode=req.objective_mode or "WEIGHTED",
+        apply_midnight_wrap=req.apply_midnight_wrap or False,
     )
 
     is_sol = result.solver_status in ("OPTIMAL", "FEASIBLE")

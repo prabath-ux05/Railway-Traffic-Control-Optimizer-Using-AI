@@ -129,16 +129,39 @@ class CPSATScheduler(BaseScheduler):
                 model.Add(dep_var >= arr_var)
 
         # 4. Enforce timetable departure & initial origin constraints
+        day_offsets: Dict[Tuple[str, int], float] = {}
         for s_id, service in request.services.items():
             if s_id not in service_nodes:
                 continue
             nodes = service_nodes[s_id]
 
+            # Compute day_offsets if opt-in midnight wrap is requested
+            if getattr(request, "apply_midnight_wrap", False):
+                last_m = -1.0
+                curr_offset = 0.0
+                for i, node in enumerate(nodes):
+                    tt_e = tt_lookup.get((s_id, node))
+                    if tt_e:
+                        if tt_e.arrival:
+                            arr_raw = time_to_minutes(tt_e.arrival) + curr_offset
+                            if arr_raw < last_m and (arr_raw + 1440.0) >= last_m:
+                                curr_offset += 1440.0
+                                arr_raw += 1440.0
+                            last_m = max(last_m, arr_raw)
+                        if tt_e.departure:
+                            dep_raw = time_to_minutes(tt_e.departure) + curr_offset
+                            if dep_raw < last_m and (dep_raw + 1440.0) >= last_m:
+                                curr_offset += 1440.0
+                                dep_raw += 1440.0
+                            last_m = max(last_m, dep_raw)
+                    day_offsets[(s_id, i)] = curr_offset
+
             # Origin departure
             origin_node = nodes[0]
             tt_origin = tt_lookup.get((s_id, origin_node))
+            offset_0 = day_offsets.get((s_id, 0), 0.0)
             if tt_origin and tt_origin.departure:
-                sched_dep_min = int(round(time_to_minutes(tt_origin.departure)))
+                sched_dep_min = int(round(time_to_minutes(tt_origin.departure) + offset_0))
                 # Cannot depart origin earlier than published schedule
                 model.Add(dep_vars[(s_id, 0)] >= sched_dep_min)
                 model.Add(arr_vars[(s_id, 0)] == dep_vars[(s_id, 0)])
@@ -149,13 +172,14 @@ class CPSATScheduler(BaseScheduler):
             # Intermediate and destination stops in timetable
             for i, node in enumerate(nodes):
                 tt_entry = tt_lookup.get((s_id, node))
+                offset_i = day_offsets.get((s_id, i), 0.0)
                 if tt_entry:
                     if tt_entry.arrival and i > 0:
-                        sched_arr_min = int(round(time_to_minutes(tt_entry.arrival)))
+                        sched_arr_min = int(round(time_to_minutes(tt_entry.arrival) + offset_i))
                         # Train arrives around or after scheduled arrival
                         # We track delay = max(0, arr - sched_arr)
                     if tt_entry.departure and i < len(nodes) - 1:
-                        sched_dep_min = int(round(time_to_minutes(tt_entry.departure)))
+                        sched_dep_min = int(round(time_to_minutes(tt_entry.departure) + offset_i))
                         # Cannot depart commercial passenger stop early
                         model.Add(dep_vars[(s_id, i)] >= sched_dep_min)
 
@@ -305,11 +329,13 @@ class CPSATScheduler(BaseScheduler):
             # Destination arrival delay
             dest_node = nodes[k_final]
             tt_dest = tt_lookup.get((s_id, dest_node))
+            offset_dest = day_offsets.get((s_id, k_final), 0.0)
             if tt_dest and tt_dest.arrival:
-                sched_dest_min = int(round(time_to_minutes(tt_dest.arrival)))
+                sched_dest_min = int(round(time_to_minutes(tt_dest.arrival) + offset_dest))
             else:
                 tt_origin = tt_lookup.get((s_id, nodes[0]))
-                sched_origin = int(round(time_to_minutes(tt_origin.departure))) if (tt_origin and tt_origin.departure) else 0
+                offset_0 = day_offsets.get((s_id, 0), 0.0)
+                sched_origin = int(round(time_to_minutes(tt_origin.departure) + offset_0)) if (tt_origin and tt_origin.departure) else 0
                 sched_dest_min = sched_origin + (len(nodes) * 3)
 
             dest_arr = arr_vars[(s_id, k_final)]
@@ -413,8 +439,9 @@ class CPSATScheduler(BaseScheduler):
                 opt_dep = float(solver.Value(dep_vars[(s_id, i)]))
 
                 tt_entry = tt_lookup.get((s_id, node))
-                orig_arr = time_to_minutes(tt_entry.arrival) if (tt_entry and tt_entry.arrival) else None
-                orig_dep = time_to_minutes(tt_entry.departure) if (tt_entry and tt_entry.departure) else None
+                offset_i = day_offsets.get((s_id, i), 0.0)
+                orig_arr = (time_to_minutes(tt_entry.arrival) + offset_i) if (tt_entry and tt_entry.arrival) else None
+                orig_dep = (time_to_minutes(tt_entry.departure) + offset_i) if (tt_entry and tt_entry.departure) else None
 
                 seq = tt_entry.stop_sequence if tt_entry else (i + 1)
                 pf_id = None

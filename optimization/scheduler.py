@@ -174,10 +174,28 @@ class BaselineScheduler(BaseScheduler):
             entries.sort(key=lambda e: e.stop_sequence)
             adj_list: List[ServiceTimetableAdjustment] = []
 
+            last_t = -1.0
+            day_offset = 0.0
             for entry in entries:
                 total_stops += 1
                 arr_min = time_to_minutes(entry.arrival) if entry.arrival is not None else None
                 dep_min = time_to_minutes(entry.departure) if entry.departure is not None else None
+
+                if getattr(request, "apply_midnight_wrap", False):
+                    if arr_min is not None:
+                        calc_a = arr_min + day_offset
+                        if calc_a < last_t and (calc_a + 1440.0) >= last_t:
+                            day_offset += 1440.0
+                            calc_a += 1440.0
+                        last_t = max(last_t, calc_a)
+                        arr_min = calc_a
+                    if dep_min is not None:
+                        calc_d = dep_min + day_offset
+                        if calc_d < last_t and (calc_d + 1440.0) >= last_t:
+                            day_offset += 1440.0
+                            calc_d += 1440.0
+                        last_t = max(last_t, calc_d)
+                        dep_min = calc_d
 
                 current_delay = request.current_delays.get(s_id, 0.0)
                 adj_arr = (arr_min + current_delay) if arr_min is not None else None
@@ -455,6 +473,11 @@ class FeasibleBaselineScheduler(BaseScheduler):
                     if tt_v and tt_v.arrival and tt_v.departure:
                         sched_arr = time_to_minutes(tt_v.arrival)
                         sched_dep = time_to_minutes(tt_v.departure)
+                        if getattr(request, "apply_midnight_wrap", False):
+                            if sched_arr < curr_ready_time and (sched_arr + 1440.0) >= curr_ready_time:
+                                sched_arr += 1440.0
+                            if sched_dep < sched_arr and (sched_dep + 1440.0) >= sched_arr:
+                                sched_dep += 1440.0
                         sched_dwell = max(1.0, sched_dep - sched_arr)
                     elif tt_v and tt_v.is_commercial_stop:
                         sched_dwell = 1.0
@@ -492,10 +515,28 @@ class FeasibleBaselineScheduler(BaseScheduler):
             entries.sort(key=lambda e: e.stop_sequence)
             adj_list: List[ServiceTimetableAdjustment] = []
 
+            last_t = -1.0
+            day_offset = 0.0
             for entry in entries:
                 total_stops += 1
                 orig_arr_min = time_to_minutes(entry.arrival) if entry.arrival else None
                 orig_dep_min = time_to_minutes(entry.departure) if entry.departure else None
+
+                if getattr(request, "apply_midnight_wrap", False):
+                    if orig_arr_min is not None:
+                        calc_a = orig_arr_min + day_offset
+                        if calc_a < last_t and (calc_a + 1440.0) >= last_t:
+                            day_offset += 1440.0
+                            calc_a += 1440.0
+                        last_t = max(last_t, calc_a)
+                        orig_arr_min = calc_a
+                    if orig_dep_min is not None:
+                        calc_d = orig_dep_min + day_offset
+                        if calc_d < last_t and (calc_d + 1440.0) >= last_t:
+                            day_offset += 1440.0
+                            calc_d += 1440.0
+                        last_t = max(last_t, calc_d)
+                        orig_dep_min = calc_d
 
                 node_idx = None
                 for idx, n in enumerate(nodes):

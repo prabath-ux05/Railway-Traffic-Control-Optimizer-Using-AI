@@ -76,4 +76,7 @@ This log documents all additive changes to API endpoints and runtime contracts.
 |---|---|:---:|:---:|:---:|---|
 | `/api/v1/network` | `data_provenance.snapshot_date` | Response | `Optional[str]` | `None` (`null`) | Replaced hard-coded literal `"2026-09-26"` with `null` (or configurable via `DATASET_SNAPSHOT_DATE` env var) per Rule 2 since master datasets do not specify snapshot date. |
 | `/api/v1/network` | `data_provenance.snapshot_date_provenance` | Response | `str` | `"Unspecified in source dataset; null per data provenance rules"` | Explanatory provenance note describing the source of `snapshot_date`. |
+| `/api/v1/optimize`, `/api/v1/what-if` | `apply_midnight_wrap` | Request | `Optional[bool]` | `False` | Opt-in flag (default False). When True, applies +1440 minute day wrap to services crossing midnight (e.g., SRV_16159_01). Corrected evaluation results stored separately in `data/evaluation/v2/`. |
+| `OptimizationRequest`, `ScenarioRunner`, `ResearchExperimentRunner` | `apply_midnight_wrap` | Config / Parameter | `bool` | `False` | Internal model/runner parameter enabling day-wrap calculations when opt-in flag is True. Default False preserves frozen paper numbers. |
+
 

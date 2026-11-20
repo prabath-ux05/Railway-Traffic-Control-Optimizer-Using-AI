@@ -337,7 +337,9 @@ class ResearchExperimentRunner:
         network: Optional[Network] = None,
         time_limit_seconds: float = 15.0,
         objective_weights: Optional[ObjectiveWeights] = None,
+        apply_midnight_wrap: bool = False,
     ):
+        self.apply_midnight_wrap = apply_midnight_wrap
         self.scenario_runner = ScenarioRunner(
             network=network,
             time_limit_seconds=time_limit_seconds,
@@ -351,6 +353,7 @@ class ResearchExperimentRunner:
         comparison = self.scenario_runner.run_scenario(
             scenario=config.scenario,
             time_horizon=config.time_horizon,
+            apply_midnight_wrap=self.apply_midnight_wrap,
         )
 
         base_res = comparison.feasible_baseline_result or comparison.baseline_result

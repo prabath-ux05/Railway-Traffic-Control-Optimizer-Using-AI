@@ -211,6 +211,7 @@ class PipelineOrchestrator:
         departure_delays: Optional[Dict[str, float]] = None,
         time_horizon: Optional[float] = None,
         objective_mode: str = "WEIGHTED",
+        apply_midnight_wrap: bool = False,
     ) -> PipelineExecutionResult:
         """Execute complete 6-stage end-to-end optimization and decision-support pipeline."""
         t_start = time.perf_counter()
@@ -258,6 +259,7 @@ class PipelineOrchestrator:
         comparison = self.scenario_runner.run_scenario(
             scenario=scenario,
             time_horizon=time_horizon,
+            apply_midnight_wrap=apply_midnight_wrap,
         )
 
         # Step 4: Evaluate Decision Support Assessment
