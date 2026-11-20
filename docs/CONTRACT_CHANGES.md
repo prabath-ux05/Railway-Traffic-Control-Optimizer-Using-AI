@@ -69,3 +69,11 @@ This log documents all additive changes to API endpoints and runtime contracts.
 | `/api/v1/simulation/proposals/{id}/accept` | N/A | Request (POST) | Path Param | N/A | Human-in-the-loop action: marks proposal `ACCEPTED` and applies optimized timetable adjustments to `runtime/runtime_simulation_applied_plan.json`. |
 | `/api/v1/simulation/proposals/{id}/reject` | N/A | Request (POST) | Path Param | N/A | Human-in-the-loop action: marks proposal `REJECTED` and preserves current plan. |
 | `LiveSimulationEngine` | Startup State | Lifecycle | `bool` | `is_playing=False` | Authoritative startup guarantee: server always starts paused regardless of persisted state file value. Background loop never advances time until explicitly started. |
+
+## Batch 6: Integrity & Provenance Alignment
+
+| Endpoint / Component | Field / Parameter | Direction | Type | Default | Reason / Description |
+|---|---|:---:|:---:|:---:|---|
+| `/api/v1/network` | `data_provenance.snapshot_date` | Response | `Optional[str]` | `None` (`null`) | Replaced hard-coded literal `"2026-09-26"` with `null` (or configurable via `DATASET_SNAPSHOT_DATE` env var) per Rule 2 since master datasets do not specify snapshot date. |
+| `/api/v1/network` | `data_provenance.snapshot_date_provenance` | Response | `str` | `"Unspecified in source dataset; null per data provenance rules"` | Explanatory provenance note describing the source of `snapshot_date`. |
+

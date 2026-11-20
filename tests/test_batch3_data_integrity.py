@@ -191,7 +191,9 @@ def test_data_provenance_in_network(client):
     prov = data.get("data_provenance")
     assert prov is not None
 
-    assert prov["snapshot_date"] == "2026-09-26"
+    # snapshot_date defaults to None (null) when not configured via DATASET_SNAPSHOT_DATE per Rule 2
+    assert prov["snapshot_date"] is None
+    assert "Unspecified in source dataset" in prov.get("snapshot_date_provenance", "")
 
     # Expected: erail.in 103, railyatri.in 22, confirmtkt.com 2
     sources = prov["timetable_sources"]

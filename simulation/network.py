@@ -648,8 +648,14 @@ class Network:
             with open(json_file, "rb") as fp:
                 hashes[rel_path] = hashlib.sha256(fp.read()).hexdigest()
 
+        snapshot_date = os.environ.get("DATASET_SNAPSHOT_DATE")
         return {
-            "snapshot_date": "2026-09-26",
+            "snapshot_date": snapshot_date,
+            "snapshot_date_provenance": (
+                "Configured via DATASET_SNAPSHOT_DATE"
+                if snapshot_date is not None
+                else "Unspecified in source dataset; null per data provenance rules"
+            ),
             "timetable_sources": dict(self.timetable_domain_sources),
             "timetable_raw_sources": dict(self.timetable_raw_sources),
             "timetable_data_sources": dict(self.timetable_data_sources),
