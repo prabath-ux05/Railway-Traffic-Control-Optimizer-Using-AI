@@ -104,10 +104,10 @@ The Chennai Division infrastructure is modeled with relational schemas without s
 |---|:---:|---|---|
 | **Stations** | 30 active / 107 corridor stations | Timetabled stops, passenger interchanges, and route terminals | MAS (Chennai Central), MSB (Chennai Beach), TBM (Tambaram), AJJ (Arakkonam), SPE (Sullurupeta) |
 | **Junctions** | 7 interlocking hubs | Divergence, merging, and grade-crossing throats | BBQ (Basin Bridge), VJM (Vyasarpadi Jeeva), KOK (Korukkupet), PAB (Pattabiram), CGL (Chengalpattu) |
-| **Platforms** | 14 registered | Terminal and junction track berths (exactly 2 platforms per station across 7 primary stations) | MAS (PF 1, 2), BBQ (PF 1, 2), VJM (PF 1, 2), PER (PF 1, 2), PCW (PF 1, 2), MSB (PF 1, 2), TBM (PF 1, 2) |
+| **Platforms** | 14 registered | Terminal and junction track berths (exactly 2 platforms per station across 7 primary stations) | AJJ (PF 1, 2), BBQ (PF 1, 2), CGL (PF 1, 2), MAS (PF 1, 2), MS (PF 1, 2), MSB (PF 1, 2), TBM (PF 1, 2) |
 | **Corridor Routes** | 24 routes | Ordered sequence of nodes specifying directional train paths | MAS-AJJ UP/DOWN, MSB-CGL UP/DOWN, MSB-VLCY MRTS |
 | **Track Sections** | 354 sections | Directional/bidirectional track links with length and speed bounds | 6 corridor datasets (West, North, South, MRTS, Beach-Bypass, Cross) |
-| **Train Identities** | 51 units | Rolling-stock specifications, maximum operational speeds | EMU sets, WAP-7 express rakes, WAP-4 rakes |
+| **Train Identities** | 51 units | Rolling-stock specifications, maximum operational speeds | EMU rakes, Express passenger rakes, Freight consists |
 | **Train Services** | 47 total / 40 active | Operational train trips scheduled across corridors | SRV_12607_01 (Lalbagh Exp), SRV_12609_01, EMU 43411 |
 | **Timetable Entries**| 127 stop records | Published commercial arrival, departure, and dwell sequences | Scheduled arrival/departure times, stop sequence indices |
 
@@ -135,10 +135,10 @@ The system partitions the division into 7 operational corridors:
     [Cross Line: AJJ ◄── Kanchipuram ◄── CGL]
 ```
 
-1. **West Mainline Corridor (MAS ↔ AJJ):** 29 stations. Heavy trunk carrying Bangalore/Mumbai expresses and western suburban EMUs via Basin Bridge (BBQ), Vyasarpadi (VJM), and Avadi (AVD).
+1. **West Mainline Corridor (MAS ↔ AJJ):** 31 nodes. Heavy trunk carrying Bangalore/Mumbai expresses and western suburban EMUs via Basin Bridge (BBQ), Vyasarpadi (VJM), and Avadi (AVD).
 2. **North Mainline Corridor (BBQ ↔ SPE):** 21 stations. Coastal trunk heading toward Andhra Pradesh (Gummidipundi, Sullurupeta) merging at BBQ and Korukkupet (KOK).
 3. **South Mainline Corridor (MSB ↔ CGL):** 28 stations. High-density suburban corridor linking Chennai Beach through Chennai Egmore (MS) and Tambaram (TBM) to Chengalpattu (CGL).
-4. **MRTS Corridor (MSB ↔ VLCY):** 19 stations. Dedicated elevated double-line suburban corridor from Chennai Beach to Velachery.
+4. **MRTS Corridor (MSB ↔ VLCY):** 18 nodes. Dedicated elevated double-line suburban corridor from Chennai Beach to Velachery.
 5. **Beach–North Bypass (MSB ↔ RPM ↔ WST ↔ KOK):** Freight and inter-corridor bypass linking Beach with the northern freight lines avoiding MAS terminal throat.
 6. **Cross Line (CGL ↔ Kanchipuram ↔ AJJ):** Single-track rural branch connecting the southern and western extremities.
 7. **Pattabiram Military Siding (PAB ↔ PTMS):** Dedicated defense and suburban spur branching from Pattabiram.
@@ -382,14 +382,19 @@ The backend is built with **FastAPI** (`backend/app/main.py` and `backend/app/ap
 | GET  /api/v1/simulation/state   | Authoritative persistent runtime simulation state     |
 | POST /api/v1/simulation/control | Playback control (play/pause/speed), delay injection  |
 | POST /api/v1/simulation/reset   | Reset clock to 06:00 and clear delay injections       |
+| GET  /api/v1/stream             | Server-Sent Events (SSE) real-time state/tick stream  |
+| GET  /api/v1/events             | Historical discrete simulation events query log       |
 | POST /api/v1/optimize           | CP-SAT mathematical solver execution & schedule diff  |
+| POST /api/v1/reoptimize         | Live runtime reoptimization under injected delays     |
+| GET  /api/v1/proposals          | List, filter, or retrieve active/applied proposals    |
+| POST /api/v1/proposals/{id}/apply| Accept and commit dispatch proposal to runtime plan  |
 | POST /api/v1/what-if            | End-to-end disruption evaluation + recommendation DAG |
 | GET  /api/v1/analytics          | Full scalability benchmarks & research metrics        |
 +-----------------------------------------------------------------------------------------+
 ```
 
 ### Persistence & Caching
-* **Disk State Persistence:** Live simulation state persists across reloads via `data/runtime_simulation_state.json`.
+* **Disk State Persistence:** Live simulation state and proposal audits persist across reloads via `runtime/` (e.g. `runtime/runtime_simulation_events.jsonl`, `runtime/runtime_simulation_proposals.json`, `runtime/runtime_simulation_applied_plan.json`).
 * **In-Memory Graph Singleton:** Ingestion occurs once at startup, caching graph lookups for sub-millisecond route checks.
 
 ---
@@ -457,20 +462,20 @@ Rigorous profiling across 7 nested service cohorts (4 to 40 concurrent services)
 
 | Cohort Size | Sim Time (s) | Conflict Detection (s) | CP-SAT Solve (s) | Decision Support (s) | Total E2E Time (s) | Peak Dynamic RAM | FIFO Delay (m) | Optimized Delay (m) | Net Delay Saved |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **4 Services** | 0.007s | 0.001s | 0.145s | 0.124s | **0.321s** | 0.60 MB | 35.5m | 43.0m | Baseline |
-| **8 Services** | 0.013s | 0.002s | 0.220s | 0.297s | **0.599s** | 0.79 MB | 45.5m | 53.0m | Baseline |
-| **12 Services**| 0.021s | 0.002s | 0.347s | 0.470s | **0.960s** | 1.17 MB | 127.5m | 135.0m | Baseline |
-| **16 Services**| 0.025s | 0.003s | 0.436s | 0.633s | **1.278s** | 1.49 MB | 131.0m | 146.0m | Baseline |
-| **20 Services**| 0.032s | 0.004s | 0.560s | 0.801s | **1.638s** | 1.84 MB | 133.0m | 148.0m | Baseline |
-| **30 Services**| 0.052s | 0.005s | 0.927s | 1.486s | **3.059s** | 3.39 MB | 1,781.0m | 1,793.0m | Scalability Cohort |
-| **40 Services**| 0.068s | 0.006s | 1.112s | 2.349s | **4.616s** | 5.74 MB | 1,926.0m | 1,937.0m | Full Division Load |
+| **4 Services** | 0.007s | 0.001s | 0.145s | 0.124s | **0.321s** | 0.60 MB | 35.5m | 43.0m | -7.5 |
+| **8 Services** | 0.013s | 0.002s | 0.220s | 0.297s | **0.599s** | 0.79 MB | 45.5m | 53.0m | -7.5 |
+| **12 Services**| 0.021s | 0.002s | 0.347s | 0.470s | **0.960s** | 1.17 MB | 127.5m | 135.0m | -7.5 |
+| **16 Services**| 0.025s | 0.003s | 0.436s | 0.633s | **1.278s** | 1.49 MB | 131.0m | 146.0m | -15 |
+| **20 Services**| 0.032s | 0.004s | 0.560s | 0.801s | **1.638s** | 1.84 MB | 133.0m | 148.0m | -15 |
+| **30 Services**| 0.052s | 0.005s | 0.927s | 1.486s | **3.059s** | 3.39 MB | 1,781.0m | 1,793.0m | -12 |
+| **40 Services**| 0.068s | 0.006s | 1.112s | 2.349s | **4.616s** | 5.74 MB | 1,926.0m | 1,937.0m | -11 |
 
 ### 10.2 Disruption Recovery Performance (Audited Compound Disruption Benchmarks)
 
 Under reproducible compound disruption benchmarks audited across stored evaluation datasets:
 * **Severe Multi-Corridor Disruption (Phase 31.3 / EXP_31_3_18):**
   * **FIFO Dispatcher:** Total network delay reaches **573.0 minutes** due to compounded primary delays and cascading junction holds.
-  * **CP-SAT Optimizer:** Solves in **0.420 seconds**, rescheduling train sequences to reduce total network delay to **477.0 minutes**.
+  * **CP-SAT Optimizer:** Solves in **0.636 s**, rescheduling train sequences to reduce total network delay to **477.0 minutes**.
   * **Net Controller Benefit:** **+96.0 minutes of delay saved (16.75% reduction)**.
 * **Peak Concurrency Compound Disruption (Phase 31.1 / EXP_31_1_07B):**
   * Baseline FIFO delay of **262.0 minutes** reduced by CP-SAT to **149.0 minutes**, yielding **+113.0 minutes saved (43.13% reduction)**.
@@ -486,6 +491,13 @@ When an impassable track section or corridor throat blockage occurs (such as sim
   4. The Decision Support engine issues an **`EMERGENCY`** directive:  
      `"EMERGENCY: Infrastructure capacity exhausted. Hold departures and verify alternate routing."`
 
+### 10.4 Midnight-Wrap Artifact Note (`SRV_16159_01`)
+
+In the frozen paper baseline (v1), `SRV_16159_01` (Mangalore Express) departs Chennai Egmore (MS) at `23:10` (1390.0m) and arrives at Chengalpattu (CGL) at `00:08` the following calendar day.
+* In unwrapped v1 mode, `00:08` is parsed as 8.0 minutes from midnight on the departure day, introducing an artificial 1,415.0 minute delay artifact that elevates the 30-service baseline to 1,781.0m and the 40-service baseline to 1,926.0m.
+* To preserve exact numerical reproducibility for the accepted CICT 2026 paper, default solver behavior remains strictly unwrapped (`apply_midnight_wrap=False`).
+* An opt-in flag (`apply_midnight_wrap=True`) applies a +1440-minute day wrap to post-midnight arrivals, resolving CGL arrival to 1,448.0m and eliminating the 1,415.0m artificial delay completely (reducing 40-service nominal FIFO baseline to exactly 511.0m, consistent with 505.0m for the remaining 39 services). Non-midnight services are completely unaffected. Corrected v2 benchmarks are isolated in `data/evaluation/v2/`.
+
 ---
 
 ## 11. Verification & Quality Assurance Summary
@@ -493,7 +505,7 @@ When an impassable track section or corridor throat blockage occurs (such as sim
 The platform was subjected to exhaustive regression testing across 56 test modules:
 
 ```
-========================= 676 passed in 115.36s =========================
+========================= 682 passed on a clean Linux clone =========================
 - Unit & Network Topology Tests:         10 passed
 - Master Dataset Immutability Audit:     39 passed
 - Discrete-Event Simulation Mechanics:   26 passed
@@ -512,7 +524,6 @@ The platform was subjected to exhaustive regression testing across 56 test modul
 
 * **Frontend Toolchain Quality:** Next.js production build (`npm run build`) completed with **0 TypeScript errors, 0 ESLint errors** (2 pre-existing react-hooks warnings in untouched UI components), and 4/4 statically optimized pages.
 * **Master Dataset Hash Immutability:** 100% match on all 13 canonical SHA-256 hashes.
-* **Memory Integrity:** Exactly 0 stale track occupancies and 0 resource allocation leaks across all test cycles.
 * **Memory Integrity:** Exactly 0 stale track occupancies and 0 resource allocation leaks across all test cycles.
 
 ---
