@@ -25,9 +25,10 @@ def generate_v2():
     v2_dir = os.path.join(repo_root, "data", "evaluation", "v2")
     os.makedirs(v2_dir, exist_ok=True)
     
-    # 1. Evaluate nominal cohorts with midnight wrap
+    # 1. Evaluate nominal cohorts with and without midnight wrap
     runner = ScenarioRunner()
     cohort_results = {}
+    v1_baselines = {}
     for n in [4, 8, 12, 16, 20, 30, 40]:
         services = SCALABILITY_COHORTS[n]
         scen = Scenario(
@@ -35,17 +36,21 @@ def generate_v2():
             name=f"Load {n} Nominal State (v2 Day Wrap)",
             affected_service_ids=services,
         )
-        comp = runner.run_scenario(scen, apply_midnight_wrap=True)
+        comp_v1 = runner.run_scenario(scen, apply_midnight_wrap=False)
+        v1_baselines[n] = comp_v1.baseline_total_delay
+
+        comp_v2 = runner.run_scenario(scen, apply_midnight_wrap=True)
         cohort_results[n] = {
             "load_count": n,
             "services": services,
-            "baseline_delay_minutes": comp.baseline_total_delay,
-            "optimized_delay_minutes": comp.optimized_total_delay,
-            "delay_savings_minutes": comp.delay_savings_minutes,
-            "delay_savings_percent": comp.delay_savings_percent,
-            "solver_status": comp.optimization_status,
+            "v1_baseline_delay_minutes": comp_v1.baseline_total_delay,
+            "baseline_delay_minutes": comp_v2.baseline_total_delay,
+            "optimized_delay_minutes": comp_v2.optimized_total_delay,
+            "delay_savings_minutes": comp_v2.delay_savings_minutes,
+            "delay_savings_percent": comp_v2.delay_savings_percent,
+            "solver_status": comp_v2.optimization_status,
         }
-        print(f"Cohort {n}: Baseline Delay = {comp.baseline_total_delay:.1f}m, Optimized = {comp.optimized_total_delay:.1f}m")
+        print(f"Cohort {n:2d}: v1 FIFO = {comp_v1.baseline_total_delay:.1f}m, v2 FIFO = {comp_v2.baseline_total_delay:.1f}m, v2 Opt = {comp_v2.optimized_total_delay:.1f}m")
         
     with open(os.path.join(v2_dir, "nominal_cohort_benchmarks.json"), "w", encoding="utf-8") as f:
         json.dump(cohort_results, f, indent=2)
@@ -110,15 +115,15 @@ In the published timetable, `SRV_16159_01` departs Chennai Egmore (MS) at `23:10
 
 ## 2. Nominal Cohort Performance Comparison
 
-| Cohort Size | v1 Baseline Delay (min) | v2 Baseline Delay (min) | Artificial Delay Removed (min) |
-|---|---|---|---|
-| 4 Services | {cohort_results[4]['baseline_delay_minutes']:.1f} | {cohort_results[4]['baseline_delay_minutes']:.1f} | 0.0 |
-| 8 Services | {cohort_results[8]['baseline_delay_minutes']:.1f} | {cohort_results[8]['baseline_delay_minutes']:.1f} | 0.0 |
-| 12 Services | {cohort_results[12]['baseline_delay_minutes']:.1f} | {cohort_results[12]['baseline_delay_minutes']:.1f} | 0.0 |
-| 16 Services | {cohort_results[16]['baseline_delay_minutes']:.1f} | {cohort_results[16]['baseline_delay_minutes']:.1f} | 0.0 |
-| 20 Services | {cohort_results[20]['baseline_delay_minutes']:.1f} | {cohort_results[20]['baseline_delay_minutes']:.1f} | 0.0 |
-| 30 Services | 1781.0 | {cohort_results[30]['baseline_delay_minutes']:.1f} | {1781.0 - cohort_results[30]['baseline_delay_minutes']:.1f} |
-| 40 Services | 1926.0 | {cohort_results[40]['baseline_delay_minutes']:.1f} | {1926.0 - cohort_results[40]['baseline_delay_minutes']:.1f} |
+| Cohort Size | v1 Baseline Delay (min) | v2 Baseline Delay (min) | v2 Optimized Delay (min) | Artificial Delay Removed (min) |
+|---|---|---|---|---|
+| 4 Services | {v1_baselines[4]:.1f} | {cohort_results[4]['baseline_delay_minutes']:.1f} | {cohort_results[4]['optimized_delay_minutes']:.1f} | {v1_baselines[4] - cohort_results[4]['baseline_delay_minutes']:.1f} |
+| 8 Services | {v1_baselines[8]:.1f} | {cohort_results[8]['baseline_delay_minutes']:.1f} | {cohort_results[8]['optimized_delay_minutes']:.1f} | {v1_baselines[8] - cohort_results[8]['baseline_delay_minutes']:.1f} |
+| 12 Services | {v1_baselines[12]:.1f} | {cohort_results[12]['baseline_delay_minutes']:.1f} | {cohort_results[12]['optimized_delay_minutes']:.1f} | {v1_baselines[12] - cohort_results[12]['baseline_delay_minutes']:.1f} |
+| 16 Services | {v1_baselines[16]:.1f} | {cohort_results[16]['baseline_delay_minutes']:.1f} | {cohort_results[16]['optimized_delay_minutes']:.1f} | {v1_baselines[16] - cohort_results[16]['baseline_delay_minutes']:.1f} |
+| 20 Services | {v1_baselines[20]:.1f} | {cohort_results[20]['baseline_delay_minutes']:.1f} | {cohort_results[20]['optimized_delay_minutes']:.1f} | {v1_baselines[20] - cohort_results[20]['baseline_delay_minutes']:.1f} |
+| 30 Services | {v1_baselines[30]:.1f} | {cohort_results[30]['baseline_delay_minutes']:.1f} | {cohort_results[30]['optimized_delay_minutes']:.1f} | {v1_baselines[30] - cohort_results[30]['baseline_delay_minutes']:.1f} |
+| 40 Services | {v1_baselines[40]:.1f} | {cohort_results[40]['baseline_delay_minutes']:.1f} | {cohort_results[40]['optimized_delay_minutes']:.1f} | {v1_baselines[40] - cohort_results[40]['baseline_delay_minutes']:.1f} |
 """
     with open(os.path.join(v2_dir, "v2_evaluation_report.md"), "w", encoding="utf-8") as f:
         f.write(md_content)

@@ -11,12 +11,12 @@ In the published timetable, `SRV_16159_01` departs Chennai Egmore (MS) at `23:10
 
 ## 2. Nominal Cohort Performance Comparison
 
-| Cohort Size | v1 Baseline Delay (min) | v2 Baseline Delay (min) | Artificial Delay Removed (min) |
-|---|---|---|---|
-| 4 Services | 35.5 | 35.5 | 0.0 |
-| 8 Services | 45.5 | 45.5 | 0.0 |
-| 12 Services | 4241.5 | 4241.5 | 0.0 |
-| 16 Services | 4245.0 | 4245.0 | 0.0 |
-| 20 Services | 4247.0 | 4247.0 | 0.0 |
-| 30 Services | 1781.0 | 9547.0 | -7766.0 |
-| 40 Services | 1926.0 | 31473.0 | -29547.0 |
+| Cohort Size | v1 Baseline Delay (min) | v2 Baseline Delay (min) | v2 Optimized Delay (min) | Artificial Delay Removed (min) |
+|---|---|---|---|---|
+| 4 Services | 35.5 | 35.5 | 43.0 | 0.0 |
+| 8 Services | 45.5 | 45.5 | 53.0 | 0.0 |
+| 12 Services | 127.5 | 127.5 | 135.0 | 0.0 |
+| 16 Services | 131.0 | 131.0 | 146.0 | 0.0 |
+| 20 Services | 133.0 | 133.0 | 148.0 | 0.0 |
+| 30 Services | 1781.0 | 366.0 | 378.0 | 1415.0 |
+| 40 Services | 1926.0 | 511.0 | 522.0 | 1415.0 |

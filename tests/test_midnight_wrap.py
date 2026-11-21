@@ -16,6 +16,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from backend.app.main import app
+from evaluation.scalability_framework import SCALABILITY_COHORTS
 from optimization.model import OptimizationRequest
 from optimization.scenarios import Scenario, ScenarioRunner
 
@@ -118,3 +119,56 @@ def test_v2_evaluation_artifacts_exist():
         assert data["service_id"] == "SRV_16159_01"
         assert data["v1_without_wrap"]["baseline_delay_minutes"] == 1415.0
         assert data["v2_with_wrap"]["baseline_delay_minutes"] == 0.0
+
+
+def test_sanity_cohorts_v2_le_v1_and_40_baseline():
+    """For every cohort, v2 FIFO <= v1 FIFO, and 40-service v2 FIFO is close to 511 min."""
+    runner = ScenarioRunner()
+    for n in [4, 8, 12, 16, 20, 30, 40]:
+        scen = Scenario(
+            scenario_id=f"TEST_SANITY_{n}",
+            name=f"Sanity {n}",
+            affected_service_ids=SCALABILITY_COHORTS[n],
+        )
+        c1 = runner.run_scenario(scen, apply_midnight_wrap=False)
+        c2 = runner.run_scenario(scen, apply_midnight_wrap=True)
+
+        assert c2.baseline_total_delay <= c1.baseline_total_delay + 1e-6
+        if n <= 20:
+            assert abs(c1.baseline_total_delay - c2.baseline_total_delay) < 1e-6
+        else:
+            # 30 and 40 cohorts include SRV_16159_01 which has exactly 1415.0m artificial delay removed
+            assert abs((c1.baseline_total_delay - c2.baseline_total_delay) - 1415.0) < 1e-6
+
+        if n == 40:
+            # Must be close to 511 min (the 39-service result without SRV_16159_01)
+            assert 500.0 <= c2.baseline_total_delay <= 520.0
+            assert round(c2.baseline_total_delay, 1) == 511.0
+
+
+def test_non_midnight_service_delays_unchanged():
+    """Per-service delays for services that do not cross midnight are unchanged by apply_midnight_wrap."""
+    runner = ScenarioRunner()
+    scen = Scenario(
+        scenario_id="TEST_NON_MIDNIGHT_UNCHANGED_40",
+        name="Test 40 Services",
+        affected_service_ids=SCALABILITY_COHORTS[40],
+    )
+    res_v1 = runner.run_scenario(scen, apply_midnight_wrap=False)
+    res_v2 = runner.run_scenario(scen, apply_midnight_wrap=True)
+
+    adj_v1 = res_v1.feasible_baseline_result.adjusted_timetables
+    adj_v2 = res_v2.feasible_baseline_result.adjusted_timetables
+
+    for s_id in SCALABILITY_COHORTS[40]:
+        v1_stops = adj_v1.get(s_id, [])
+        v2_stops = adj_v2.get(s_id, [])
+
+        v1_service_delay = sum(st.delay_minutes for st in v1_stops)
+        v2_service_delay = sum(st.delay_minutes for st in v2_stops)
+
+        if s_id == "SRV_16159_01":
+            assert abs((v1_service_delay - v2_service_delay) - 1415.0) < 1e-6
+        else:
+            assert abs(v1_service_delay - v2_service_delay) < 1e-6
+

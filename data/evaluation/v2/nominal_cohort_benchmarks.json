@@ -7,6 +7,7 @@
       "SRV_12712_01",
       "SRV_42601_01"
     ],
+    "v1_baseline_delay_minutes": 35.5,
     "baseline_delay_minutes": 35.5,
     "optimized_delay_minutes": 43.0,
     "delay_savings_minutes": -7.5,
@@ -25,6 +26,7 @@
       "SRV_12636_01",
       "SRV_12711_01"
     ],
+    "v1_baseline_delay_minutes": 45.5,
     "baseline_delay_minutes": 45.5,
     "optimized_delay_minutes": 53.0,
     "delay_savings_minutes": -7.5,
@@ -47,10 +49,11 @@
       "SRV_43102_01",
       "SRV_12605_01"
     ],
-    "baseline_delay_minutes": 4241.5,
+    "v1_baseline_delay_minutes": 127.5,
+    "baseline_delay_minutes": 127.5,
     "optimized_delay_minutes": 135.0,
-    "delay_savings_minutes": 4106.5,
-    "delay_savings_percent": 96.8171637392432,
+    "delay_savings_minutes": -7.5,
+    "delay_savings_percent": -5.88235294117647,
     "solver_status": "OPTIMAL"
   },
   "16": {
@@ -73,10 +76,11 @@
       "SRV_41002_01",
       "SRV_42602_01"
     ],
-    "baseline_delay_minutes": 4245.0,
+    "v1_baseline_delay_minutes": 131.0,
+    "baseline_delay_minutes": 131.0,
     "optimized_delay_minutes": 146.0,
-    "delay_savings_minutes": 4099.0,
-    "delay_savings_percent": 96.56065959952885,
+    "delay_savings_minutes": -15.0,
+    "delay_savings_percent": -11.450381679389313,
     "solver_status": "OPTIMAL"
   },
   "20": {
@@ -103,10 +107,11 @@
       "SRV_12693_01",
       "SRV_42015_01"
     ],
-    "baseline_delay_minutes": 4247.0,
+    "v1_baseline_delay_minutes": 133.0,
+    "baseline_delay_minutes": 133.0,
     "optimized_delay_minutes": 148.0,
-    "delay_savings_minutes": 4099.0,
-    "delay_savings_percent": 96.51518719095831,
+    "delay_savings_minutes": -15.0,
+    "delay_savings_percent": -11.278195488721805,
     "solver_status": "OPTIMAL"
   },
   "30": {
@@ -143,10 +148,11 @@
       "SRV_43116_01",
       "SRV_42411_01"
     ],
-    "baseline_delay_minutes": 9547.0,
+    "v1_baseline_delay_minutes": 1781.0,
+    "baseline_delay_minutes": 366.0,
     "optimized_delay_minutes": 378.0,
-    "delay_savings_minutes": 9169.0,
-    "delay_savings_percent": 96.04064103906987,
+    "delay_savings_minutes": -12.0,
+    "delay_savings_percent": -3.278688524590164,
     "solver_status": "OPTIMAL"
   },
   "40": {
@@ -193,10 +199,11 @@
       "SRV_43501_01",
       "SRV_43507_01"
     ],
-    "baseline_delay_minutes": 31473.0,
+    "v1_baseline_delay_minutes": 1926.0,
+    "baseline_delay_minutes": 511.0,
     "optimized_delay_minutes": 522.0,
-    "delay_savings_minutes": 30951.0,
-    "delay_savings_percent": 98.34143551615671,
+    "delay_savings_minutes": -11.0,
+    "delay_savings_percent": -2.152641878669276,
     "solver_status": "OPTIMAL"
   }
 }
