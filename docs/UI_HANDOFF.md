@@ -75,3 +75,11 @@ The table below lists every component where hard-coded mock data or static fallb
 3. **Active Service Filtering in Service Selectors:**
    - Only select from `services.filter(s => s.active)`.
    - Excluded services (e.g. `SRV_40143_01`) should display an info badge: *"Excluded: No published timetable evidence"*.
+
+---
+
+## 4. Frontend Environment & Package Management Specifications
+
+- **Node.js Compatibility:** `node >= 18.0.0`
+- **npm Compatibility:** `npm >= 11.0.0` (specified in `frontend/package.json` engines and locked in `frontend/package-lock.json`).
+- **Clean Checkout Installation:** Run `npm ci` within `frontend/` using npm 11.x to ensure reproducible, clean lockfile builds without lockfile version downgrade discrepancies.

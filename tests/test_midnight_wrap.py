@@ -62,9 +62,9 @@ def test_opt_in_midnight_wrap_on():
 
 
 def test_api_optimize_with_midnight_wrap():
-    """POST /optimize supports opt-in apply_midnight_wrap flag."""
+    """POST /optimize supports opt-in apply_midnight_wrap flag with and without departure delays."""
     with TestClient(app) as client:
-        # 1. With apply_midnight_wrap=True
+        # 1. Nominal with apply_midnight_wrap=True
         resp_wrap = client.post(
             "/api/v1/optimize",
             json={
@@ -88,10 +88,43 @@ def test_api_optimize_with_midnight_wrap():
         data_def = resp_def.json()
         assert data_def["solution_available"] is True
 
+        # 3. Non-midnight service SRV_12607_01 with 25 min departure delay and wrap=True
+        resp_non = client.post(
+            "/api/v1/optimize",
+            json={
+                "service_ids": ["SRV_12607_01", "SRV_12609_01"],
+                "departure_delays": {"SRV_12607_01": 25.0},
+                "apply_midnight_wrap": True,
+            },
+        )
+        assert resp_non.status_code == 200
+        data_non = resp_non.json()
+        assert data_non["solution_available"] is True
+        assert data_non["solver_status"] in ("OPTIMAL", "FEASIBLE")
+        assert data_non["optimized_total_delay_minutes"] is not None
+        assert data_non["optimized_total_delay_minutes"] < 500.0
+
+        # 4. Midnight service SRV_16159_01 with 15 min departure delay and wrap=True
+        resp_mid = client.post(
+            "/api/v1/optimize",
+            json={
+                "service_ids": ["SRV_16159_01"],
+                "departure_delays": {"SRV_16159_01": 15.0},
+                "apply_midnight_wrap": True,
+            },
+        )
+        assert resp_mid.status_code == 200
+        data_mid = resp_mid.json()
+        assert data_mid["solution_available"] is True
+        assert data_mid["solver_status"] in ("OPTIMAL", "FEASIBLE")
+        assert data_mid["optimized_total_delay_minutes"] is not None
+        assert data_mid["optimized_total_delay_minutes"] < 100.0
+
 
 def test_api_what_if_with_midnight_wrap():
-    """POST /what-if supports opt-in apply_midnight_wrap flag."""
+    """POST /what-if supports opt-in apply_midnight_wrap flag with and without departure delays."""
     with TestClient(app) as client:
+        # 1. Nominal midnight service
         resp = client.post(
             "/api/v1/what-if",
             json={
@@ -103,6 +136,35 @@ def test_api_what_if_with_midnight_wrap():
         data = resp.json()
         assert data["solution_available"] is True
         assert data["total_baseline_delay_minutes"] == 0.0
+
+        # 2. Non-midnight services with departure delay and wrap=True
+        resp_non = client.post(
+            "/api/v1/what-if",
+            json={
+                "service_ids": ["SRV_12607_01", "SRV_12609_01", "SRV_12610_01", "SRV_43411_01"],
+                "departure_delays": {"SRV_12607_01": 25.0},
+                "apply_midnight_wrap": True,
+            },
+        )
+        assert resp_non.status_code == 200
+        data_non = resp_non.json()
+        assert data_non["solution_available"] is True
+        assert data_non["total_baseline_delay_minutes"] < 500.0
+        assert len(data_non["recommendations"]) > 0
+
+        # 3. Midnight service with departure delay and wrap=True
+        resp_mid = client.post(
+            "/api/v1/what-if",
+            json={
+                "service_ids": ["SRV_16159_01"],
+                "departure_delays": {"SRV_16159_01": 15.0},
+                "apply_midnight_wrap": True,
+            },
+        )
+        assert resp_mid.status_code == 200
+        data_mid = resp_mid.json()
+        assert data_mid["solution_available"] is True
+        assert data_mid["total_baseline_delay_minutes"] < 100.0
 
 
 def test_v2_evaluation_artifacts_exist():
@@ -147,12 +209,19 @@ def test_sanity_cohorts_v2_le_v1_and_40_baseline():
 
 
 def test_non_midnight_service_delays_unchanged():
-    """Per-service delays for services that do not cross midnight are unchanged by apply_midnight_wrap."""
+    """Per-service delays for services that do not cross midnight are unchanged by apply_midnight_wrap.
+    
+    Also verifies departure delay repro: 40 active services under departure delays with wrap=True
+    must remain OPTIMAL and equal nowrap minus 1415.0m.
+    """
     runner = ScenarioRunner()
+    s_ids = SCALABILITY_COHORTS[40]
+
+    # Nominal 40-service test
     scen = Scenario(
         scenario_id="TEST_NON_MIDNIGHT_UNCHANGED_40",
         name="Test 40 Services",
-        affected_service_ids=SCALABILITY_COHORTS[40],
+        affected_service_ids=s_ids,
     )
     res_v1 = runner.run_scenario(scen, apply_midnight_wrap=False)
     res_v2 = runner.run_scenario(scen, apply_midnight_wrap=True)
@@ -160,7 +229,7 @@ def test_non_midnight_service_delays_unchanged():
     adj_v1 = res_v1.feasible_baseline_result.adjusted_timetables
     adj_v2 = res_v2.feasible_baseline_result.adjusted_timetables
 
-    for s_id in SCALABILITY_COHORTS[40]:
+    for s_id in s_ids:
         v1_stops = adj_v1.get(s_id, [])
         v2_stops = adj_v2.get(s_id, [])
 
@@ -172,82 +241,7 @@ def test_non_midnight_service_delays_unchanged():
         else:
             assert abs(v1_service_delay - v2_service_delay) < 1e-6
 
-
-def test_api_optimize_with_wrap_and_departure_delays():
-    """POST /optimize with apply_midnight_wrap=True and departure delays on midnight and non-midnight services."""
-    with TestClient(app) as client:
-        # Non-midnight service SRV_12607_01 with 25 min departure delay
-        resp_non = client.post(
-            "/api/v1/optimize",
-            json={
-                "service_ids": ["SRV_12607_01", "SRV_12609_01"],
-                "departure_delays": {"SRV_12607_01": 25.0},
-                "apply_midnight_wrap": True,
-            },
-        )
-        assert resp_non.status_code == 200
-        data_non = resp_non.json()
-        assert data_non["solution_available"] is True
-        assert data_non["solver_status"] in ("OPTIMAL", "FEASIBLE")
-        assert data_non["optimized_total_delay_minutes"] is not None
-        assert data_non["optimized_total_delay_minutes"] < 500.0
-
-        # Midnight service SRV_16159_01 with 15 min departure delay
-        resp_mid = client.post(
-            "/api/v1/optimize",
-            json={
-                "service_ids": ["SRV_16159_01"],
-                "departure_delays": {"SRV_16159_01": 15.0},
-                "apply_midnight_wrap": True,
-            },
-        )
-        assert resp_mid.status_code == 200
-        data_mid = resp_mid.json()
-        assert data_mid["solution_available"] is True
-        assert data_mid["solver_status"] in ("OPTIMAL", "FEASIBLE")
-        assert data_mid["optimized_total_delay_minutes"] is not None
-        assert data_mid["optimized_total_delay_minutes"] < 100.0
-
-
-def test_api_what_if_with_wrap_and_departure_delays():
-    """POST /what-if with apply_midnight_wrap=True and departure delays on midnight and non-midnight services."""
-    with TestClient(app) as client:
-        # Non-midnight service SRV_12607_01
-        resp_non = client.post(
-            "/api/v1/what-if",
-            json={
-                "service_ids": ["SRV_12607_01", "SRV_12609_01", "SRV_12610_01", "SRV_43411_01"],
-                "departure_delays": {"SRV_12607_01": 25.0},
-                "apply_midnight_wrap": True,
-            },
-        )
-        assert resp_non.status_code == 200
-        data_non = resp_non.json()
-        assert data_non["solution_available"] is True
-        assert data_non["total_baseline_delay_minutes"] < 500.0
-        assert len(data_non["recommendations"]) > 0
-
-        # Midnight service SRV_16159_01
-        resp_mid = client.post(
-            "/api/v1/what-if",
-            json={
-                "service_ids": ["SRV_16159_01"],
-                "departure_delays": {"SRV_16159_01": 15.0},
-                "apply_midnight_wrap": True,
-            },
-        )
-        assert resp_mid.status_code == 200
-        data_mid = resp_mid.json()
-        assert data_mid["solution_available"] is True
-        assert data_mid["total_baseline_delay_minutes"] < 100.0
-
-
-def test_40_services_departure_delays_wrap_repro():
-    """40 active services under departure delays with wrap=True must remain OPTIMAL and equal nowrap minus 1415."""
-    runner = ScenarioRunner()
-    s_ids = SCALABILITY_COHORTS[40]
-
-    # Repro 1: SRV_12607_01 +25 min delay
+    # Repro 1: SRV_12607_01 +25 min departure delay
     scen1 = Scenario(
         scenario_id="TEST_REPRO_12607",
         name="Repro 12607 Delay 25",
@@ -266,7 +260,7 @@ def test_40_services_departure_delays_wrap_repro():
     assert abs((res1_nowrap.baseline_total_delay - res1_wrap.baseline_total_delay) - 1415.0) < 1e-6
     assert abs((res1_nowrap.optimized_total_delay - res1_wrap.optimized_total_delay) - 1415.0) < 1e-6
 
-    # Repro 2: SRV_43411_01 +15 min delay
+    # Repro 2: SRV_43411_01 +15 min departure delay
     scen2 = Scenario(
         scenario_id="TEST_REPRO_43411",
         name="Repro 43411 Delay 15",
@@ -284,5 +278,6 @@ def test_40_services_departure_delays_wrap_repro():
     assert round(res2_wrap.optimized_total_delay, 1) == 563.0
     assert abs((res2_nowrap.baseline_total_delay - res2_wrap.baseline_total_delay) - 1415.0) < 1e-6
     assert abs((res2_nowrap.optimized_total_delay - res2_wrap.optimized_total_delay) - 1415.0) < 1e-6
+
 
 
