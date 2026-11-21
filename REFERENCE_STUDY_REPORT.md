@@ -373,24 +373,24 @@ Each recommendation includes:
 The backend is built with **FastAPI** (`backend/app/main.py` and `backend/app/api.py`), serving high-throughput endpoints with Pydantic validation:
 
 ```
-+-----------------------------------------------------------------------------------------+
-|                                    REST API MATRIX                                      |
-+-----------------------------------------------------------------------------------------+
-| GET  /api/v1/health             | System health, dataset verification, IST clock status |
-| GET  /api/v1/network            | Topology: 30 stations, 7 junctions, routes, services  |
-| POST /api/v1/simulate           | Deterministic discrete simulation step/epoch          |
-| GET  /api/v1/simulation/state   | Authoritative persistent runtime simulation state     |
-| POST /api/v1/simulation/control | Playback control (play/pause/speed), delay injection  |
-| POST /api/v1/simulation/reset   | Reset clock to 06:00 and clear delay injections       |
-| GET  /api/v1/stream             | Server-Sent Events (SSE) real-time state/tick stream  |
-| GET  /api/v1/events             | Historical discrete simulation events query log       |
-| POST /api/v1/optimize           | CP-SAT mathematical solver execution & schedule diff  |
-| POST /api/v1/reoptimize         | Live runtime reoptimization under injected delays     |
-| GET  /api/v1/proposals          | List, filter, or retrieve active/applied proposals    |
-| POST /api/v1/proposals/{id}/apply| Accept and commit dispatch proposal to runtime plan  |
-| POST /api/v1/what-if            | End-to-end disruption evaluation + recommendation DAG |
-| GET  /api/v1/analytics          | Full scalability benchmarks & research metrics        |
-+-----------------------------------------------------------------------------------------+
++------------------------------------------------------------------------------------------------+
+|                                        REST API MATRIX                                         |
++------------------------------------------------------------------------------------------------+
+| GET  /api/v1/health                       | System health, dataset verification, IST clock     |
+| GET  /api/v1/network                      | Topology: 30 stations, 7 junctions, routes, services|
+| POST /api/v1/simulate                     | Deterministic discrete simulation step/epoch       |
+| GET  /api/v1/simulation/state             | Authoritative persistent runtime simulation state  |
+| POST /api/v1/simulation/control           | Playback control (play/pause/speed), delay inject  |
+| POST /api/v1/simulation/reset             | Reset clock to 06:00 and clear delay injections    |
+| GET  /api/v1/simulation/stream            | Server-Sent Events (SSE) real-time event stream    |
+| GET  /api/v1/simulation/events            | Historical discrete simulation events query log    |
+| POST /api/v1/simulation/reoptimize        | Live runtime reoptimization under injected delays  |
+| POST /api/v1/simulation/proposals/{id}/accept | Human dispatcher approval to apply proposal   |
+| POST /api/v1/simulation/proposals/{id}/reject | Human dispatcher rejection of proposal         |
+| POST /api/v1/optimize                     | CP-SAT mathematical solver execution & diff        |
+| POST /api/v1/what-if                      | End-to-end disruption evaluation + recommendation  |
+| GET  /api/v1/analytics                    | Full scalability benchmarks & research metrics     |
++------------------------------------------------------------------------------------------------+
 ```
 
 ### Persistence & Caching
@@ -502,24 +502,71 @@ In the frozen paper baseline (v1), `SRV_16159_01` (Mangalore Express) departs Ch
 
 ## 11. Verification & Quality Assurance Summary
 
-The platform was subjected to exhaustive regression testing across 56 test modules:
+The platform was subjected to exhaustive regression testing across 60 test modules:
 
 ```
-========================= 682 passed on a clean Linux clone =========================
-- Unit & Network Topology Tests:         10 passed
-- Master Dataset Immutability Audit:     39 passed
-- Discrete-Event Simulation Mechanics:   26 passed
-- Conflict Detection Algorithms:         12 passed
-- Optimization Contracts & CP-SAT:       11 passed
-- Disruption & Rescheduling Integrity:   72 passed
-- Decision Support & Explainability:     20 passed
-- Scalability & Benchmark Experiments:   73 passed
-- Research Metrics & Paper Verification: 51 passed
-- Batch 1 to 4 Integrity & SSE Tests:    35 passed
-- Frontend Integration & Contracts:      33 passed
-- Performance, Memory & Stress Audits:   26 passed
-- Digital Twin Multi-Phase Validation:   268 passed
-==========================================================================
+========================= 684 passed, 60 test modules =========================
+- test_all_trains_simulation_and_chart.py: 5 passed
+- test_analysis.py: 24 passed
+- test_analytics.py: 4 passed
+- test_api.py: 21 passed
+- test_batch2_integrity.py: 11 passed
+- test_batch3_data_integrity.py: 8 passed
+- test_batch4_live_engine.py: 10 passed
+- test_clickable_station_nodes.py: 4 passed
+- test_conflicts.py: 12 passed
+- test_consolidation.py: 18 passed
+- test_corridor_performance_backend.py: 8 passed
+- test_corridor_performance_ui.py: 4 passed
+- test_cross_corridor.py: 28 passed
+- test_dataset_integrity.py: 39 passed
+- test_decision_support.py: 15 passed
+- test_delay_meter_scale.py: 5 passed
+- test_end_to_end.py: 9 passed
+- test_evaluation.py: 8 passed
+- test_explainable_decision_support.py: 5 passed
+- test_feasible_baseline.py: 5 passed
+- test_midnight_wrap.py: 7 passed
+- test_network.py: 10 passed
+- test_optimization.py: 0 passed
+- test_optimization_contracts.py: 6 passed
+- test_optimization_solver.py: 5 passed
+- test_paper_reproduction.py: 1 passed
+- test_phase27_e2e_validation.py: 4 passed
+- test_phase30_conflict_resource.py: 53 passed
+- test_phase30_disruption_rescheduling.py: 19 passed
+- test_phase30_service_activation.py: 7 passed
+- test_phase30_simulation.py: 4 passed
+- test_phase31_1_framework.py: 20 passed
+- test_phase31_2_scalability.py: 12 passed
+- test_phase31_3_severity.py: 16 passed
+- test_phase31_4_comparative.py: 16 passed
+- test_phase31_5_metrics.py: 9 passed
+- test_phase32_1_bottlenecks.py: 10 passed
+- test_phase32_2_propagation.py: 7 passed
+- test_phase32_3_recommendations.py: 11 passed
+- test_phase32_4_what_if.py: 10 passed
+- test_phase33_1_frontend.py: 7 passed
+- test_phase33_2_decision_support_ui.py: 7 passed
+- test_phase33_3_scenario_comparison_ui.py: 7 passed
+- test_phase33_4_dashboard_validation.py: 5 passed
+- test_phase34_1_full_division.py: 6 passed
+- test_phase34_2_data_integrity.py: 5 passed
+- test_phase34_3_reproducibility.py: 5 passed
+- test_phase34_4_performance.py: 11 passed
+- test_phase34_5_final_regression.py: 6 passed
+- test_realtime_simulation_state.py: 5 passed
+- test_scalability.py: 53 passed
+- test_scenarios.py: 6 passed
+- test_services.py: 21 passed
+- test_simulation.py: 26 passed
+- test_timetable.py: 0 passed
+- test_timetable_comparison_backend.py: 4 passed
+- test_timetable_comparison_e2e.py: 1 passed
+- test_timetable_comparison_ui.py: 3 passed
+- test_trains.py: 0 passed
+- test_validation.py: 36 passed
+===============================================================================
 ```
 
 * **Frontend Toolchain Quality:** Next.js production build (`npm run build`) completed with **0 TypeScript errors, 0 ESLint errors** (2 pre-existing react-hooks warnings in untouched UI components), and 4/4 statically optimized pages.
