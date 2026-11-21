@@ -85,7 +85,10 @@ class CPSATScheduler(BaseScheduler):
         # 1. Initialize CP-SAT model
         model = cp_model.CpModel()
         horizon_start, horizon_end = request.time_horizon
-        max_horizon_min = int(max(1440, horizon_end + 360))  # Allow buffer for delays
+        if getattr(request, "apply_midnight_wrap", False):
+            max_horizon_min = int(max(2880, horizon_end + 1440 + 360))
+        else:
+            max_horizon_min = int(max(1440, horizon_end + 360))  # Allow buffer for delays
 
         # 2. Decision Variables: arr_var[s_id, node_idx], dep_var[s_id, node_idx]
         arr_vars: Dict[Tuple[str, int], cp_model.IntVar] = {}
@@ -144,13 +147,13 @@ class CPSATScheduler(BaseScheduler):
                     if tt_e:
                         if tt_e.arrival:
                             arr_raw = time_to_minutes(tt_e.arrival) + curr_offset
-                            if arr_raw < last_m and (arr_raw + 1440.0) >= last_m:
+                            if last_m >= 0 and (last_m - arr_raw) > 720.0:
                                 curr_offset += 1440.0
                                 arr_raw += 1440.0
                             last_m = max(last_m, arr_raw)
                         if tt_e.departure:
                             dep_raw = time_to_minutes(tt_e.departure) + curr_offset
-                            if dep_raw < last_m and (dep_raw + 1440.0) >= last_m:
+                            if last_m >= 0 and (last_m - dep_raw) > 720.0:
                                 curr_offset += 1440.0
                                 dep_raw += 1440.0
                             last_m = max(last_m, dep_raw)

@@ -180,12 +180,12 @@ class BaselineScheduler(BaseScheduler):
                 dep = time_to_minutes(e.departure) if e.departure else None
                 if getattr(request, "apply_midnight_wrap", False):
                     if arr is not None:
-                        if last_t >= 0 and (arr + day_offset) < last_t and (arr + day_offset + 1440.0) >= last_t:
+                        if last_t >= 0 and (last_t - (arr + day_offset)) > 720.0:
                             day_offset += 1440.0
                         arr += day_offset
                         last_t = max(last_t, arr)
                     if dep is not None:
-                        if last_t >= 0 and (dep + day_offset) < last_t and (dep + day_offset + 1440.0) >= last_t:
+                        if last_t >= 0 and (last_t - (dep + day_offset)) > 720.0:
                             day_offset += 1440.0
                         dep += day_offset
                         last_t = max(last_t, dep)
@@ -323,12 +323,12 @@ class FeasibleBaselineScheduler(BaseScheduler):
                 dep = time_to_minutes(e.departure) if e.departure else None
                 if getattr(request, "apply_midnight_wrap", False):
                     if arr is not None:
-                        if last_t >= 0 and (arr + day_offset) < last_t and (arr + day_offset + 1440.0) >= last_t:
+                        if last_t >= 0 and (last_t - (arr + day_offset)) > 720.0:
                             day_offset += 1440.0
                         arr += day_offset
                         last_t = max(last_t, arr)
                     if dep is not None:
-                        if last_t >= 0 and (dep + day_offset) < last_t and (dep + day_offset + 1440.0) >= last_t:
+                        if last_t >= 0 and (last_t - (dep + day_offset)) > 720.0:
                             day_offset += 1440.0
                         dep += day_offset
                         last_t = max(last_t, dep)
