@@ -62,12 +62,14 @@ class CPSATScheduler(BaseScheduler):
         log_search_progress: bool = False,
         objective: Optional[OptimizationObjective] = None,
         objective_mode: str = "WEIGHTED",
+        time_resolution: Optional[int] = None,
     ):
         self.time_limit_seconds = time_limit_seconds
         self.num_search_workers = num_search_workers
         self.log_search_progress = log_search_progress
         self.objective = objective or OptimizationObjective()
         self.objective_mode = objective_mode
+        self.time_resolution = time_resolution or 1
 
     def schedule(self, request: OptimizationRequest) -> OptimizationResult:
         """Formulate and solve the railway optimization problem for the given request."""
@@ -82,6 +84,20 @@ class CPSATScheduler(BaseScheduler):
                 computation_time_seconds=time.time() - start_cpu_time,
             )
 
+        # Determine internal time resolution multiplier (1 = 1-min units, 2 = 0.5-min units)
+        R = int(getattr(request, "time_resolution", None) or self.time_resolution or 1)
+        if R < 1:
+            raise ValueError(f"time_resolution must be an integer >= 1, got {R}")
+
+        def to_units(val: float, name: str) -> int:
+            scaled = val * R
+            rounded = round(scaled)
+            if R > 1 and abs(scaled - rounded) > 1e-4:
+                raise ValueError(
+                    f"Value {val} for '{name}' is not an exact multiple of 1/time_resolution (1/{R} = {1.0/R} min)."
+                )
+            return int(rounded)
+
         # 1. Initialize CP-SAT model
         model = cp_model.CpModel()
         horizon_start, horizon_end = request.time_horizon
@@ -89,6 +105,11 @@ class CPSATScheduler(BaseScheduler):
             max_horizon_min = int(max(2880, horizon_end + 1440 + 360))
         else:
             max_horizon_min = int(max(1440, horizon_end + 360))  # Allow buffer for delays
+        max_horizon_units = max_horizon_min * R
+
+        # Validate current delays against resolution
+        for s_id, d in request.current_delays.items():
+            to_units(d, f"current_delays[{s_id}]")
 
         # 2. Decision Variables: arr_var[s_id, node_idx], dep_var[s_id, node_idx]
         arr_vars: Dict[Tuple[str, int], cp_model.IntVar] = {}
@@ -123,8 +144,8 @@ class CPSATScheduler(BaseScheduler):
             k_nodes = len(nodes)
 
             for i, node in enumerate(nodes):
-                arr_var = model.NewIntVar(0, max_horizon_min, f"arr_{s_id}_{i}_{node}")
-                dep_var = model.NewIntVar(0, max_horizon_min, f"dep_{s_id}_{i}_{node}")
+                arr_var = model.NewIntVar(0, max_horizon_units, f"arr_{s_id}_{i}_{node}")
+                dep_var = model.NewIntVar(0, max_horizon_units, f"dep_{s_id}_{i}_{node}")
                 arr_vars[(s_id, i)] = arr_var
                 dep_vars[(s_id, i)] = dep_var
 
@@ -164,9 +185,9 @@ class CPSATScheduler(BaseScheduler):
             tt_origin = tt_lookup.get((s_id, origin_node))
             offset_0 = day_offsets.get((s_id, 0), 0.0)
             if tt_origin and tt_origin.departure:
-                sched_dep_min = int(round(time_to_minutes(tt_origin.departure) + offset_0))
+                sched_dep_units = to_units(time_to_minutes(tt_origin.departure) + offset_0, f"origin_dep_{s_id}")
                 # Cannot depart origin earlier than published schedule
-                model.Add(dep_vars[(s_id, 0)] >= sched_dep_min)
+                model.Add(dep_vars[(s_id, 0)] >= sched_dep_units)
                 model.Add(arr_vars[(s_id, 0)] == dep_vars[(s_id, 0)])
             else:
                 # Default start within horizon
@@ -178,13 +199,13 @@ class CPSATScheduler(BaseScheduler):
                 offset_i = day_offsets.get((s_id, i), 0.0)
                 if tt_entry:
                     if tt_entry.arrival and i > 0:
-                        sched_arr_min = int(round(time_to_minutes(tt_entry.arrival) + offset_i))
+                        sched_arr_units = to_units(time_to_minutes(tt_entry.arrival) + offset_i, f"sched_arr_{s_id}_{node}")
                         # Train arrives around or after scheduled arrival
                         # We track delay = max(0, arr - sched_arr)
                     if tt_entry.departure and i < len(nodes) - 1:
-                        sched_dep_min = int(round(time_to_minutes(tt_entry.departure) + offset_i))
+                        sched_dep_units = to_units(time_to_minutes(tt_entry.departure) + offset_i, f"sched_dep_{s_id}_{node}")
                         # Cannot depart commercial passenger stop early
-                        model.Add(dep_vars[(s_id, i)] >= sched_dep_min)
+                        model.Add(dep_vars[(s_id, i)] >= sched_dep_units)
 
         # 5. Physics & Running Time Constraints along Route Edges
         # and Section Occupancy Intervals for NoOverlap
@@ -203,16 +224,17 @@ class CPSATScheduler(BaseScheduler):
                 u, v = nodes[i], nodes[i + 1]
                 ts = get_track_section(u, v, dir_hint)
 
-                travel_time_min = int(round(ts.travel_time_minutes)) if ts else 3
-                travel_time_min = max(1, travel_time_min)
-                headway_min = int(round(ts.minimum_headway_minutes)) if (ts and ts.minimum_headway_minutes > 0) else 3
-                headway_min = max(1, headway_min)
+                travel_time_val = ts.travel_time_minutes if ts else 3.0
+                travel_time_units = max(1, to_units(travel_time_val, f"travel_time_{u}_{v}"))
+
+                headway_val = ts.minimum_headway_minutes if (ts and ts.minimum_headway_minutes > 0) else 3.0
+                headway_units = max(1, to_units(headway_val, f"headway_{ts.id if ts else f'SEC_{u}_{v}'}"))
 
                 dep_u = dep_vars[(s_id, i)]
                 arr_v = arr_vars[(s_id, i + 1)]
 
                 # Physics: Arrival at v >= Departure from u + travel time
-                model.Add(arr_v >= dep_u + travel_time_min)
+                model.Add(arr_v >= dep_u + travel_time_units)
 
                 # Dwell time at intermediate station v (if not terminus)
                 if i + 1 < len(nodes) - 1:
@@ -220,21 +242,21 @@ class CPSATScheduler(BaseScheduler):
                     tt_v = tt_lookup.get((s_id, v))
                     # If commercial stop with dwell in timetable
                     if tt_v and tt_v.arrival and tt_v.departure:
-                        sched_dwell = int(round(time_to_minutes(tt_v.departure) - time_to_minutes(tt_v.arrival)))
-                        min_dwell = max(1, sched_dwell)
+                        sched_dwell_min = time_to_minutes(tt_v.departure) - time_to_minutes(tt_v.arrival)
+                        min_dwell_units = max(1, to_units(sched_dwell_min, f"dwell_{s_id}_{v}"))
                     else:
-                        min_dwell = 0  # Non-stop waypoint / transit node
-                    model.Add(dep_v >= arr_v + min_dwell)
+                        min_dwell_units = 0  # Non-stop waypoint / transit node
+                    model.Add(dep_v >= arr_v + min_dwell_units)
 
                 # Track section occupancy interval for capacity & headway enforcement
                 sec_id = ts.id if ts else f"SEC_{u}_{v}"
                 # Interval covers entry to exit + safety headway buffer
-                occ_duration = model.NewIntVar(travel_time_min, max_horizon_min, f"dur_{s_id}_{sec_id}_{i}")
-                model.Add(occ_duration >= arr_v - dep_u + headway_min)
+                occ_duration = model.NewIntVar(travel_time_units, max_horizon_units, f"dur_{s_id}_{sec_id}_{i}")
+                model.Add(occ_duration >= arr_v - dep_u + headway_units)
                 occ_interval = model.NewIntervalVar(
                     dep_u,
                     occ_duration,
-                    model.NewIntVar(0, max_horizon_min, f"end_{s_id}_{sec_id}_{i}"),
+                    model.NewIntVar(0, max_horizon_units, f"end_{s_id}_{sec_id}_{i}"),
                     f"occ_{s_id}_{sec_id}_{i}",
                 )
                 section_intervals[sec_id].append((s_id, occ_interval))
@@ -271,7 +293,7 @@ class CPSATScheduler(BaseScheduler):
         # 8. Enforce Junction / Interlocking Constraints
         for jct_const in request.junction_constraints:
             node = jct_const.node_id
-            clearance = int(round(jct_const.clearance_time_minutes))
+            clearance_units = to_units(jct_const.clearance_time_minutes, f"junction_{jct_const.junction_id}_clearance")
             jct_intervals: List[cp_model.IntervalVar] = []
 
             for s_id in jct_const.competing_service_ids:
@@ -282,12 +304,12 @@ class CPSATScheduler(BaseScheduler):
                     if n == node or n in jct_const.junction_id:
                         arr_n = arr_vars[(s_id, i)]
                         dep_n = dep_vars[(s_id, i)]
-                        dur = model.NewIntVar(clearance, max_horizon_min, f"jct_dur_{s_id}_{node}")
-                        model.Add(dur >= dep_n - arr_n + clearance)
+                        dur = model.NewIntVar(clearance_units, max_horizon_units, f"jct_dur_{s_id}_{node}")
+                        model.Add(dur >= dep_n - arr_n + clearance_units)
                         j_int = model.NewIntervalVar(
                             arr_n,
                             dur,
-                            model.NewIntVar(0, max_horizon_min, f"jct_end_{s_id}_{node}"),
+                            model.NewIntVar(0, max_horizon_units, f"jct_end_{s_id}_{node}"),
                             f"jct_occ_{s_id}_{node}",
                         )
                         jct_intervals.append(j_int)
@@ -301,7 +323,7 @@ class CPSATScheduler(BaseScheduler):
         # 9. Enforce Precedence Constraints
         for prec in request.precedence_constraints:
             s1, s2, res_id = prec.earlier_service_id, prec.later_service_id, prec.resource_id
-            sep = int(round(prec.separation_minutes))
+            sep_units = to_units(prec.separation_minutes, f"precedence_separation_{s1}_{s2}")
             if s1 in service_nodes and s2 in service_nodes:
                 # Find matching node if res_id is a node
                 nodes1 = service_nodes[s1]
@@ -309,14 +331,14 @@ class CPSATScheduler(BaseScheduler):
                 for i1, n1 in enumerate(nodes1):
                     for i2, n2 in enumerate(nodes2):
                         if n1 == n2 and (n1 == res_id or res_id in n1 or res_id == "*"):
-                            model.Add(dep_vars[(s2, i2)] >= dep_vars[(s1, i1)] + sep)
+                            model.Add(dep_vars[(s2, i2)] >= dep_vars[(s1, i1)] + sep_units)
 
         # 10. Multi-Objective Function
         # Minimize: total weighted delay + departure schedule deviation + max delay
         weights = request.weights
         delay_terms: List[Tuple[cp_model.IntVar, int]] = []
         dev_terms: List[Tuple[cp_model.IntVar, int]] = []
-        max_delay_var = model.NewIntVar(0, max_horizon_min, "max_delay")
+        max_delay_var = model.NewIntVar(0, max_horizon_units, "max_delay")
 
         for s_id, service in request.services.items():
             if s_id not in service_nodes:
@@ -334,16 +356,16 @@ class CPSATScheduler(BaseScheduler):
             tt_dest = tt_lookup.get((s_id, dest_node))
             offset_dest = day_offsets.get((s_id, k_final), 0.0)
             if tt_dest and tt_dest.arrival:
-                sched_dest_min = int(round(time_to_minutes(tt_dest.arrival) + offset_dest))
+                sched_dest_units = to_units(time_to_minutes(tt_dest.arrival) + offset_dest, f"dest_arr_{s_id}")
             else:
                 tt_origin = tt_lookup.get((s_id, nodes[0]))
                 offset_0 = day_offsets.get((s_id, 0), 0.0)
-                sched_origin = int(round(time_to_minutes(tt_origin.departure) + offset_0)) if (tt_origin and tt_origin.departure) else 0
-                sched_dest_min = sched_origin + (len(nodes) * 3)
+                sched_origin = time_to_minutes(tt_origin.departure) + offset_0 if (tt_origin and tt_origin.departure) else 0.0
+                sched_dest_units = to_units(sched_origin + (len(nodes) * 3.0), f"dest_arr_fallback_{s_id}")
 
             dest_arr = arr_vars[(s_id, k_final)]
-            delay_dest = model.NewIntVar(0, max_horizon_min, f"delay_{s_id}")
-            model.Add(delay_dest >= dest_arr - sched_dest_min)
+            delay_dest = model.NewIntVar(0, max_horizon_units, f"delay_{s_id}")
+            model.Add(delay_dest >= dest_arr - sched_dest_units)
             model.Add(max_delay_var >= delay_dest)
 
             # Add to objective
@@ -356,9 +378,9 @@ class CPSATScheduler(BaseScheduler):
             origin_dep = dep_vars[(s_id, 0)]
             tt_origin = tt_lookup.get((s_id, nodes[0]))
             if tt_origin and tt_origin.departure:
-                sched_origin_min = int(round(time_to_minutes(tt_origin.departure)))
-                dev_var = model.NewIntVar(0, max_horizon_min, f"dev_{s_id}")
-                model.Add(dev_var >= origin_dep - sched_origin_min)
+                sched_origin_units = to_units(time_to_minutes(tt_origin.departure), f"origin_dev_{s_id}")
+                dev_var = model.NewIntVar(0, max_horizon_units, f"dev_{s_id}")
+                model.Add(dev_var >= origin_dep - sched_origin_units)
                 dev_weight = int(round(weights.schedule_deviation_weight * 10))
                 dev_terms.append((dev_var, max(1, dev_weight)))
 
@@ -385,9 +407,9 @@ class CPSATScheduler(BaseScheduler):
                         if adj.station_id in stn_to_idx:
                             idx = stn_to_idx[adj.station_id]
                             if adj.adjusted_arrival is not None and (s_id, idx) in arr_vars:
-                                model.AddHint(arr_vars[(s_id, idx)], int(round(adj.adjusted_arrival)))
+                                model.AddHint(arr_vars[(s_id, idx)], int(round(adj.adjusted_arrival * R)))
                             if adj.adjusted_departure is not None and (s_id, idx) in dep_vars:
-                                model.AddHint(dep_vars[(s_id, idx)], int(round(adj.adjusted_departure)))
+                                model.AddHint(dep_vars[(s_id, idx)], int(round(adj.adjusted_departure * R)))
 
         # 11. Execute CP-SAT Solver
         solver = cp_model.CpSolver()
@@ -438,8 +460,8 @@ class CPSATScheduler(BaseScheduler):
 
             for i, node in enumerate(nodes):
                 total_stops += 1
-                opt_arr = float(solver.Value(arr_vars[(s_id, i)]))
-                opt_dep = float(solver.Value(dep_vars[(s_id, i)]))
+                opt_arr = float(solver.Value(arr_vars[(s_id, i)])) / R
+                opt_dep = float(solver.Value(dep_vars[(s_id, i)])) / R
 
                 tt_entry = tt_lookup.get((s_id, node))
                 offset_i = day_offsets.get((s_id, i), 0.0)
@@ -487,8 +509,8 @@ class CPSATScheduler(BaseScheduler):
                     on_time_stops += 1
 
             # Travel duration
-            orig_t = solver.Value(dep_vars[(s_id, 0)])
-            dest_t = solver.Value(arr_vars[(s_id, len(nodes) - 1)])
+            orig_t = float(solver.Value(dep_vars[(s_id, 0)])) / R
+            dest_t = float(solver.Value(arr_vars[(s_id, len(nodes) - 1)])) / R
             total_travel_time += max(0.0, float(dest_t - orig_t))
 
             adjusted_timetables[s_id] = adj_list
@@ -505,8 +527,8 @@ class CPSATScheduler(BaseScheduler):
                     for c_node in sorted(list(common_nodes)):
                         idx1 = service_nodes[s1].index(c_node)
                         idx2 = service_nodes[s2].index(c_node)
-                        t1 = solver.Value(dep_vars[(s1, idx1)])
-                        t2 = solver.Value(dep_vars[(s2, idx2)])
+                        t1 = float(solver.Value(dep_vars[(s1, idx1)])) / R
+                        t2 = float(solver.Value(dep_vars[(s2, idx2)])) / R
                         if t1 != t2:
                             first = s1 if t1 < t2 else s2
                             second = s2 if t1 < t2 else s1
@@ -515,7 +537,7 @@ class CPSATScheduler(BaseScheduler):
                                     resource_id=c_node,
                                     first_service_id=first,
                                     second_service_id=second,
-                                    reason=f"Optimized departure order at bottleneck '{c_node}' ({minutes_to_time_str(min(t1, t2))} precedes {minutes_to_time_str(max(t1, t2))})",
+                                    reason=f"Optimized departure order at bottleneck '{c_node}' ({minutes_to_time_str(min(t1, t2), include_seconds=(min(t1, t2) % 1.0 != 0))} precedes {minutes_to_time_str(max(t1, t2), include_seconds=(max(t1, t2) % 1.0 != 0))})",
                                 )
                             )
 

@@ -283,6 +283,18 @@ class OptimizeRequest(BaseModel):
         False,
         description="Opt-in flag (default False). When True, applies +1440 minute day wrap to services crossing midnight.",
     )
+    time_resolution: Optional[int] = Field(
+        1,
+        description="Opt-in time resolution multiplier (1=1 min, 2=0.5 min/30s). Defaults to 1.",
+        json_schema_extra={"example": 1},
+    )
+
+    @field_validator("time_resolution")
+    @classmethod
+    def validate_time_resolution(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and v < 1:
+            raise ValueError(f"time_resolution must be an integer >= 1, got {v}")
+        return v
 
     @field_validator("departure_delays")
     @classmethod
@@ -371,6 +383,18 @@ class WhatIfRequest(BaseModel):
         False,
         description="Opt-in flag (default False). When True, applies +1440 minute day wrap to services crossing midnight.",
     )
+    time_resolution: Optional[int] = Field(
+        1,
+        description="Opt-in time resolution multiplier (1=1 min, 2=0.5 min/30s). Defaults to 1.",
+        json_schema_extra={"example": 1},
+    )
+
+    @field_validator("time_resolution")
+    @classmethod
+    def validate_time_resolution(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and v < 1:
+            raise ValueError(f"time_resolution must be an integer >= 1, got {v}")
+        return v
 
     @field_validator("departure_delays")
     @classmethod

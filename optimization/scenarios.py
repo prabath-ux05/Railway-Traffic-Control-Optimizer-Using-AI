@@ -152,6 +152,7 @@ class Scenario:
     custom_headway_overrides: Dict[str, float] = field(default_factory=dict)
     injected_conflicts: List[Conflict] = field(default_factory=list)
     objective_mode: str = "WEIGHTED"
+    time_resolution: int = 1
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -167,6 +168,7 @@ class Scenario:
             "custom_headway_overrides": self.custom_headway_overrides,
             "injected_conflicts": [c.to_dict() for c in self.injected_conflicts],
             "objective_mode": self.objective_mode,
+            "time_resolution": self.time_resolution,
         }
 
 
@@ -769,15 +771,23 @@ class ScenarioRunner:
         self,
         scenario: Scenario,
         time_horizon: Optional[Tuple[float, float]] = None,
+        apply_midnight_wrap: Optional[bool] = None,
+        time_resolution: Optional[int] = None,
     ) -> ScenarioComparison:
         """Alias for run_scenario."""
-        return self.run_scenario(scenario=scenario, time_horizon=time_horizon)
+        return self.run_scenario(
+            scenario=scenario,
+            time_horizon=time_horizon,
+            apply_midnight_wrap=apply_midnight_wrap,
+            time_resolution=time_resolution,
+        )
 
     def run_scenario(
         self,
         scenario: Scenario,
         time_horizon: Optional[Tuple[float, float]] = None,
         apply_midnight_wrap: Optional[bool] = None,
+        time_resolution: Optional[int] = None,
     ) -> ScenarioComparison:
         """Execute a What-If scenario and compute comparative metrics."""
         # 1. Select target services
@@ -788,6 +798,17 @@ class ScenarioRunner:
             if s_id in self.network.services
         }
 
+        time_res = time_resolution if time_resolution is not None else getattr(scenario, "time_resolution", 1)
+        if time_res is None or time_res < 1:
+            time_res = 1
+
+        def check_multiple(val: float, name: str):
+            scaled = val * time_res
+            if abs(scaled - round(scaled)) > 1e-4:
+                raise ValueError(
+                    f"Value {val} for '{name}' is not an exact multiple of 1/time_resolution (1/{time_res} = {1.0/time_res} min)."
+                )
+
         # 2. Build Base Request (using cloned objects)
         cloned_tt = copy.deepcopy(self.network.timetable)
         cloned_sections = copy.deepcopy(self.network.track_sections)
@@ -797,28 +818,31 @@ class ScenarioRunner:
         for s_id, dep_delay in scenario.departure_delays.items():
             if dep_delay <= 0:
                 continue
+            check_multiple(dep_delay, f"departure_delay_{s_id}")
             # Find origin stop
             svc_entries = [e for e in cloned_tt if e.service_id == s_id]
             svc_entries.sort(key=lambda e: e.stop_sequence)
             if svc_entries and svc_entries[0].departure:
                 orig_dep_min = time_to_minutes(svc_entries[0].departure)
                 new_dep_min = orig_dep_min + dep_delay
-                svc_entries[0].departure = minutes_to_time_str(new_dep_min)
+                svc_entries[0].departure = minutes_to_time_str(new_dep_min, include_seconds=(new_dep_min % 1.0 != 0))
 
         # Apply intermediate station delays
         for s_id, stn_map in scenario.station_delays.items():
             for stn_id, extra_delay in stn_map.items():
+                check_multiple(extra_delay, f"station_delay_{s_id}_{stn_id}")
                 for entry in cloned_tt:
                     if entry.service_id == s_id and entry.station_id == stn_id:
                         if entry.arrival:
                             arr_m = time_to_minutes(entry.arrival) + extra_delay
-                            entry.arrival = minutes_to_time_str(arr_m)
+                            entry.arrival = minutes_to_time_str(arr_m, include_seconds=(arr_m % 1.0 != 0))
                         if entry.departure:
                             dep_m = time_to_minutes(entry.departure) + extra_delay
-                            entry.departure = minutes_to_time_str(dep_m)
+                            entry.departure = minutes_to_time_str(dep_m, include_seconds=(dep_m % 1.0 != 0))
 
         # Apply speed restrictions
         for sec_id, new_tt in scenario.track_speed_restrictions.items():
+            check_multiple(float(new_tt), f"track_speed_restriction_{sec_id}")
             if sec_id in cloned_sections:
                 cloned_sections[sec_id].travel_time_minutes = float(new_tt)
 
@@ -864,6 +888,9 @@ class ScenarioRunner:
                 current_delays[s_id] = d_delay
 
         apply_wrap = apply_midnight_wrap if apply_midnight_wrap is not None else getattr(scenario, "apply_midnight_wrap", False)
+        time_res = time_resolution if time_resolution is not None else getattr(scenario, "time_resolution", 1)
+        if time_res is None or time_res < 1:
+            time_res = 1
 
         # Build OptimizationRequest
         request = OptimizationRequest(
@@ -882,6 +909,7 @@ class ScenarioRunner:
             weights=self.objective_weights,
             objective_mode=getattr(scenario, "objective_mode", "WEIGHTED"),
             apply_midnight_wrap=apply_wrap,
+            time_resolution=time_res,
         )
 
         # 3. Detect Conflicts on Scenario State (throat sections & corridor headway)
@@ -968,6 +996,7 @@ class ScenarioRunner:
             time_limit_seconds=self.time_limit_seconds,
             objective=OptimizationObjective(weights=self.objective_weights),
             objective_mode=getattr(scenario, "objective_mode", "WEIGHTED"),
+            time_resolution=time_res,
         )
         opt_result = cpsat_solver.schedule(request)
 

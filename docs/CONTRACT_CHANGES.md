@@ -79,4 +79,12 @@ This log documents all additive changes to API endpoints and runtime contracts.
 | `/api/v1/optimize`, `/api/v1/what-if` | `apply_midnight_wrap` | Request | `Optional[bool]` | `False` | Opt-in flag (default False). When True, applies +1440 minute day wrap to services crossing midnight (e.g., SRV_16159_01). Corrected evaluation results stored separately in `data/evaluation/v2/`. |
 | `OptimizationRequest`, `ScenarioRunner`, `ResearchExperimentRunner` | `apply_midnight_wrap` | Config / Parameter | `bool` | `False` | Internal model/runner parameter enabling day-wrap calculations when opt-in flag is True. Default False preserves frozen paper numbers. |
 
+## Batch 9: Time Resolution Parameterization
+
+| Endpoint / Component | Field / Parameter | Direction | Type | Default | Reason / Description |
+|---|---|:---:|:---:|:---:|---|
+| `/api/v1/optimize`, `/api/v1/what-if` | `time_resolution` | Request | `Optional[int]` | `1` | Opt-in time resolution multiplier (1 = 1 minute, 2 = 0.5 minute / 30 seconds). Internal CP-SAT integer unit is `1/time_resolution` minutes. Fractional inputs must be exact multiples of `1/time_resolution` or an HTTP 400 Bad Request error is raised. Results are converted back to minutes. |
+| `OptimizationRequest`, `CPSATScheduler`, `ScenarioRunner`, `PipelineOrchestrator`, `ResearchExperimentRunner`, `ComparativeAnalyzer` | `time_resolution` | Config / Parameter | `int` | `1` | Configures internal time discretization granularity. Default `1` preserves frozen paper results bit-for-bit. |
+
+
 

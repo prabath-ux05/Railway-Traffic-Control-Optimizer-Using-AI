@@ -888,9 +888,13 @@ class ComparativeAnalyzer:
         self,
         network: Optional[Network] = None,
         time_limit_seconds: float = 15.0,
+        apply_midnight_wrap: bool = False,
+        time_resolution: int = 1,
     ) -> None:
         self._time_limit = time_limit_seconds
         self._network = network
+        self._apply_midnight_wrap = apply_midnight_wrap
+        self._time_resolution = time_resolution
 
     def _load_network(self) -> Network:
         if self._network is not None:
@@ -906,7 +910,12 @@ class ComparativeAnalyzer:
         return net
 
     def _run_phase31_1(self, net: Network) -> List[ComparativeRecord]:
-        runner = ResearchExperimentRunner(network=net, time_limit_seconds=self._time_limit)
+        runner = ResearchExperimentRunner(
+            network=net,
+            time_limit_seconds=self._time_limit,
+            apply_midnight_wrap=self._apply_midnight_wrap,
+            time_resolution=self._time_resolution,
+        )
         configs = create_phase31_research_suite()
         records: List[ComparativeRecord] = []
         for cfg in configs:
@@ -921,6 +930,8 @@ class ComparativeAnalyzer:
             network=net,
             time_limit_seconds=self._time_limit,
             modes=["nominal", "compound"],
+            apply_midnight_wrap=self._apply_midnight_wrap,
+            time_resolution=self._time_resolution,
         )
         nominal_records: List[ComparativeRecord] = []
         compound_records: List[ComparativeRecord] = []
@@ -941,6 +952,8 @@ class ComparativeAnalyzer:
         suite = run_severity_experiments(
             network=net,
             time_limit_seconds=self._time_limit,
+            apply_midnight_wrap=self._apply_midnight_wrap,
+            time_resolution=self._time_resolution,
         )
         records: List[ComparativeRecord] = []
         for res in suite.results:

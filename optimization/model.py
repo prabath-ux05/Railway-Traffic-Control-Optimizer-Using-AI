@@ -210,6 +210,7 @@ class OptimizationRequest:
     fifo_timetables: Optional[Dict[str, List[ServiceTimetableAdjustment]]] = None
     enable_platform_conflicts: bool = False
     apply_midnight_wrap: bool = False
+    time_resolution: int = 1
 
     @classmethod
     def from_network_and_state(
@@ -221,6 +222,7 @@ class OptimizationRequest:
         time_horizon: Optional[Tuple[float, float]] = None,
         weights: Optional[ObjectiveWeights] = None,
         apply_midnight_wrap: bool = False,
+        time_resolution: int = 1,
     ) -> "OptimizationRequest":
         """Factory constructor that builds an OptimizationRequest from network and state."""
         # Filter services if subset requested
@@ -281,6 +283,7 @@ class OptimizationRequest:
             junction_constraints=junctions_const,
             time_horizon=horizon,
             apply_midnight_wrap=apply_midnight_wrap,
+            time_resolution=time_resolution,
             weights=weights or ObjectiveWeights(),
         )
 

@@ -355,6 +355,8 @@ def run_scalability_experiments(
     network: Optional[Network] = None,
     time_limit_seconds: float = 15.0,
     modes: Optional[List[str]] = None,
+    apply_midnight_wrap: bool = False,
+    time_resolution: int = 1,
 ) -> ScalabilitySuiteResult:
     """Execute the full multi-load scalability benchmark suite.
 
@@ -379,7 +381,12 @@ def run_scalability_experiments(
     else:
         net = network
 
-    runner = ResearchExperimentRunner(network=net, time_limit_seconds=time_limit_seconds)
+    runner = ResearchExperimentRunner(
+        network=net,
+        time_limit_seconds=time_limit_seconds,
+        apply_midnight_wrap=apply_midnight_wrap,
+        time_resolution=time_resolution,
+    )
     configs = create_scalability_suite(network=net, modes=modes, time_limit_seconds=time_limit_seconds)
 
     suite_result = ScalabilitySuiteResult(

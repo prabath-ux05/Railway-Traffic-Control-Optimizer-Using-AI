@@ -636,6 +636,8 @@ def run_severity_experiments(
     cohort: Optional[List[str]] = None,
     time_limit_seconds: float = 15.0,
     suite_id: str = "PHASE_31_3_SEVERITY_SUITE",
+    apply_midnight_wrap: bool = False,
+    time_resolution: int = 1,
 ) -> SeveritySuiteResult:
     """Executes the full 18-experiment severity suite and returns structured results."""
     target_cohort = list(cohort) if cohort is not None else list(COHORT_20)
@@ -657,7 +659,12 @@ def run_severity_experiments(
     else:
         net = network
 
-    runner = ResearchExperimentRunner(network=net, time_limit_seconds=time_limit_seconds)
+    runner = ResearchExperimentRunner(
+        network=net,
+        time_limit_seconds=time_limit_seconds,
+        apply_midnight_wrap=apply_midnight_wrap,
+        time_resolution=time_resolution,
+    )
     configs = create_severity_suite(cohort=target_cohort, time_limit_seconds=time_limit_seconds)
 
     results: List[ResearchExperimentResult] = []
