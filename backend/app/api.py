@@ -34,6 +34,7 @@ from simulation.state_manager import (
     find_track_section,
 )
 from optimization.scenarios import Scenario, ScenarioRunner
+from optimization.model import validate_data_time_resolution
 from backend.app.pipeline import PipelineOrchestrator, _load_default_network
 from backend.app.runtime_engine import get_live_engine
 from evaluation.consolidation import run_consolidated_research
@@ -691,12 +692,15 @@ def run_optimization(req: OptimizeRequest) -> OptimizeResponse:
         objective_mode=req.objective_mode or "WEIGHTED",
     )
 
+    eff_time_resolution = req.time_resolution or 1
+
     try:
+        validate_data_time_resolution(net, eff_time_resolution)
         comparison = runner.run_scenario(
             scenario=scenario,
             time_horizon=req.time_horizon,
             apply_midnight_wrap=req.apply_midnight_wrap,
-            time_resolution=req.time_resolution or 1,
+            time_resolution=eff_time_resolution,
         )
     except ValueError as ve:
         raise HTTPException(
@@ -796,6 +800,7 @@ def run_optimization(req: OptimizeRequest) -> OptimizeResponse:
         published_adjusted_timetables=published_timetables,
         three_tier_timetable=three_tier_tt,
         corridor_performance=comparison.build_corridor_performance_summary(net) if is_sol else [],
+        time_resolution=eff_time_resolution,
     )
 
 
@@ -874,14 +879,17 @@ def run_what_if(req: WhatIfRequest) -> WhatIfResponse:
         objective_mode=req.objective_mode or "WEIGHTED",
     )
 
+    eff_time_resolution = req.time_resolution or 1
+
     try:
+        validate_data_time_resolution(net, eff_time_resolution)
         result = orchestrator.run_pipeline(
             scenario=scenario,
             service_ids=selected_svcs,
             time_horizon=req.time_horizon,
             objective_mode=req.objective_mode or "WEIGHTED",
             apply_midnight_wrap=req.apply_midnight_wrap or False,
-            time_resolution=req.time_resolution or 1,
+            time_resolution=eff_time_resolution,
         )
     except ValueError as ve:
         raise HTTPException(
@@ -933,6 +941,7 @@ def run_what_if(req: WhatIfRequest) -> WhatIfResponse:
         controller_summary=controller_summary,
         metadata=result.metadata,
         corridor_performance=result.baseline_comparison.corridor_performance if (hasattr(result.baseline_comparison, "corridor_performance") and is_sol) else None,
+        time_resolution=eff_time_resolution,
     )
 
 

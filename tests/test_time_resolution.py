@@ -98,8 +98,9 @@ def test_40_active_nominal_case_wrap_resolution_2():
 
 
 def test_api_optimize_with_time_resolution():
-    """POST /api/v1/optimize accepts time_resolution parameter."""
+    """POST /api/v1/optimize accepts time_resolution, echoes it, and rejects non-multiples with 400."""
     with TestClient(app) as client:
+        # Valid resolution 2: accepted, echoed
         resp = client.post(
             "/api/v1/optimize",
             json={
@@ -112,8 +113,41 @@ def test_api_optimize_with_time_resolution():
         data = resp.json()
         assert data["solution_available"] is True
         assert data["solver_status"] in ("OPTIMAL", "FEASIBLE")
+        assert data["time_resolution"] == 2
 
-        # Invalid time_resolution rejected
+        # Default resolution 1: echoed as 1
+        resp_def = client.post(
+            "/api/v1/optimize",
+            json={
+                "service_ids": ["SRV_12607_01", "SRV_12609_01"],
+            },
+        )
+        assert resp_def.status_code == 200
+        assert resp_def.json()["time_resolution"] == 1
+
+        # Resolution 3: must be rejected with 400
+        resp_r3 = client.post(
+            "/api/v1/optimize",
+            json={
+                "service_ids": ["SRV_12607_01"],
+                "time_resolution": 3,
+            },
+        )
+        assert resp_r3.status_code == 400
+        assert "not an exact multiple of 1/time_resolution" in resp_r3.json()["detail"]
+
+        # Resolution 61: must be rejected with 400
+        resp_r61 = client.post(
+            "/api/v1/optimize",
+            json={
+                "service_ids": ["SRV_12607_01"],
+                "time_resolution": 61,
+            },
+        )
+        assert resp_r61.status_code == 400
+        assert "not an exact multiple of 1/time_resolution" in resp_r61.json()["detail"]
+
+        # Invalid time_resolution <= 0 rejected with 422
         resp_invalid = client.post(
             "/api/v1/optimize",
             json={
@@ -125,8 +159,9 @@ def test_api_optimize_with_time_resolution():
 
 
 def test_api_what_if_with_time_resolution():
-    """POST /api/v1/what-if accepts time_resolution parameter."""
+    """POST /api/v1/what-if accepts time_resolution, echoes it, and rejects non-multiples with 400."""
     with TestClient(app) as client:
+        # Valid resolution 2: accepted, echoed
         resp = client.post(
             "/api/v1/what-if",
             json={
@@ -139,3 +174,36 @@ def test_api_what_if_with_time_resolution():
         data = resp.json()
         assert data["solution_available"] is True
         assert data["solver_status"] in ("OPTIMAL", "FEASIBLE")
+        assert data["time_resolution"] == 2
+
+        # Default resolution 1: echoed as 1
+        resp_def = client.post(
+            "/api/v1/what-if",
+            json={
+                "service_ids": ["SRV_12607_01", "SRV_12609_01"],
+            },
+        )
+        assert resp_def.status_code == 200
+        assert resp_def.json()["time_resolution"] == 1
+
+        # Resolution 3: must be rejected with 400
+        resp_r3 = client.post(
+            "/api/v1/what-if",
+            json={
+                "service_ids": ["SRV_12607_01"],
+                "time_resolution": 3,
+            },
+        )
+        assert resp_r3.status_code == 400
+        assert "not an exact multiple of 1/time_resolution" in resp_r3.json()["detail"]
+
+        # Resolution 61: must be rejected with 400
+        resp_r61 = client.post(
+            "/api/v1/what-if",
+            json={
+                "service_ids": ["SRV_12607_01"],
+                "time_resolution": 61,
+            },
+        )
+        assert resp_r61.status_code == 400
+        assert "not an exact multiple of 1/time_resolution" in resp_r61.json()["detail"]

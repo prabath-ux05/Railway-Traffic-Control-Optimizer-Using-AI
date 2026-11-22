@@ -34,6 +34,7 @@ from optimization.model import (
     PlatformConstraint,
     PrecedenceConstraint,
     ServiceTimetableAdjustment,
+    validate_data_time_resolution,
 )
 from optimization.objective import ObjectiveWeights, OptimizationObjective
 from optimization.scheduler import (
@@ -801,6 +802,8 @@ class ScenarioRunner:
         time_res = time_resolution if time_resolution is not None else getattr(scenario, "time_resolution", 1)
         if time_res is None or time_res < 1:
             time_res = 1
+
+        validate_data_time_resolution(self.network, time_res)
 
         def check_multiple(val: float, name: str):
             scaled = val * time_res

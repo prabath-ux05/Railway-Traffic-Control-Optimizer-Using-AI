@@ -351,6 +351,7 @@ class OptimizeResponse(BaseModel):
     published_adjusted_timetables: Optional[Dict[str, List[TimetableAdjustmentSummary]]] = None
     three_tier_timetable: Optional[List[Dict[str, Any]]] = None
     corridor_performance: Optional[List[Dict[str, Any]]] = None
+    time_resolution: int = Field(1, description="Time resolution multiplier (1 = 1-min units, 2 = 30-sec units)")
 
 
 # ---------------------------------------------------------------------------
@@ -513,6 +514,7 @@ class WhatIfResponse(BaseModel):
     controller_summary: Dict[str, Any]
     metadata: Dict[str, Any]
     corridor_performance: Optional[List[Dict[str, Any]]] = None
+    time_resolution: int = Field(1, description="Time resolution multiplier (1 = 1-min units, 2 = 30-sec units)")
 
 
 # ---------------------------------------------------------------------------

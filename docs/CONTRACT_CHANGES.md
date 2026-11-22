@@ -86,5 +86,12 @@ This log documents all additive changes to API endpoints and runtime contracts.
 | `/api/v1/optimize`, `/api/v1/what-if` | `time_resolution` | Request | `Optional[int]` | `1` | Opt-in time resolution multiplier (1 = 1 minute, 2 = 0.5 minute / 30 seconds). Internal CP-SAT integer unit is `1/time_resolution` minutes. Fractional inputs must be exact multiples of `1/time_resolution` or an HTTP 400 Bad Request error is raised. Results are converted back to minutes. |
 | `OptimizationRequest`, `CPSATScheduler`, `ScenarioRunner`, `PipelineOrchestrator`, `ResearchExperimentRunner`, `ComparativeAnalyzer` | `time_resolution` | Config / Parameter | `int` | `1` | Configures internal time discretization granularity. Default `1` preserves frozen paper results bit-for-bit. |
 
+## Batch 10: Time Resolution Validation & Response Echoing
+
+| Endpoint / Component | Field / Parameter | Direction | Type | Default | Reason / Description |
+|---|---|:---:|:---:|:---:|---|
+| `/api/v1/optimize`, `/api/v1/what-if` | `time_resolution` | Response | `int` | `1` | Echoes the active time resolution multiplier (1 for 1-minute units, 2 for 30-second units). |
+| `/api/v1/optimize`, `/api/v1/what-if` | `time_resolution` validation | Validation | Request Rule | N/A | Validates that every track section running time, minimum headway, junction clearance, and timetable dwell in the underlying dataset is an exact integer multiple of `1/time_resolution`. If any value is not a multiple, returns HTTP 400 Bad Request with a clear message (e.g., resolutions 3 and 61 are rejected due to 3.5 min and 1.5 min running times). |
+
 
 

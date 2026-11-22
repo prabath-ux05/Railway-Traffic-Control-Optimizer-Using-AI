@@ -30,6 +30,58 @@ from simulation.state import SimulationState
 from optimization.objective import ObjectiveWeights
 
 
+def validate_data_time_resolution(network: Any, time_resolution: int) -> None:
+    """Validate that every running time, headway, clearance, and dwell in the data is a multiple of 1/time_resolution.
+
+    Raises ValueError with a clear explanation if any value is not an exact integer multiple of 1/R.
+    """
+    R = time_resolution
+    if R <= 1:
+        return
+
+    # 1. Track sections: running time and minimum headway
+    if hasattr(network, "track_sections") and network.track_sections:
+        for ts_id, ts in sorted(network.track_sections.items()):
+            rt = getattr(ts, "travel_time_minutes", None)
+            if rt is not None:
+                scaled = rt * R
+                if abs(scaled - round(scaled)) > 1e-4:
+                    raise ValueError(
+                        f"Track section '{ts_id}' running time {rt} min is not an exact multiple of 1/time_resolution (1/{R} = {1.0/R:.4f} min)."
+                    )
+            hw = getattr(ts, "minimum_headway_minutes", None)
+            if hw is not None and hw > 0:
+                scaled = hw * R
+                if abs(scaled - round(scaled)) > 1e-4:
+                    raise ValueError(
+                        f"Track section '{ts_id}' headway {hw} min is not an exact multiple of 1/time_resolution (1/{R} = {1.0/R:.4f} min)."
+                    )
+
+    # 2. Junction clearance times
+    if hasattr(network, "junctions") and network.junctions:
+        for jct_id, jct in sorted(network.junctions.items()):
+            clr = getattr(jct, "clearance_time_minutes", 2.0)
+            scaled = clr * R
+            if abs(scaled - round(scaled)) > 1e-4:
+                raise ValueError(
+                    f"Junction '{jct_id}' clearance time {clr} min is not an exact multiple of 1/time_resolution (1/{R} = {1.0/R:.4f} min)."
+                )
+
+    # 3. Scheduled station dwell times
+    if hasattr(network, "timetable") and network.timetable:
+        for entry in network.timetable:
+            if getattr(entry, "arrival", None) and getattr(entry, "departure", None):
+                arr_m = time_to_minutes(entry.arrival)
+                dep_m = time_to_minutes(entry.departure)
+                dwell = (dep_m - arr_m) % 1440.0
+                if dwell > 0:
+                    scaled = dwell * R
+                    if abs(scaled - round(scaled)) > 1e-4:
+                        raise ValueError(
+                            f"Timetable dwell for service '{entry.service_id}' at station '{entry.station_id}' ({dwell} min) is not an exact multiple of 1/time_resolution (1/{R} = {1.0/R:.4f} min)."
+                        )
+
+
 # ---------------------------------------------------------------------------
 # Constraint Domain Models
 # ---------------------------------------------------------------------------
@@ -225,6 +277,8 @@ class OptimizationRequest:
         time_resolution: int = 1,
     ) -> "OptimizationRequest":
         """Factory constructor that builds an OptimizationRequest from network and state."""
+        validate_data_time_resolution(network, time_resolution)
+
         # Filter services if subset requested
         svcs = network.services
         if service_ids is not None:
