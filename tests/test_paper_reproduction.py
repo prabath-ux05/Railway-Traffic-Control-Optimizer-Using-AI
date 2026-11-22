@@ -9,7 +9,7 @@ from __future__ import annotations
 import os
 import pytest
 
-from scripts.reproduce_paper import audit_stored_results
+from scripts.reproduce_paper import audit_stored_results, write_reports
 
 
 def test_paper_reproduction_checks_pass():
@@ -32,3 +32,15 @@ def test_paper_reproduction_checks_pass():
     assert unverified["Compound Disruption 183 to 123 (saving 60.0 min, 32.8%)"] == "RECONSTRUCTED"
     assert unverified["20.5% mean reduction over '6 core experiments'"] == "NOT FOUND"
     assert unverified["44.3% for the most aggressive compound scenario"] == "RECONSTRUCTED"
+
+
+def test_paper_reproduction_write_reports_uses_tmp_path(tmp_path):
+    """Verify write_reports writes to specified tmp_path directory without modifying tracked files."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    results = audit_stored_results(base_dir)
+    json_path, md_path = write_reports(base_dir, results, output_dir=str(tmp_path))
+
+    assert os.path.isfile(json_path)
+    assert os.path.isfile(md_path)
+    assert str(tmp_path) in json_path
+    assert str(tmp_path) in md_path
