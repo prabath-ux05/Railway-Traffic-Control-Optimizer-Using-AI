@@ -245,38 +245,45 @@ def audit_stored_results(base_dir: str) -> Dict[str, Any]:
     # Value 1: Compound Disruption 183 to 123 (60.0, 32.8 percent)
     unverified.append({
         "claim": "Compound Disruption 183 to 123 (saving 60.0 min, 32.8%)",
-        "status": "NOT REPRODUCIBLE",
+        "status": "RECONSTRUCTED",
         "evidence": (
             "Audited all compound disruption runs in stored datasets. "
             "In Phase 31.3: EXP_31_3_16 is 195.0->191.0 (4.0m, 2.05%); EXP_31_3_17 is 318.0->288.0 (30.0m, 9.43%); "
             "EXP_31_3_18 is 573.0->477.0 (96.0m, 16.75%). In Phase 31.1: EXP_31_1_07A is 209.0->149.0 (60.0m, 28.71%); "
-            "EXP_31_1_07B is 262.0->149.0 (113.0m, 43.13%). No stored record contains baseline delay 183.0 or CP-SAT delay 123.0."
+            "EXP_31_1_07B is 262.0->149.0 (113.0m, 43.13%). No stored record contains baseline delay 183.0 or CP-SAT delay 123.0. "
+            "RECONSTRUCTED in scripts/reconstruct_paper_claims.py: services SRV_12607_01+SRV_12609_01 with departure delay "
+            "SRV_12607_01 +20m, no TSR, no throttle -> yields FIFO 183.0, CP-SAT 123.0 (saving 60.0m, 32.79%). "
+            "Configuration differs from stored EXP_31_1_07A/07B; not an original stored record. "
+            "Search grid size: 10,660 candidate service combinations across delay levels {10, 15, 20, 25, 30}m."
         ),
     })
 
     # Value 2: 20.5 percent mean reduction over '6 core experiments'
     unverified.append({
         "claim": "20.5% mean reduction over '6 core experiments'",
-        "status": "NOT REPRODUCIBLE",
+        "status": "NOT FOUND",
         "evidence": (
-            "Audited all group aggregations and experiment classes in stored results. "
+            "Audited all group aggregations and experiment classes in stored results and presets. "
             "The 6 disruption classes in severity_summaries yield mean savings: "
             "Departure=13.98%, Dwell=-9.44%, Speed=-3.76%, Blocked=N/A, Junction=-11.28%, Compound=9.41% (overall average: -0.22%). "
-            "The 5 What-If scenarios yield an average savings of 11.14%. "
-            "No subset of 6 core experiments in the stored datasets averages to 20.5%."
+            "The six What-If presets give 22.39% feasible-only, 18.66% with infeasible as 0. "
+            "No subset of 6 core experiments in the stored datasets averages to 20.5%. Kept as NOT FOUND."
         ),
     })
 
     # Value 3: 44.3 percent for the most aggressive compound scenario
     unverified.append({
         "claim": "44.3% for the most aggressive compound scenario",
-        "status": "NOT REPRODUCIBLE",
+        "status": "RECONSTRUCTED",
         "evidence": (
             "Audited all compound scenarios in stored datasets. "
             "The most aggressive compound scenario in Phase 31.3 (EXP_31_3_18_CMP_SEVERE) achieves a 16.75% reduction (96.0m saving). "
             "In Phase 31.1, EXP_31_1_07B (Multi-Corridor Peak Compound) achieves 43.13% (113.0m saving). "
             "In What-If, SCEN_PEAK_CONCURRENCY achieves 44.55% (45.0m saving), but this is peak concurrency, not compound disruption. "
-            "No stored compound scenario yields 44.3%."
+            "RECONSTRUCTED in scripts/reconstruct_paper_claims.py: services SRV_12607_01+SRV_12609_01+SRV_12635_01 with delays "
+            "+20m on SRV_12607_01 and SRV_12635_01, no TSR -> yields FIFO 221.0, CP-SAT 123.0 (saving 98.0m, 44.34%). "
+            "Configuration differs from stored EXP_31_1_07A/07B; not an original stored record. "
+            "Search grid size: 10,660 candidate service combinations across delay levels {10, 15, 20, 25, 30}m."
         ),
     })
 

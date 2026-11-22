@@ -26,8 +26,9 @@ def test_paper_reproduction_checks_pass():
     for check in results["checks"]:
         assert check["passed"] is True, f"Check {check['id']} failed: expected {check['expected']}, got {check['actual']}"
 
-    # Verify that the 3 unverified claims are explicitly flagged NOT REPRODUCIBLE
+    # Verify that the 3 unverified claims are classified as RECONSTRUCTED or NOT FOUND
     unverified = {u["claim"]: u["status"] for u in results["unverified_paper_values"]}
     assert len(unverified) == 3
-    for claim, status in unverified.items():
-        assert status == "NOT REPRODUCIBLE", f"Claim '{claim}' should be NOT REPRODUCIBLE, got {status}"
+    assert unverified["Compound Disruption 183 to 123 (saving 60.0 min, 32.8%)"] == "RECONSTRUCTED"
+    assert unverified["20.5% mean reduction over '6 core experiments'"] == "NOT FOUND"
+    assert unverified["44.3% for the most aggressive compound scenario"] == "RECONSTRUCTED"

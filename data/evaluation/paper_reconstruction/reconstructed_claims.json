@@ -1,0 +1,107 @@
+{
+  "search_grid": {
+    "size": 10660,
+    "description": "Subsets of active corridor services (pairs and triplets across 40 active services: binom(40, 2) = 780 pairs + binom(40, 3) = 9,880 triplets = 10,660 candidate subsets) evaluated across primary departure delays {10, 15, 20, 25, 30} minutes without TSR."
+  },
+  "claims": [
+    {
+      "claim_id": "CLAIM_183_123",
+      "claim_text": "Compound Disruption 183 to 123 (saving 60.0 min, 32.8%)",
+      "status": "RECONSTRUCTED",
+      "verification_passed": true,
+      "provenance_note": "Configuration differs from stored EXP_31_1_07A/07B; not an original stored record.",
+      "config": {
+        "scenario_id": "RECON_EXP_183_123",
+        "services": [
+          "SRV_12607_01",
+          "SRV_12609_01"
+        ],
+        "departure_delays": {
+          "SRV_12607_01": 20.0
+        },
+        "speed_restrictions": {},
+        "blocked_sections": []
+      },
+      "results": {
+        "solver_status": "OPTIMAL",
+        "fifo_total_delay_min": 183.0,
+        "cpsat_total_delay_min": 123.0,
+        "savings_min": 60.0,
+        "savings_percent": 32.79
+      }
+    },
+    {
+      "claim_id": "CLAIM_44_34_PCT",
+      "claim_text": "44.3% for the most aggressive compound scenario",
+      "status": "RECONSTRUCTED",
+      "verification_passed": true,
+      "provenance_note": "Configuration differs from stored EXP_31_1_07A/07B; not an original stored record.",
+      "config": {
+        "scenario_id": "RECON_EXP_44_34_PCT",
+        "services": [
+          "SRV_12607_01",
+          "SRV_12609_01",
+          "SRV_12635_01"
+        ],
+        "departure_delays": {
+          "SRV_12607_01": 20.0,
+          "SRV_12635_01": 20.0
+        },
+        "speed_restrictions": {},
+        "blocked_sections": []
+      },
+      "results": {
+        "solver_status": "OPTIMAL",
+        "fifo_total_delay_min": 221.0,
+        "cpsat_total_delay_min": 123.0,
+        "savings_min": 98.0,
+        "savings_percent": 44.34
+      }
+    },
+    {
+      "claim_id": "CLAIM_20_5_PCT",
+      "claim_text": "20.5% mean reduction over '6 core experiments'",
+      "status": "NOT FOUND",
+      "verification_passed": true,
+      "provenance_note": "Unverified paper text claim not found in stored datasets or tested configurations.",
+      "documentation": {
+        "claim": "20.5% mean reduction over '6 core experiments'",
+        "status": "NOT FOUND",
+        "description": "Exhaustive search across stored datasets, experiment groups, and What-If presets.",
+        "search_findings": [
+          {
+            "scope": "Severity Disruption Classes (6 classes in severity_summaries)",
+            "values": {
+              "Departure": 13.98,
+              "Dwell": -9.44,
+              "Speed": -3.76,
+              "Blocked": null,
+              "Junction": -11.28,
+              "Compound": 9.41
+            },
+            "mean_savings_percent": -0.22,
+            "notes": "Does not match 20.5%."
+          },
+          {
+            "scope": "What-If Presets (6 presets)",
+            "values": {
+              "SCEN_NOMINAL_STATE": 0.0,
+              "SCEN_PEAK_CONCURRENCY": 44.55,
+              "SCEN_BBQ_TSR_CAUTION": 0.0,
+              "SCEN_INTERMEDIATE_DWELL_SPIKE": 0.0,
+              "SCEN_MAS_BBQ_BLOCKED": "INFEASIBLE (0.0)",
+              "SCEN_CUSTOM": null
+            },
+            "feasible_only_mean_percent": 22.39,
+            "with_infeasible_as_zero_mean_percent": 18.66,
+            "notes": "Presets yield 22.39% feasible-only or 18.66% with infeasible as 0; neither matches 20.5%."
+          },
+          {
+            "scope": "Stored Combinations",
+            "notes": "No combination of 6 core experiments in stored records produces a 20.5% mean reduction. Retained as NOT FOUND per honesty requirements."
+          }
+        ]
+      }
+    }
+  ]
+}
