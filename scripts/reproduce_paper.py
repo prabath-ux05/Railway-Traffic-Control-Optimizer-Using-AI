@@ -254,7 +254,8 @@ def audit_stored_results(base_dir: str) -> Dict[str, Any]:
             "RECONSTRUCTED in scripts/reconstruct_paper_claims.py: services SRV_12607_01+SRV_12609_01 with departure delay "
             "SRV_12607_01 +20m, no TSR, no throttle -> yields FIFO 183.0, CP-SAT 123.0 (saving 60.0m, 32.79%). "
             "Configuration differs from stored EXP_31_1_07A/07B; not an original stored record. "
-            "Search grid size: 10,660 candidate service combinations across delay levels {10, 15, 20, 25, 30}m."
+            "Procedure: found by a neighbourhood sweep of about 500 variants around EXP_31_1_07A/07B "
+            "(cohort subsets, departure delay, TSR, junction throttle), not an exhaustive search of all pairs and triplets."
         ),
     })
 
@@ -283,7 +284,8 @@ def audit_stored_results(base_dir: str) -> Dict[str, Any]:
             "RECONSTRUCTED in scripts/reconstruct_paper_claims.py: services SRV_12607_01+SRV_12609_01+SRV_12635_01 with delays "
             "+20m on SRV_12607_01 and SRV_12635_01, no TSR -> yields FIFO 221.0, CP-SAT 123.0 (saving 98.0m, 44.34%). "
             "Configuration differs from stored EXP_31_1_07A/07B; not an original stored record. "
-            "Search grid size: 10,660 candidate service combinations across delay levels {10, 15, 20, 25, 30}m."
+            "Procedure: found by a neighbourhood sweep of about 500 variants around EXP_31_1_07A/07B "
+            "(cohort subsets, departure delay, TSR, junction throttle), not an exhaustive search of all pairs and triplets."
         ),
     })
 
@@ -318,8 +320,11 @@ def generate_console_table(results: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def write_reports(base_dir: str, results: Dict[str, Any]) -> Tuple[str, str]:
-    out_dir = os.path.join(base_dir, "data", "evaluation", "paper_reproduction")
+def write_reports(base_dir: str, results: Dict[str, Any], output_dir: Optional[str] = None) -> Tuple[str, str]:
+    if output_dir is not None:
+        out_dir = output_dir
+    else:
+        out_dir = os.path.join(base_dir, "data", "evaluation", "paper_reproduction")
     os.makedirs(out_dir, exist_ok=True)
 
     json_path = os.path.join(out_dir, "report.json")

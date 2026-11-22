@@ -13,8 +13,9 @@ Third claim (20.5% mean reduction over '6 core experiments'):
     -> NOT FOUND. Documented search results and presets tried.
 
 Classification: RECONSTRUCTED (configuration differs from stored EXP_31_1_07A/07B; not an original stored record).
-Search Grid Size: 10,660 candidate service combinations (pairs and triplets across 40 active services) evaluated across
-                  primary departure delay levels {10, 15, 20, 25, 30} minutes on bottleneck nodes without TSR.
+Search Procedure: The two configurations were found by a neighbourhood sweep of about 500 variants
+                  around EXP_31_1_07A/07B (cohort subsets, departure delay, TSR, junction throttle),
+                  not an exhaustive search of all pairs and triplets.
 """
 
 from __future__ import annotations
@@ -22,7 +23,7 @@ from __future__ import annotations
 import json
 import os
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if repo_root not in sys.path:
@@ -31,15 +32,14 @@ if repo_root not in sys.path:
 from optimization.scenarios import Scenario, ScenarioRunner
 
 
-SEARCH_GRID_SIZE = 10660
-SEARCH_GRID_DESCRIPTION = (
-    "Subsets of active corridor services (pairs and triplets across 40 active services: "
-    "binom(40, 2) = 780 pairs + binom(40, 3) = 9,880 triplets = 10,660 candidate subsets) "
-    "evaluated across primary departure delays {10, 15, 20, 25, 30} minutes without TSR."
+SEARCH_PROCEDURE_METHOD = "Neighbourhood sweep around EXP_31_1_07A/07B"
+SEARCH_PROCEDURE_DESCRIPTION = (
+    "The two configs were found by a neighbourhood sweep of about 500 variants around EXP_31_1_07A/07B "
+    "(cohort subsets, departure delay, TSR, junction throttle), not an exhaustive search of all pairs and triplets."
 )
 
 
-def run_reconstruction() -> Dict[str, Any]:
+def run_reconstruction(output_dir: Optional[str] = None) -> Dict[str, Any]:
     runner = ScenarioRunner()
 
     # -------------------------------------------------------------------------
@@ -139,9 +139,10 @@ def run_reconstruction() -> Dict[str, Any]:
     }
 
     reconstructed_results = {
-        "search_grid": {
-            "size": SEARCH_GRID_SIZE,
-            "description": SEARCH_GRID_DESCRIPTION,
+        "search_procedure": {
+            "method": SEARCH_PROCEDURE_METHOD,
+            "variants_evaluated": "about 500",
+            "description": SEARCH_PROCEDURE_DESCRIPTION,
         },
         "claims": [
             {
@@ -197,8 +198,11 @@ def run_reconstruction() -> Dict[str, Any]:
         ],
     }
 
-    # Write files to data/evaluation/paper_reconstruction/
-    out_dir = os.path.join(repo_root, "data", "evaluation", "paper_reconstruction")
+    # Write files to output directory (default: data/evaluation/paper_reconstruction/)
+    if output_dir is not None:
+        out_dir = output_dir
+    else:
+        out_dir = os.path.join(repo_root, "data", "evaluation", "paper_reconstruction")
     os.makedirs(out_dir, exist_ok=True)
 
     json_path = os.path.join(out_dir, "reconstructed_claims.json")
@@ -208,7 +212,7 @@ def run_reconstruction() -> Dict[str, Any]:
     md_path = os.path.join(out_dir, "reconstructed_claims.md")
     with open(md_path, "w", encoding="utf-8") as f:
         f.write("# CICT 2026 Paper Claims Reconstruction Report\n\n")
-        f.write(f"**Search Grid Evaluated:** {SEARCH_GRID_SIZE} candidate configurations ({SEARCH_GRID_DESCRIPTION})\n\n")
+        f.write(f"**Search Procedure:** {SEARCH_PROCEDURE_DESCRIPTION}\n\n")
         f.write("## 1. Reconstructed Claims Summary\n\n")
         f.write("| Claim Text | Classification | Configuration | FIFO (min) | CP-SAT (min) | Savings (min) | Savings (%) | Status |\n")
         f.write("|---|:---:|---|---:|---:|---:|---:|:---:|\n")

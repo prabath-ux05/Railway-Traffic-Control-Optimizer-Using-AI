@@ -1,6 +1,6 @@
 # CICT 2026 Paper Claims Reconstruction Report
 
-**Search Grid Evaluated:** 10660 candidate configurations (Subsets of active corridor services (pairs and triplets across 40 active services: binom(40, 2) = 780 pairs + binom(40, 3) = 9,880 triplets = 10,660 candidate subsets) evaluated across primary departure delays {10, 15, 20, 25, 30} minutes without TSR.)
+**Search Procedure:** The two configs were found by a neighbourhood sweep of about 500 variants around EXP_31_1_07A/07B (cohort subsets, departure delay, TSR, junction throttle), not an exhaustive search of all pairs and triplets.
 
 ## 1. Reconstructed Claims Summary
 

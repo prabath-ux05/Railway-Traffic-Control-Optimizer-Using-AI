@@ -14,7 +14,7 @@ import os
 import pytest
 
 from optimization.scenarios import Scenario, ScenarioRunner
-from scripts.reconstruct_paper_claims import run_reconstruction, SEARCH_GRID_SIZE
+from scripts.reconstruct_paper_claims import run_reconstruction, SEARCH_PROCEDURE_METHOD
 
 
 def test_reconstructed_claim_183_to_123():
@@ -54,11 +54,12 @@ def test_reconstructed_claim_44_34_percent():
     assert round(pct, 2) == 44.34
 
 
-def test_reconstruction_runner_and_artifacts():
-    """Verify run_reconstruction generates artifacts and labels them RECONSTRUCTED / NOT FOUND."""
-    results = run_reconstruction()
+def test_reconstruction_runner_and_artifacts(tmp_path):
+    """Verify run_reconstruction generates artifacts in tmp_path without touching tracked files."""
+    results = run_reconstruction(output_dir=str(tmp_path))
 
-    assert results["search_grid"]["size"] == SEARCH_GRID_SIZE
+    assert results["search_procedure"]["method"] == SEARCH_PROCEDURE_METHOD
+    assert "about 500 variants" in results["search_procedure"]["description"]
     claims = {c["claim_id"]: c for c in results["claims"]}
 
     assert claims["CLAIM_183_123"]["status"] == "RECONSTRUCTED"
@@ -71,7 +72,13 @@ def test_reconstruction_runner_and_artifacts():
     assert claims["CLAIM_20_5_PCT"]["status"] == "NOT FOUND"
     assert claims["CLAIM_20_5_PCT"]["verification_passed"] is True
 
-    # Artifact files must exist
+    # Artifact files must exist in tmp_path (test must not write to tracked repository files)
+    tmp_json = tmp_path / "reconstructed_claims.json"
+    tmp_md = tmp_path / "reconstructed_claims.md"
+    assert tmp_json.is_file()
+    assert tmp_md.is_file()
+
+    # Tracked reference files in data/evaluation/paper_reconstruction/ must also exist and be valid
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     json_path = os.path.join(base_dir, "data", "evaluation", "paper_reconstruction", "reconstructed_claims.json")
     md_path = os.path.join(base_dir, "data", "evaluation", "paper_reconstruction", "reconstructed_claims.md")
