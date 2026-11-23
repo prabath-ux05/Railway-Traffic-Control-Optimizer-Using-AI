@@ -234,16 +234,21 @@ def test_station_registry_proposal_file():
         assert "source_url" in p
         assert "accessed_on" in p
         assert "verification_status" in p
-        assert p["verification_status"] in ("VERIFIED", "UNVERIFIED")
+        assert p["verification_status"] in ("VERIFIED", "SOURCE_LISTED", "UNVERIFIED")
+        if p["verification_status"] == "VERIFIED":
+            assert "evidence_excerpt" in p and p["evidence_excerpt"]
+            assert "fetch_date" in p and p["fetch_date"]
+            assert p["id"] in p["evidence_excerpt"]
 
     # 7 requested nodes must be UNVERIFIED
     for unverified_id in ["PLMG", "MSU", "TO", "MAF", "SPAM", "KBT", "EGT"]:
         assert unverified_id in prop_by_id
         assert prop_by_id[unverified_id]["verification_status"] == "UNVERIFIED"
 
-    # PAB is verified junction
+    # PAB is verified junction with verbatim evidence excerpt
     assert prop_by_id["PAB"]["verification_status"] == "VERIFIED"
     assert prop_by_id["PAB"]["name"] == "Pattabiram Junction"
+    assert "PAB" in prop_by_id["PAB"]["evidence_excerpt"]
 
     # stations.json must remain strictly unmodified with 30 stations
     with open(os.path.join("data", "infrastructure", "stations.json"), "r", encoding="utf-8") as f:

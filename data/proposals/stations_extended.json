@@ -7,7 +7,9 @@
     "verification_status": "UNVERIFIED",
     "station_type": null,
     "platform_count": null,
-    "provenance_note": "Mismatch: Station code AIP officially designates Attippattu (Athipattu). Attipattu Pudu Nagar has official code AIPP."
+    "provenance_note": "Mismatch: Station code AIP officially designates Attippattu (Athipattu). Attipattu Pudu Nagar has official code AIPP.",
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "AKAT",
@@ -17,34 +19,42 @@
     "verification_status": "UNVERIFIED",
     "station_type": null,
     "platform_count": null,
-    "provenance_note": "Mismatch: Station code AKAT officially designates Akkampet (Akkampeta) on Chennai division (SR). Akkaraivattam has no railway station."
+    "provenance_note": "Mismatch: Station code AKAT officially designates Akkampet (Akkampeta) on Chennai division (SR). Akkaraivattam has no railway station.",
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "AKM",
     "name": "Arambakkam",
     "source_url": "https://erail.in/station/arambakkam-AKM",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "ANNR",
     "name": "Annanur",
     "source_url": "https://erail.in/station/annanur-ANNR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "APB",
     "name": "Anuppampattu",
     "source_url": "https://erail.in/station/anuppampattu-APB",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "ATU",
@@ -54,34 +64,42 @@
     "verification_status": "UNVERIFIED",
     "station_type": null,
     "platform_count": null,
-    "provenance_note": "Mismatch: Station code ATU officially designates Attur in Salem division (SR). Attipattu corresponds to AIP."
+    "provenance_note": "Mismatch: Station code ATU officially designates Attur in Salem division (SR). Attipattu corresponds to AIP.",
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "CJE",
     "name": "Kanchipuram East",
     "source_url": "https://erail.in/station/kanchipuram-east-CJE",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "CMP",
     "name": "Chromepet",
     "source_url": "https://erail.in/station/chromepet-CMP",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "CTM",
     "name": "Kattangulathur",
     "source_url": "https://erail.in/station/kattangulathur-CTM",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "EGT",
@@ -90,61 +108,75 @@
     "accessed_on": "2026-11-23",
     "verification_status": "UNVERIFIED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "ELR",
     "name": "Elavur",
     "source_url": "https://erail.in/station/elavur-ELR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "GI",
     "name": "Guduvancheri",
     "source_url": "https://erail.in/station/guduvancheri-GI",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "GWYR",
     "name": "Greenways Road",
     "source_url": "https://erail.in/station/greenways-road-GWYR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "HC",
     "name": "Hindu College",
     "source_url": "https://erail.in/station/hindu-college-HC",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "INDR",
     "name": "Indira Nagar",
     "source_url": "https://erail.in/station/indira-nagar-INDR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "KAVM",
     "name": "Kathivakkam",
     "source_url": "https://erail.in/station/kathivakkam-KAVM",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "KBT",
@@ -153,43 +185,53 @@
     "accessed_on": "2026-11-23",
     "verification_status": "UNVERIFIED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "KOTR",
     "name": "Korattur",
     "source_url": "https://erail.in/station/korattur-KOTR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "KTBR",
     "name": "Kasturibai Nagar",
     "source_url": "https://erail.in/station/kasturibai-nagar-KTBR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "KTPM",
     "name": "Kotturpuram",
     "source_url": "https://erail.in/station/kotturpuram-KTPM",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "KVP",
     "name": "Kavaraippettai",
     "source_url": "https://erail.in/station/kavaraippettai-KVP",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MAF",
@@ -198,88 +240,108 @@
     "accessed_on": "2026-11-23",
     "verification_status": "UNVERIFIED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MCPK",
     "name": "Chepauk",
     "source_url": "https://erail.in/station/chepauk-MCPK",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MCPT",
     "name": "Chintadripet",
     "source_url": "https://erail.in/station/chintadripet-MCPT",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MJR",
     "name": "Minjur",
     "source_url": "https://erail.in/station/minjur-MJR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MKAK",
     "name": "Mundakakanni Amman Koil",
     "source_url": "https://erail.in/station/mundakakanni-amman-koil-MKAK",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MKK",
     "name": "Kodambakkam",
     "source_url": "https://erail.in/station/kodambakkam-MKK",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MMNK",
     "name": "Maraimalai Nagar Kamarajar",
     "source_url": "https://erail.in/station/maraimalai-nagar-kamarajar-MMNK",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MN",
     "name": "Minambakkam",
     "source_url": "https://erail.in/station/minambakkam-MN",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MNDY",
     "name": "Mandaveli",
     "source_url": "https://erail.in/station/mandaveli-MNDY",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MSC",
     "name": "Chetpet",
     "source_url": "https://erail.in/station/chetpet-MSC",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MSU",
@@ -288,88 +350,108 @@
     "accessed_on": "2026-11-23",
     "verification_status": "UNVERIFIED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "MTMY",
     "name": "Thirumayilai",
     "source_url": "https://erail.in/station/thirumayilai-MTMY",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "NBK",
     "name": "Nungambakkam",
     "source_url": "https://erail.in/station/nungambakkam-NBK",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "NEC",
     "name": "Nemilichery",
     "source_url": "https://erail.in/station/nemilichery-NEC",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "NPKM",
     "name": "Nandiambakkam",
     "source_url": "https://erail.in/station/nandiambakkam-NPKM",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "NTT",
     "name": "Nathapettai",
     "source_url": "https://erail.in/station/nathapettai-NTT",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PAB",
     "name": "Pattabiram Junction",
-    "source_url": "https://indiarailinfo.com/station/map/pattabiram-pab/1592",
+    "source_url": "https://en.wikipedia.org/wiki/Pattabiram_railway_station",
     "accessed_on": "2026-11-23",
     "verification_status": "VERIFIED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": "2026-11-23",
+    "evidence_excerpt": "Pattabiram railway station is one of the railway stations of the Chennai Central\u2013Arakkonam section of the Chennai Suburban Railway Network. ... Station code PAB"
   },
   {
     "id": "PALR",
     "name": "Palur",
     "source_url": "https://erail.in/station/palur-PALR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PCW",
     "name": "Perambur Carriage Works",
     "source_url": "https://erail.in/station/perambur-carriage-works-PCW",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PEW",
     "name": "Perambur Loco Works",
     "source_url": "https://erail.in/station/perambur-loco-works-PEW",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PJS",
@@ -379,7 +461,9 @@
     "verification_status": "UNVERIFIED",
     "station_type": null,
     "platform_count": null,
-    "provenance_note": "Mismatch: Station code PJS does not exist on Southern Railway. Intermediate station between Palur and Walajabad is Palayasivaram (PYV)."
+    "provenance_note": "Mismatch: Station code PJS does not exist on Southern Railway. Intermediate station between Palur and Walajabad is Palayasivaram (PYV).",
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PLMG",
@@ -388,125 +472,153 @@
     "accessed_on": "2026-11-23",
     "verification_status": "UNVERIFIED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PON",
     "name": "Ponneri",
     "source_url": "https://erail.in/station/ponneri-PON",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "POT",
     "name": "Potheri",
     "source_url": "https://erail.in/station/potheri-POT",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PRGD",
     "name": "Perungudi",
     "source_url": "https://erail.in/station/perungudi-PRGD",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PRGL",
     "name": "Perungalathur",
     "source_url": "https://erail.in/station/perungalathur-PRGL",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PTLR",
     "name": "Putlur",
     "source_url": "https://erail.in/station/putlur-PTLR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PTMS",
     "name": "Pattabiram Military Siding",
     "source_url": "https://erail.in/station/pattabiram-military-siding-PTMS",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
     "platform_count": null,
-    "provenance_note": "Naming discrepancy: IR Station Code Index designates PTMS as Pattabiram Military Siding Depot / West Depot (distinguished from PRES)."
+    "provenance_note": "Naming discrepancy: IR Station Code Index designates PTMS as Pattabiram Military Siding Depot / West Depot (distinguished from PRES).",
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PV",
     "name": "Pallavaram",
     "source_url": "https://erail.in/station/pallavaram-PV",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PVM",
     "name": "Pattaravakkam",
     "source_url": "https://erail.in/station/pattaravakkam-PVM",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PWU",
     "name": "Paranur",
     "source_url": "https://erail.in/station/paranur-PWU",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "PZA",
     "name": "Palavanthangal",
     "source_url": "https://erail.in/station/palavanthangal-PZA",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "RDY",
     "name": "Reddipalaiyam",
     "source_url": "https://erail.in/station/redipalayam-RDY",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "SKL",
     "name": "Singaperumal Koil",
     "source_url": "https://erail.in/station/singaperumal-koil-SKL",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "SP",
     "name": "Saidapet",
     "source_url": "https://erail.in/station/saidapet-SP",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "SPAM",
@@ -515,97 +627,119 @@
     "accessed_on": "2026-11-23",
     "verification_status": "UNVERIFIED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "STM",
     "name": "St. Thomas Mount",
     "source_url": "https://erail.in/station/st-thomas-mount-STM",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "SVR",
     "name": "Sevvapet Road",
     "source_url": "https://erail.in/station/sevvapet-road-SVR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "TADA",
     "name": "Tada",
     "source_url": "https://erail.in/station/tada-TADA",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "TBMS",
     "name": "Tambaram Sanatorium",
     "source_url": "https://erail.in/station/tambaram-sanatorium-TBMS",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "TI",
     "name": "Tiruninravur",
     "source_url": "https://erail.in/station/tiruninravur-TI",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "TKO",
     "name": "Takkolam",
     "source_url": "https://erail.in/station/takkolam-TKO",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "TLM",
     "name": "Tirusulam",
     "source_url": "https://erail.in/station/tirusulam-TLM",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "TMLP",
     "name": "Tirumalpur",
     "source_url": "https://erail.in/station/tirumalpur-TMLP",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "TMVL",
     "name": "Tirumullaivayil",
     "source_url": "https://erail.in/station/tirumullaivayil-TMVL",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "TNPM",
     "name": "Tondiarpet",
     "source_url": "https://erail.in/station/tondiarpet-TNPM",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "TO",
@@ -614,34 +748,42 @@
     "accessed_on": "2026-11-23",
     "verification_status": "UNVERIFIED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "TRMN",
     "name": "Taramani",
     "source_url": "https://erail.in/station/taramani-TRMN",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "TYMR",
     "name": "Thiruvanmiyur",
     "source_url": "https://erail.in/station/thiruvanmiyur-TYMR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "UPM",
     "name": "Urapakkam",
     "source_url": "https://erail.in/station/urapakkam-UPM",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "VAM",
@@ -651,25 +793,31 @@
     "verification_status": "UNVERIFIED",
     "station_type": null,
     "platform_count": null,
-    "provenance_note": "Mismatch: Station code VAM officially designates Vellambaram (ECoR). Walajah Road is WJR; Villiyanallur is VI."
+    "provenance_note": "Mismatch: Station code VAM officially designates Vellambaram (ECoR). Walajah Road is WJR; Villiyanallur is VI.",
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "VDR",
     "name": "Vandalur",
     "source_url": "https://erail.in/station/vandalur-VDR",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "VEU",
     "name": "Veppampattu",
     "source_url": "https://erail.in/station/veppampattu-VEU",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "VOCN",
@@ -679,24 +827,30 @@
     "verification_status": "UNVERIFIED",
     "station_type": null,
     "platform_count": null,
-    "provenance_note": "Mismatch: Station code VOCN is non-standard. Official IR station code for V.O.C. Nagar is VOC."
+    "provenance_note": "Mismatch: Station code VOCN is non-standard. Official IR station code for V.O.C. Nagar is VOC.",
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "WCN",
     "name": "Wimco Nagar",
     "source_url": "https://erail.in/station/wimco-nagar-WCN",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   },
   {
     "id": "WJ",
     "name": "Walajabad",
     "source_url": "https://erail.in/station/walajabad-WJ",
     "accessed_on": "2026-11-23",
-    "verification_status": "VERIFIED",
+    "verification_status": "SOURCE_LISTED",
     "station_type": null,
-    "platform_count": null
+    "platform_count": null,
+    "fetch_date": null,
+    "evidence_excerpt": null
   }
 ]
