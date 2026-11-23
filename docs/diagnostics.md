@@ -16,6 +16,7 @@
 | **DIAG-03** | 22 Route Hops Without Directional Tracks | **CONFIRMED** | Exactly 22 route hops across 8 routes have no directional track section match, falling back to nominal 3.0 min travel time in simulation. |
 | **DIAG-04** | Time-Order Anomaly in `SRV_16159_01` | **CONFIRMED** | Timetable crosses midnight (`MS 23:10` -> `CGL 00:08`). Without day-wrap offset (+1440 min), `00:08` is parsed as 8.0 min from midnight, creating 1,415.0 min of artificial delay. |
 | **DIAG-05** | Origin of `simulation_timestamp_str` in `/what-if` | **CONFIRMED** | Not wall-clock based. Represents the discrete simulation clock time when the last service in the evaluated cohort reaches its destination. |
+| **DIAG-06** | Architectural Overlap in Evaluation Modules | **CONFIRMED** | `consolidation.py` vs `metrics_consolidation.py` and `scalability.py` vs `scalability_framework.py` serve distinct operational scopes (runtime execution vs paper table aggregation; single-corridor micro-benchmarks vs division-wide macro-frameworks) and must not be merged. |
 
 ---
 
@@ -187,3 +188,45 @@ return PipelineExecutionResult(
    * Other cohort orders finish at **21:25** or **19:45**.
 
 **Finding:** **CONFIRMED.** `simulation_timestamp_str` is strictly deterministic simulation model time, representing the completion timestamp of the last processed train service in the evaluation cohort. It is **NOT** wall-clock based.
+
+---
+
+## 6. Evaluation Modules Architectural Overlap Analysis (DIAG-06)
+
+### 6.1 `evaluation/consolidation.py` vs. `evaluation/metrics_consolidation.py`
+
+* **Lexical Similarity:** 3.29% (difflib SequenceMatcher).
+* **Line Counts:** `consolidation.py` (801 lines) vs. `metrics_consolidation.py` (637 lines).
+* **Role of `evaluation/consolidation.py` (Live API Runner):**
+  - Defines data classes: `ConsolidatedCaseMetrics`, `ConsolidatedAggregateStats`, `ConsolidatedResearchReport`, `ConsolidatedResearchRunner`.
+  - Exposes entry point: `run_consolidated_research(network, state_manager=None) -> ConsolidatedResearchReport`.
+  - Dynamically constructs and executes 10 comprehensive operational scenarios (Nominal, Peak Concurrency, West Bottleneck, Speed Restriction, Compound Disruption, Dwell Delay, Blocked Section, Junction Contention, Multiple Bottlenecks, Scale Stress 20) by invoking `TrainSimulator` and `CPSATScheduler`.
+  - Consumers: Imported directly by `backend/app/api.py` to power the live `/api/v1/analytics` endpoint, as well as `tests/test_consolidation.py` and `tests/test_analytics.py`.
+* **Role of `evaluation/metrics_consolidation.py` (Offline Paper Table Aggregator):**
+  - Defines reporting schemas: `ResearchKPISummary`, `GroupKPISummary`, `ScalabilityKPISummary`, `SeverityKPISummary`, `InfeasibleBoundarySummary`, `BottleneckKPISummary`, `ConsolidatedResearchMetrics`, `MetricsConsolidator`.
+  - Exposes entry point: `run_metrics_consolidation(...) -> ConsolidatedResearchMetrics`.
+  - Operates as a post-processing meta-aggregator for Phase 31.5. Instead of executing simulations itself, it reads the pre-computed outputs of Phase 31.1 (comparative analysis), Phase 31.2 (scalability framework), Phase 31.3 (severity progression), and Phase 31.4 (comparative benchmarks) and formats them into the exact JSON schemas and Markdown tables required for the CICT 2026 conference paper (`data/evaluation/consolidated_research_metrics.json`).
+  - Consumers: `tests/test_phase31_5_metrics.py`, `scratch/run_phase31_5.py`.
+* **Overlap Findings:**
+  - The two files share naming conventions (`Consolidated...`) but have completely disjoint architectures. One is a dynamic simulation testbench runner; the other is a static benchmark metrics formatter.
+  - Merging them would create unnecessary coupling between live API endpoints and offline paper publication scripts. They should remain separate.
+
+### 6.2 `evaluation/scalability.py` vs. `evaluation/scalability_framework.py`
+
+* **Lexical Similarity:** 2.39% (difflib SequenceMatcher).
+* **Line Counts:** `scalability.py` (791 lines) vs. `scalability_framework.py` (405 lines).
+* **Role of `evaluation/scalability.py` (Corridor-Specific Micro-Benchmark):**
+  - Defines schemas: `ScalabilityLoadLevel`, `ScalabilityMetrics`, `ScalabilityResult`, `ScalabilityReport`, `ScalabilityRunner`.
+  - Exposes: `create_west_corridor_load_levels()`, `run_scalability_suite()`.
+  - Focuses on single-corridor stress testing on the West Mainline (`MAS_AJJ`), scaling service load levels from 4 to 20 services.
+  - Drives internal profiling tests in `tests/test_scalability.py` and `tests/test_analysis.py`.
+* **Role of `evaluation/scalability_framework.py` (Division-Wide Macro-Framework):**
+  - Defines schemas: `ScalabilitySuiteResult`.
+  - Exposes: `create_scalability_scenario()`, `create_scalability_experiment_config()`, `create_scalability_suite()`, `run_scalability_experiments()`.
+  - Authoritative source of `SCALABILITY_COHORTS` (7 cohorts: 4, 8, 12, 16, 20, 30, 40 services) and `COHORT_20`.
+  - Generates both Nominal and Compound Disruption benchmark suites across the entire Chennai Division network, feeding directly into `evaluation/comparative_analysis.py`, `scripts/run_v3_evaluation.py`, and Section IV.G of the research paper.
+  - Consumers: Imported by 10+ core test modules (`test_phase31_2_scalability.py`, `test_phase34_4_performance.py`, `test_midnight_wrap.py`, `test_time_resolution.py`).
+* **Overlap Findings:**
+  - `scalability.py` is a specialized West-corridor simulator runner; `scalability_framework.py` is the generalized division-wide scenario generator.
+  - The framework module (`scalability_framework.py`) is the official driver for conference paper results and multi-resolution evaluations.
+  - Both modules serve distinct experimental layers and must not be merged.
