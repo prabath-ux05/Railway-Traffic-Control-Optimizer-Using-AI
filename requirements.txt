@@ -4,14 +4,17 @@
 fastapi==0.116.2
 uvicorn[standard]==0.35.0
 pydantic==2.11.9
-pydantic-settings==2.14.1
 starlette==0.48.0
 ortools==9.15.6755
-networkx==3.5
+
+# Required by Google OR-Tools CP-SAT and evaluation benchmarking
 numpy==2.2.2
 pandas==3.0.1
-pytz==2020.1
-python-dotenv==1.2.2
+
+# Transitive dependency of pandas (application code uses stdlib datetime.timezone for IST)
+pytz>=2020.1
+
+# Test & HTTP client toolchain
 httpx==0.28.1
 pytest==9.1.1
 anyio==4.10.0
