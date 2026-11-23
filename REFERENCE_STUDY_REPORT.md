@@ -2,7 +2,7 @@
 
 > **Document Type:** Comprehensive Architectural Audit & Reference Study  
 > **Target Scope:** Chennai Division (Southern Railway), Digital Twin Simulation, CP-SAT Optimization, and Explainable Decision Support  
-> **System Status:** Validated (Batches 1–5 Complete, 676/676 Full Suite Tests Passed, 100% Master Dataset Immutability)  
+> **System Status:** Validated (Batches 1–11 Complete, 694/694 Full Suite Tests Passed, 100% Master Dataset Immutability)  
 > **Date:** November 2026  
 
 ---
@@ -498,14 +498,29 @@ In the frozen paper baseline (v1), `SRV_16159_01` (Mangalore Express) departs Ch
 * To preserve exact numerical reproducibility for the accepted CICT 2026 paper, default solver behavior remains strictly unwrapped (`apply_midnight_wrap=False`).
 * An opt-in flag (`apply_midnight_wrap=True`) applies a +1440-minute day wrap to post-midnight arrivals, resolving CGL arrival to 1,448.0m and eliminating the 1,415.0m artificial delay completely (reducing 40-service nominal FIFO baseline to exactly 511.0m, consistent with 505.0m for the remaining 39 services). Non-midnight services are completely unaffected. Corrected v2 benchmarks are isolated in `data/evaluation/v2/`.
 
+### 10.5 High-Resolution Discretization Evaluation (v3, Resolution 2)
+
+The original CICT 2026 paper used 1-minute discretization intervals ($R=1$). Due to track section running times containing half-minute values (e.g., `BBQ_KOK` at 3.5m and other hops at 1.5m), integer rounding created minor discretization artifacts in 19 out of 44 feasible experiments where CP-SAT reported negative savings relative to FIFO.
+* An opt-in parameter (`time_resolution=2`, corresponding to 30-second integer CP-SAT units) was evaluated across all 45 stored experiments into `data/evaluation/v3/`.
+* **Negative-Savings Elimination:** Exactly 19 of 19 (100%) negative-savings cases become $\ge 0$ delay savings under resolution 2.
+* **Solve-Time Cost:** Average solve time reduced from 0.440 s to 0.354 s (ratio: 0.81x) due to integer domain tightness in CP-SAT branch-and-bound.
+* **API Validation:** Non-multiple resolutions (such as 3 and 61) are strictly rejected with HTTP 400 Bad Request, protecting data integrity.
+
+### 10.6 Unverified Paper Text Claims Reconstruction
+
+Three claims printed in the conference paper text were explicitly audited against stored experimental records:
+1. **Compound Disruption 183 to 123 (60.0m, 32.79% saving):** Classified as `RECONSTRUCTED`. Found by a neighbourhood sweep of about 500 variants around `EXP_31_1_07A/07B` (services `SRV_12607_01` + `SRV_12609_01`, departure delay +20m on `SRV_12607_01`, no TSR, no throttle). Differs from stored `EXP_31_1_07A/07B` and isolated in `data/evaluation/paper_reconstruction/`.
+2. **Aggressive Compound Scenario 44.34% (221 to 123, 98.0m saving):** Classified as `RECONSTRUCTED`. Found by the same neighbourhood sweep (services `SRV_12607_01` + `SRV_12609_01` + `SRV_12635_01`, dual +20m departure delays).
+3. **20.5% Mean Reduction over 6 Core Experiments:** Classified as `NOT FOUND`. Audited all 6 disruption classes in severity summaries (average -0.22%) and all What-If presets (22.39% feasible-only, 18.66% with infeasible as 0). Retained as `NOT FOUND` per research honesty requirements.
+
 ---
 
 ## 11. Verification & Quality Assurance Summary
 
-The platform was subjected to exhaustive regression testing across 60 test modules:
+The platform was subjected to exhaustive regression testing across 62 test modules:
 
 ```
-========================= 684 passed, 60 test modules =========================
+========================= 694 passed, 62 test modules =========================
 - test_all_trains_simulation_and_chart.py: 5 passed
 - test_analysis.py: 24 passed
 - test_analytics.py: 4 passed
@@ -531,7 +546,8 @@ The platform was subjected to exhaustive regression testing across 60 test modul
 - test_optimization.py: 0 passed
 - test_optimization_contracts.py: 6 passed
 - test_optimization_solver.py: 5 passed
-- test_paper_reproduction.py: 1 passed
+- test_paper_reconstruction.py: 3 passed
+- test_paper_reproduction.py: 2 passed
 - test_phase27_e2e_validation.py: 4 passed
 - test_phase30_conflict_resource.py: 53 passed
 - test_phase30_disruption_rescheduling.py: 19 passed
@@ -560,6 +576,7 @@ The platform was subjected to exhaustive regression testing across 60 test modul
 - test_scenarios.py: 6 passed
 - test_services.py: 21 passed
 - test_simulation.py: 26 passed
+- test_time_resolution.py: 6 passed
 - test_timetable.py: 0 passed
 - test_timetable_comparison_backend.py: 4 passed
 - test_timetable_comparison_e2e.py: 1 passed

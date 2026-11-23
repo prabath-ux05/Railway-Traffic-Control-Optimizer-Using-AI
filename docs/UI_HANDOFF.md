@@ -37,6 +37,12 @@ All changes made to the FastAPI backend are strictly additive and backward-compa
 * **`POST /api/v1/simulation/reoptimize`:** Triggers proposal generation without modifying active plan.
 * **`POST /api/v1/simulation/proposals/{id}/accept` / `reject`:** Controller approval actions.
 
+### 1.4 Midnight Wrap & Time Discretization Granularity (`/api/v1/optimize`, `/api/v1/what-if`)
+* **`apply_midnight_wrap` (boolean, request, default false):** When `true`, wraps services crossing midnight (e.g. `SRV_16159_01`) by +1440 minutes, removing the 1,415.0-minute artificial day-boundary delay.
+* **`time_resolution` (int, request & response, default 1):** Sets solver discretization resolution (1 = 1-minute steps, 2 = 30-second steps). Echoed in responses. Values whose inverse does not evenly divide dataset running times, headways, clearances, or dwells (e.g. 3 and 61) return HTTP 400 Bad Request.
+* **V3 Discretization Impact (`data/evaluation/v3/`):** At resolution 2, 100% (19 of 19) of the negative-savings discretization artifacts observed in the frozen paper results are eliminated.
+* **Reconstructed Paper Claims (`data/evaluation/paper_reconstruction/`):** Claims for 183->123 min and 44.34% savings were reconstructed from a neighborhood sweep of about 500 variants around `EXP_31_1_07A/07B`.
+
 ---
 
 ## 2. Hard-Coded Frontend Data & Replacement Map
