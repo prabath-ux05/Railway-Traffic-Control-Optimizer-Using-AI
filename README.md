@@ -43,7 +43,7 @@ flowchart TD
 
     subgraph Optimization["Mathematical Optimization Core"]
         CPSAT["Google OR-Tools CP-SAT Solver (9.11)"]
-        MultiObj["Multi-Term Priority Objective: Express (w=2.0) vs Suburban (w=1.0)"]
+        MultiObj["Multi-Term Priority Objective: Express/Intercity (w=5.0) vs Suburban EMU (w=3.0)"]
         Resolution["Dual Time Discretization (R=1: 1 min, R=2: 30 sec)"]
         Fallback["Infeasible Disruption Fallback Protocol"]
     end
@@ -186,7 +186,7 @@ The operational dashboard is built on an ultra-dark control-room aesthetic desig
 |   +------------------------------------+   +-------------------------------------------------+   |
 |   | TRACK OCCUPANCY SCHEMATIC          |   | EXPLAINABLE AI DECISION DIRECTIVE               |   |
 |   | MAS ====[12607]==== BBQ ======= PER|   | Hold suburban EMU SRV_43411_01 at BBQ Plat 2   |   |
-|   | [BLOCK CLEAR]      [TSR 30 KM/H]   |   | Priority justification: Express weight w=2.0    |   |
+|   | [BLOCK CLEAR]      [TSR 30 KM/H]   |   | Priority justification: Express weight w=5.0    |   |
 |   +------------------------------------+   +-------------------------------------------------+   |
 |                                                                                                  |
 |   +------------------------------------------------------------------------------------------+   |

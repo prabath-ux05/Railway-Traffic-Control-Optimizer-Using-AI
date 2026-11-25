@@ -49,7 +49,7 @@ The application utilizes an ultra-dark navy palette (`railway-*`) coupled with s
 | signal-green     | #10b981   | rgb(16, 185, 129)| Clear track block, on-time service, optimal    |
 | signal-amber     | #f59e0b   | rgb(245, 158, 11)| Caution aspect, moderate delay, TSR warning    |
 | signal-red       | #ef4444   | rgb(239, 68, 68) | Conflict, occupied block, blockage, emergency  |
-| signal-blue      | #3b82f6   | rgb(59, 130, 246)| Express service priority ($w_i=2.0$), active   |
+| signal-blue      | #3b82f6   | rgb(59, 130, 246)| Express service priority ($w_i=5.0$), active   |
 | signal-cyan      | #06b6d4   | rgb(6, 182, 212) | Optimized trajectory, re-optimization proposal |
 | signal-purple    | #8b5cf6   | rgb(139, 92, 246)| Decision support directive, AI recommendation  |
 +--------------------------------------------------------------------------------------------------+
@@ -151,7 +151,7 @@ Whenever conflicts or disruptions occur, the decision support engine synthesizes
 | ROOT CAUSE ANALYSIS:                                                                               |
 | * Primary Disruption: Lalbagh Express (SRV_12607_01) delayed +20 min arriving from Katpadi.       |
 | * Propagated Bottleneck: Contention at BBQ Junction Switch SW_04B between Express and Suburban.    |
-| * Justification: Express weight ($w_i=2.0$) supersedes EMU weight ($w_i=1.0$). Reversing precedence |
+| * Justification: Express weight ($w_i=5.0$) supersedes EMU weight ($w_i=3.0$). Reversing precedence |
 |   would save 4.5m for EMU but cascade +22.0m delay onto 3 downstream express services.             |
 +----------------------------------------------------------------------------------------------------+
 | PROJECTED DELAY SAVINGS: -17.5 min system-wide  |  AFFECTED SERVICES: 2  |  SAFETY HEADWAY: 3.0 min|

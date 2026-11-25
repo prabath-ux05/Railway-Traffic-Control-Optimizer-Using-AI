@@ -8,3 +8,10 @@ runtime/
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 
+
+# Dashboard local secrets and account store
+frontend/.env.local
+frontend/.data/
+.frontend-backup-2026-11-25/
+.venv/
+frontend/.impeccable/

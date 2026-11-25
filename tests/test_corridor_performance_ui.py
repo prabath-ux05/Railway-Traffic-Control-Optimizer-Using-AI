@@ -119,8 +119,12 @@ def test_research_analytics_view_component_integrity():
 
 
 def test_page_component_wiring():
-    """Verify page.tsx wires corridorPerformance into ResearchAnalyticsView."""
-    page_path = os.path.join("frontend", "src", "app", "page.tsx")
+    """Verify the classic dashboard page wires corridorPerformance into ResearchAnalyticsView.
+
+    The original 8-tab page moved to /classic when the Glass Spatial dashboard became the home page
+    (2026-11-25); its wiring is unchanged, so this test now reads it there.
+    """
+    page_path = os.path.join("frontend", "src", "app", "classic", "page.tsx")
     assert os.path.exists(page_path), "page.tsx must exist"
 
     with open(page_path, "r", encoding="utf-8") as f:

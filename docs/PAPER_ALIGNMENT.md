@@ -21,7 +21,7 @@ This document provides a comprehensive mapping between every numerical claim, ta
 | **Abstract** | Maximum absolute delay saving: 125.50 min | 125.50 min (`EXP_31_1_02B`) | `REPRODUCED` | 133.00 min (`EXP_31_1_02B`) | Exact match verified (`scripts/reproduce_paper.py`, Check 3). |
 | **Abstract** | Maximum relative delay reduction: 55.16% | 55.16% (`EXP_31_1_02B`) | `REPRODUCED` | 58.46% (`EXP_31_1_02B`) | Exact match verified (Check 3). |
 | **Abstract** | Solver execution times: 0.337 s mean / 0.926 s max | Mean 0.337 s, Max 0.926 s | `REPRODUCED` | Mean 0.349 s, Max 0.900 s | Exact match verified across core benchmark runs (Check 5). |
-| **Sec. III.C, Eq. (1)** | Plain total delay objective: $\min Z = \sum_{i \in T} D_i$ | Multi-term weighted objective: $\sum w_i D_i + 0.5 \max(D_i) + 0.8 \sum \|\Delta dep_i\|$ | `NOT CHANGEABLE` | Same weighted formulation | **Mismatch is NOT CHANGEABLE**. The paper text formulates Eq. (1) as unweighted sum of total delays ($\min Z = \sum D_i$), whereas the implemented solver optimizes a weighted multi-term penalty ($w_{\text{express}}=2.0$, $w_{\text{suburban}}=1.0$, peak penalty $0.5$, departure deviation $0.8$). |
+| **Sec. III.C, Eq. (1)** | Plain total delay objective: $\min Z = \sum_{i \in T} D_i$ | Multi-term weighted objective: $\sum w_i D_i + 0.5 \max(D_i) + 0.8 \sum \delta_i$ | `NOT CHANGEABLE` | Same weighted formulation | **Mismatch is NOT CHANGEABLE**. The paper text formulates Eq. (1) as unweighted sum of total delays ($\min Z = \sum D_i$), whereas the implemented solver optimizes a weighted multi-term penalty ($w_i=5.0$ for `HIGH`-priority express/intercity services, $w_i=3.0$ for `NORMAL` suburban EMUs, peak penalty $0.5$, late origin departure $0.8$). See §2.3. |
 | **Sec. IV.B** | Departure-delay severity savings (Mild, Moderate, Severe): 0.0%, 14.9%, 27.1% | Mild: 0.0%, Mod: 14.9%, Sev: 27.1% | `REPRODUCED` | Mild: 9.87%, Mod: 22.28%, Sev: 32.49% | Exact match verified at $R=1$ (`EXP_31_3_01` to `03`, Check 7). |
 | **Sec. IV.C** | Conflict resolution: 22 initial conflicts, 22 resolved (100%) | 22 initial, 22 resolved | `REPRODUCED` | 22 initial, 22 resolved | Exact match verified (`consolidated_research_metrics.json`, Check 6). |
 | **Sec. IV.C** | MAS-BBQ throat blockage infeasibility | 1 infeasible scenario (`EXP_31_3_12_BLK_SEVERE`) | `REPRODUCED` | 1 infeasible scenario (`EXP_31_3_12_BLK_SEVERE`) | Complete throat link closure during peak traffic yields proven infeasibility (Check 1). |
@@ -115,14 +115,19 @@ In the accepted conference text (Section III.C), Equation (1) is stated as:
 $$\min Z = \sum_{i \in T} D_i$$
 where $D_i$ is the unweighted total delay of service $i$.
 
-In contrast, the actual solver implementation optimizes the multi-term weighted formulation:
-$$\min Z = \sum_{i \in T} w_i \cdot D_i + 0.5 \cdot \max_{i \in T}(D_i) + 0.8 \sum_{i \in T} |\Delta dep_i|$$
+In contrast, the actual solver implementation (`optimization/solver.py`, default `objective_mode="WEIGHTED"`) optimizes the multi-term weighted formulation:
+$$\min Z = \sum_{i \in T} w_i \cdot D_i + 0.5 \cdot \max_{i \in T}(D_i) + 0.8 \sum_{i \in T} \delta_i$$
 where:
-- Express services receive priority weight $w_i = 2.0$.
-- Suburban passenger services receive weight $w_i = 1.0$.
+- $D_i = \max(0,\ t^{arr}_{i,\text{dest}} - \text{sched}^{arr}_{i,\text{dest}})$ is the arrival delay of service $i$ at its destination.
+- $\delta_i = \max(0,\ t^{dep}_{i,\text{origin}} - \text{sched}^{dep}_{i,\text{origin}})$ is its late departure at origin (early departures are not penalized).
+- $w_i = w_{\text{delay}} + w_{\text{weighted}} \cdot p_i = 1.0 + 2.0\,p_i$, where $p_i$ is the service's `delay_penalty_weight`, raised to at least $2.0$ for `HIGH`-priority services. Every service in `services.json` has `delay_penalty_weight = 1.0`, so:
+  - `HIGH`-priority services (22 of 47: express, intercity and long-distance trains) receive $w_i = 5.0$.
+  - `NORMAL`-priority services (25 of 47: suburban EMUs) receive $w_i = 3.0$.
 - Peak delay penalty weight is $0.5$.
 - Origin departure deviation penalty weight is $0.8$.
 
-Because Express trains carry twice the weight of Suburban services, CP-SAT frequently accepts a slight delay increase on a suburban train to avoid a compounding cascade on a high-priority express train. Under an unweighted raw delay accounting ($\sum D_i$), this can yield a net negative raw saving while strictly reducing the true system objective $Z$. 
+The solver multiplies every coefficient by 10 so that they are integers (50 and 30 for delay, 5 for peak delay, 8 for deviation); the ratios above are unchanged. All reported results are unweighted cumulative delays (the sum of arrival delays at every timetabled stop of every service, as used in paper Eq. 6), not $Z$.
+
+Because high-priority trains carry 5/3 (about 1.67×) the weight of suburban EMUs, CP-SAT frequently accepts a slight delay increase on a suburban train to avoid a compounding cascade on a high-priority express train. Under an unweighted raw delay accounting ($\sum D_i$), this can yield a net negative raw saving while strictly reducing the true system objective $Z$. 
 
 **Status:** `NOT CHANGEABLE`. The research paper text is frozen with Eq. (1) in unweighted form, while the production solver requires priority weighting to avoid starvation of high-priority express services.

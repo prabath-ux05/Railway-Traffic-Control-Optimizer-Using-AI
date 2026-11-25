@@ -312,6 +312,7 @@ Where:
   * Weighted delay weight ($w_{\text{weighted}}$): **2.0**
   * Maximum delay weight ($w_{\text{max}}$): **0.5**
   * Schedule deviation weight ($w_{\text{dev}}$): **0.8**
+* Scale note: the solver multiplies every coefficient by 10 to keep them integers, so the per-service delay coefficient is $10 \cdot w_{\text{delay}} + w_{\text{weighted}} \cdot P_s$: **50** for `HIGH` services ($P_s = 20$) and **30** for `NORMAL` services ($P_s = 10$, since every service has `delay_penalty_weight = 1.0`). In minute units that is **5.0** vs **3.0** per minute of delay, alongside **0.5** for the maximum delay and **0.8** for origin deviation.
 
 ---
 

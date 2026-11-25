@@ -26,7 +26,7 @@ import {
 } from "@/lib/types";
 import { AlertCircle } from "lucide-react";
 
-export default function ControllerDashboard() {
+export default function ClassicControllerDashboard() {
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [network, setNetwork] = useState<NetworkResponse | null>(null);
