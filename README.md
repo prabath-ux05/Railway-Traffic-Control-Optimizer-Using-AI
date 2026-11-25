@@ -1,7 +1,7 @@
 <div align="center">
 
 # 🚆 AI-Assisted Railway Traffic Optimizer
-### Real-Time Digital Twin Simulation & Constraint-Based Rescheduling for Chennai Division
+### Real-Time Digital Twin Simulation & Constraint-Based Rescheduling 
 
 [![CICT 2026 Accepted](https://img.shields.io/badge/Research%20Paper-CICT%202026%20Accepted-blue?style=for-the-badge&logo=googlescholar)](docs/PAPER_ALIGNMENT.md)
 [![Python 3.12 | 3.13](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
